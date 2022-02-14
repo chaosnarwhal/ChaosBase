@@ -70,22 +70,36 @@ end
 
 function SWEP:PrimaryAttack(worldsnd)
 
+	--If they can't attack do to our previous function than dont let them attack.
 	if not self:CanPrimaryAttack() then return end
 
-	self:SetNextPrimaryFire( CurTime() + (60 / self.Primary.RPM) )
+	--LowTick rate RPM fix.
+	local curtime = CurTime()
+	local curatt = self:GetNextPrimaryFire()
+	local diff = curtime - curatt
 
+	if diff > engine.TickInterval() or diff < 0 then
+		curatt = curtime
+	end
+
+	self:SetNextPrimaryFire(curatt + self.Primary.Delay)
+
+	--Are we Inspecting the weapon? If so do not allow the user to fire their weapon.
     if self.Weapon:GetNWBool("Inspecting") == true then
 		return false
 	end
 
+	--Unsued as of the moment. Possible Reverb calculations in bound.
     if not worldsnd then
        self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
     elseif SERVER then
        sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
     end
 
+    --Pass off to the function to fire the bullet at what ever unlucky bastard is being shot at.
     self:ShootBullet( self.Primary.Damage, self.Primary.NumShots, self:CalculateSpread(), self.Primary.Tracer )
 
+    --Take the ammo from the full when they fire. This function needs to be re-wrote to include multi firing weapons.
     self:TakePrimaryAmmo( 1 )
 
 end
