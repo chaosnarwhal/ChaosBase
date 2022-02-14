@@ -1,8 +1,19 @@
 AddCSLuaFile()
 
+--Shared Functions
+include("modules/shared/sh_functions.lua")
+include("modules/shared/sh_primaryattack_behaviour.lua")
+include("modules/shared/sh_think.lua")
+include("modules/shared/sh_datatables.lua")
+
+--Clientside Functions.
+include("modules/client/cl_calcview.lua")
+include("modules/client/cl_calcviewmodelview.lua")
+
+
 SWEP.base           = "weapon_base"
 
-SWEP.PrintName		= "Scripted Weapon" -- 'Nice' Weapon name (Shown on HUD)
+SWEP.PrintName		= "Revival Weapons Base" -- 'Nice' Weapon name (Shown on HUD)
 SWEP.Author			= ""
 SWEP.Contact		= ""
 SWEP.Purpose		= ""
@@ -20,6 +31,9 @@ SWEP.WorldModel		= "models/weapons/w_357.mdl"
 --Some Viewmodel shit I guess.
 SWEP.VMPos = Vector(0, 0, 0)
 SWEP.VMAng = Vector(0, 0, 0)
+
+SWEP.IronSightsPos  = Vector(9.49, 10.5, -12.371)
+SWEP.IronSightsAng  = Vector(12, 65, -22.19)
 
 
 SWEP.Idle = 0
@@ -78,13 +92,6 @@ function SWEP:Initialize()
 	self:SetNWBool("Passive", false)
 	self:SetNWBool("Inspecting", false)
 
-
-	if ply:IsPlayer() then
-		local vm = ply:GetViewModel()
-		if not vm:IsValid() then return end
-		vm:SetPlaybackRate( 1 )
-	end
-
 -- SCK Stuff
 	if CLIENT then
 	
@@ -114,91 +121,8 @@ function SWEP:Initialize()
 		end
 		
 	end
-
-
-end
---[[---------------------------------------------------------
-	Name: SWEP:Think()
-	Desc: Called every frame
------------------------------------------------------------]]
-function SWEP:Think()
-	local ply = self:GetOwner()
-	if !IsValid(ply) or !ply:Alive() then return end
-	local cv = ply:Crouching()
-	local vm = ply:GetViewModel()
-	local hands = ply:GetHands()
-	local reloadkeyheld = ply:KeyDown(IN_RELOAD)
-
-	if self.Loading == false && self.Inspecting == false then
-		self:Rev_ManageAnims()
-	end
-
-	self:CustomThink()
-
-	if CLIENT then
-		local wl = ply:WaterLevel()
-		local oa = self.OwnerActivity
-		
-		if (ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT) or ply:KeyDown(IN_BACK) or ply:KeyDown(IN_FORWARD)) && cv == false && wl <= 2 then
-			if ply:KeyDown(IN_SPEED) then self.OwnerActivity = "sprinting"
-			else self.OwnerActivity = "running" end
-		elseif (ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT) or ply:KeyDown(IN_BACK) or ply:KeyDown(IN_FORWARD)) && cv == true && wl <= 2 then
-			if ply:KeyDown(IN_SPEED) then self.OwnerActivity = "crouchsprinting"
-			else self.OwnerActivity = "crouchrunning" end
-		elseif (!ply:KeyDown(IN_MOVELEFT) or !ply:KeyDown(IN_MOVERIGHT) or !ply:KeyDown(IN_BACK) or !ply:KeyDown(IN_FORWARD)) && cv == false && wl <= 2 then
-			self.OwnerActivity = "standidle"
-		elseif (!ply:KeyDown(IN_MOVELEFT) or !ply:KeyDown(IN_MOVERIGHT) or !ply:KeyDown(IN_BACK) or !ply:KeyDown(IN_FORWARD)) && cv == true && wl <= 2 then
-			self.OwnerActivity = "crouchidle"
-		elseif (ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT) or ply:KeyDown(IN_BACK) or ply:KeyDown(IN_FORWARD) or ply:KeyDown(IN_JUMP)) && wl > 2 then
-			if ply:KeyDown(IN_SPEED) then self.OwnerActivity = "fastswimming"
-			else self.OwnerActivity = "swimming" end
-		elseif (!ply:KeyDown(IN_MOVELEFT) or !ply:KeyDown(IN_MOVERIGHT) or !ply:KeyDown(IN_BACK) or !ply:KeyDown(IN_FORWARD)) && wl > 2 then
-			self.OwnerActivity = "swimidle"
-		end
-	end
-
 end
 
-function SWEP:CustomThink()
-end
-
---[[---------------------------------------------------------
-	Name: SWEP:SetupDataTables()
-	Desc: Initailize the Data Tables for the player.
------------------------------------------------------------]]
-function SWEP:SetupDataTables()
-   self:NetworkVar("Bool", 3, "IronsightsPredicted")
-   self:NetworkVar("Float", 3, "IronsightsTime")
-   self:NetworkVar("Bool", 3, "Passive")
-   self:NetworkVar("Bool", 3, "Inspecting")
-   self:NetworkVar("Bool", 3, "Melee")
-end
-
---[[---------------------------------------------------------
-	Name: SWEP:PrimaryAttack()
-	Desc: +attack1 has been pressed
------------------------------------------------------------]]
-function SWEP:PrimaryAttack(worldsnd)
-
-	if not self:CanPrimaryAttack() then return end
-
-	self:SetNextPrimaryFire( CurTime() + (60 / self.Primary.RPM) )
-
-    if self.Weapon:GetNWBool("Inspecting") == true then
-		return false
-	end
-
-    if not worldsnd then
-       self:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
-    elseif SERVER then
-       sound.Play(self.Primary.Sound, self:GetPos(), self.Primary.SoundLevel)
-    end
-
-    self:ShootBullet( self.Primary.Damage, self.Primary.NumShots, self:CalculateSpread(), self.Primary.Tracer )
-
-    self:TakePrimaryAmmo( 1 )
-
-end
 --[[---------------------------------------------------------
 	Name: SWEP:SecondaryAttack()
 	Desc: Reload is being pressed
@@ -407,49 +331,6 @@ end
 function SWEP:DoCustomDeploy()
 end
 
---[[---------------------------------------------------------
-	Name: SWEP:CanPrimaryAttack()
-	Desc: Helper function for checking for no ammo
------------------------------------------------------------]]
-function SWEP:CanPrimaryAttack()
-
-	local ply = self:GetOwner()
-
-	if ( self:Clip1() <= 0 ) then
-
-		self:EmitSound( "Weapon_Pistol.Empty" )
-		self:SetNextPrimaryFire(CurTime() + 0.3)
-		return false
-
-	end
-
-	if self.Weapon:GetNWBool("Inspecting") == true then
-		return false
-	end
-
-	if self.Weapon:GetNWBool("Passive") == true then
-		self:TogglePassive()
-		self:SetNextPrimaryFire(CurTime() + 0.3)
-		return false
-	end
-
-	if ply:IsSprinting() and self.AllowSprintShoot == false then
-		return false
-	elseif self.AllowSprintShoot == true then
-		return true
-	end
-
-	return true
-
-end
-
---[[---------------------------------------------------------
-	Name: SWEP:CanSecondaryAttack()
-	Desc: Disabling Secondary Attack all together kek
------------------------------------------------------------]]
-function SWEP:CanSecondaryAttack()
-	return false
-end
 
 --[[---------------------------------------------------------
 	Name: OnRemove

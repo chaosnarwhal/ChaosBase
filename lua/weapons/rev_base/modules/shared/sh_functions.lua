@@ -67,8 +67,6 @@ function SWEP:ShootBullet( damage, num, cone, tracer )
    	self:GetOwner():FireBullets( bullet )
 
    	self:UpdateBloom()
-
-   	print(self:CalculateSpread())
 end
 
 --[[---------------------------------------------------------

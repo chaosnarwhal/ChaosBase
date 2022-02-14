@@ -14,13 +14,13 @@ SWEP.AdminOnly				= false
 
 SWEP.ViewModelFOV			= 80
 SWEP.ViewModelFlip			= false
-SWEP.VMPos 					= Vector(0, 0, 0)
-SWEP.VMAng 					= Vector(0, 0, 0)
 
 SWEP.ViewModel 				= "models/chaosnarwhal/halo/weapons/unsc/ma37/v_unsc_ma37.mdl"
 SWEP.WorldModel				= "models/chaosnarwhal/halo/weapons/unsc/ma37/w_unsc_ma37.mdl"
 SWEP.UseHands				= true
 SWEP.HoldType 				= "ar2"
+SWEP.IronSightsPos  = Vector(9.49, 10.5, -12.371)
+SWEP.IronSightsAng  = Vector(12, 65, -22.19)
 
 SWEP.Primary.Sound          = Sound("chaosnarwhal/weapons/unsc/ma37/gunfire/rifle_fire_"..math.random(1,3)..".wav")
 SWEP.Primary.Recoil         = 0
