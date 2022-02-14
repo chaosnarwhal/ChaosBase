@@ -73,7 +73,11 @@ function SWEP:PrimaryAttack(worldsnd)
 	--If they can't attack do to our previous function than dont let them attack.
 	if not self:CanPrimaryAttack() then return end
 
+
+
 	--LowTick rate RPM fix.
+	local delay = 60 / self.Primary.RPM
+
 	local curtime = CurTime()
 	local curatt = self:GetNextPrimaryFire()
 	local diff = curtime - curatt
@@ -82,7 +86,7 @@ function SWEP:PrimaryAttack(worldsnd)
 		curatt = curtime
 	end
 
-	self:SetNextPrimaryFire(curatt + self.Primary.Delay)
+	self:SetNextPrimaryFire(curatt + delay)
 
 	--Are we Inspecting the weapon? If so do not allow the user to fire their weapon.
     if self.Weapon:GetNWBool("Inspecting") == true then
