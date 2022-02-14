@@ -43,27 +43,6 @@ function SWEP:CanSecondaryAttack()
 	return false
 end
 
-function SWEP:CalculateRecoil()
-    math.randomseed(self.Recoil.Seed + self:GetSprayRounds())
-
-    local verticalRecoil = math.min(self:GetSprayRounds(), math.min(self:GetMaxClip1() * 0.33, 20)) * 0.1 + math.Rand(self.Recoil.Vertical[1], self.Recoil.Vertical[2]) * GetConVar("mgbase_sv_recoil"):GetFloat()
-    local horizontalRecoil = math.Rand(self.Recoil.Horizontal[1], self.Recoil.Horizontal[2]) * GetConVar("mgbase_sv_recoil"):GetFloat()
-    local angles = Angle(-verticalRecoil, horizontalRecoil, horizontalRecoil * -0.3)
-
-    return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier)
-end
-
-function SWEP:CalculateCone()
-    math.randomseed(self.Cone.Seed + self:Clip1() + self:Ammo1())
-    return math.Clamp(math.Rand(-self:GetCone(), self:GetCone()) * 1000, -self:GetCone(), self:GetCone())
-
-    --local verticalCone = math.random(self.Cone.Vertical[1], self.Recoil.Vertical[2])
-    --local horizontalRecoil = math.random(self.Recoil.Horizontal[1], self.Recoil.Horizontal[2])
-    --local angles = Angle(verticalRecoil, horizontalRecoil, horizontalRecoil * -0.3)
-
-    --return angles * Lerp(1, self.Recoil.AdsMultiplier, self:GetAimDelta())
-end
-
 function SWEP:MetersToHU(meters)
     return (meters * 100) / 2.54
 end
