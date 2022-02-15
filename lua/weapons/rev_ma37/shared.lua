@@ -15,22 +15,29 @@ SWEP.AdminOnly				= false
 SWEP.ViewModelFOV			= 80
 SWEP.ViewModelFlip			= false
 
-SWEP.ViewModel 				= "models/chaosnarwhal/halo/weapons/unsc/ma37/v_unsc_ma37.mdl"
+SWEP.ViewModel 				= "models/chaosnarwhal/halo/weapons/unsc/ma37/v_unsc_ma37_v2.mdl"
 SWEP.WorldModel				= "models/chaosnarwhal/halo/weapons/unsc/ma37/w_unsc_ma37.mdl"
 SWEP.UseHands				= true
 SWEP.HoldType 				= "ar2"
-SWEP.IronSightsPos  = Vector(9.49, 10.5, -12.371)
-SWEP.IronSightsAng  = Vector(12, 65, -22.19)
+SWEP.MuzzleAttachment       = "muzzle"       -- Should be "1" for CSS models or "muzzle" for hl2 models
+
+SWEP.VMPos                  = Vector(4, 2, -2)
+SWEP.VMAng                  = Vector(0, 0, 0)
+
+SWEP.IronSightsPos          = Vector(-3.5, 0, -2)
+SWEP.IronSightsAng          = Vector(0, 0, 0)
+SWEP.Secondary.IronFOV      = 60
 
 SWEP.Primary.Sound          = Sound("chaosnarwhal/weapons/unsc/ma37/gunfire/rifle_fire_"..math.random(1,3)..".wav")
-SWEP.Primary.Recoil         = 0
 SWEP.Primary.Damage         = 20
 SWEP.Primary.NumShots       = 1
-SWEP.Primary.RPM          	= 600
+SWEP.Primary.RPM          	= 550
 
-SWEP.Primary.Spread         = 1
-SWEP.Primary.SpreadDiv      = 40
-SWEP.Primary.Kick           = 1
+SWEP.Primary.KickUp         = 0                 -- This is the maximum upwards recoil (rise)
+SWEP.Primary.KickDown       = 0                 -- This is the maximum downwards recoil (skeet)
+SWEP.Primary.KickHorizontal = 0 
+
+SWEP.Primary.Spread         = .01                   --This is hip-fire acuracy.  Less is more (1 is horribly awful, .0001 is close to perfect)
 
 SWEP.AllowSprintShoot		= false
 
