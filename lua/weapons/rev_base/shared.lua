@@ -1,1076 +1,931 @@
 AddCSLuaFile()
 
 --Shared Functions
-include("modules/shared/sh_anims.lua")
-include("modules/shared/sh_bobcode.lua")
-include("modules/shared/sh_bullet.lua")
-include("modules/shared/sh_datatables.lua")
-include("modules/shared/sh_effects.lua")
-include("modules/shared/sh_firemode_behaviour.lua")
 include("modules/shared/sh_functions.lua")
-include("modules/shared/sh_ironsights_behaviour.lua")
 include("modules/shared/sh_primaryattack_behaviour.lua")
 include("modules/shared/sh_think.lua")
+include("modules/shared/sh_datatables.lua")
 
 --Clientside Functions.
 include("modules/client/cl_calcview.lua")
 include("modules/client/cl_calcviewmodelview.lua")
-include("modules/client/cl_effects.lua")
-include("modules/client/cl_sck.lua")
 
 
-SWEP.base = "weapon_base"
-DEFINE_BASECLASS("weapon_base")
-SWEP.Gun = "rev_base"
+SWEP.base           = "weapon_base"
 
-SWEP.PrintName			= "Revival Weapons Base" -- 'Nice' Weapon name (Shown on HUD)
-SWEP.Author				= ""
-SWEP.Contact			= ""
-SWEP.Purpose			= ""
-SWEP.Instructions		= ""
-SWEP.Category			= "Revival"
+SWEP.PrintName		= "Revival Weapons Base" -- 'Nice' Weapon name (Shown on HUD)
+SWEP.Author			= ""
+SWEP.Contact		= ""
+SWEP.Purpose		= ""
+SWEP.Instructions	= ""
+SWEP.Category		= "Revival"
 
 
 --ViewModels and WorldModels Defaults.
-SWEP.ViewModelFOV			= 62
-SWEP.ViewModelFlip			= false
-SWEP.ViewModel				= "models/weapons/v_pistol.mdl"
-SWEP.WorldModel				= "models/weapons/w_357.mdl"
-SWEP.SightsDown 			= false
-SWEP.MuzzleAttachment		= "1" 		-- Should be "1" for CSS models or "muzzle" for hl2 models
+SWEP.ViewModelFOV	= 62
+SWEP.ViewModelFlip	= false
+SWEP.ViewModel		= "models/weapons/v_pistol.mdl"
+SWEP.WorldModel		= "models/weapons/w_357.mdl"
+
 
 --Some Viewmodel shit I guess.
-SWEP.VMPos 					= Vector(0, 0, 0)
-SWEP.VMAng 					= Vector(0, 0, 0)
+SWEP.VMPos = Vector(0, 0, 0)
+SWEP.VMAng = Vector(0, 0, 0)
 
--- Time needed to enter / leave the ironsight in seconds
-SWEP.IronSightTime 			= 0.25
--- The position offset applied when entering the ironsight
-SWEP.IronSightPos 			= Vector(0, 0, 0)
--- The rotational offset applied when entering the ironsight
-SWEP.IronSightsAng 			= Vector(0, 0, 0)
+SWEP.IronSightsPos  = Vector(9.49, 10.5, -12.371)
+SWEP.IronSightsAng  = Vector(12, 65, -22.19)
 
-SWEP.AllowSprintShoot 		= false
+
+SWEP.Idle = 0
+SWEP.IdleTimer = CurTime()
+SWEP.PistolSlide = 0
+
+SWEP.AllowSprintShoot = false
 
 --Lmfao gmod be like ME WANT THESE.
-SWEP.Spawnable				= false
-SWEP.AdminOnly				= false
+SWEP.Spawnable		= false
+SWEP.AdminOnly		= false
 
-SWEP.Primary.Sound 			= Sound("")				-- This is the sound of the gun/bow, when you shoot.
-SWEP.Primary.Round 			= ("")					-- What kind of bullet does it shoot?
-SWEP.Primary.Cone			= 0.2					-- This is the accuracy of NPCs.  Not necessary in almost all cases, since I don't even think this base is compatible with NPCs.
-SWEP.Primary.Recoil			= 1						-- This is the recoil multiplier.  Really, you should keep this at 1 and change the KickUp, KickDown, and KickHorizontal variables.  However, you can change this as a multiplier too.
-SWEP.Primary.Damage			= 0.01					-- Damage, in standard damage points.
-SWEP.Primary.Spread			= .01					--This is hip-fire acuracy.  Less is more (1 is horribly awful, .0001 is close to perfect)
-SWEP.FiresUnderwater 		= false
- 
---[[
-
-Unless you can do this manually, autodetect it.  If you decide to manually do these, uncomment this block and rmeove this line.
-
-SWEP.Primary.SpreadMultiplierMax = 2.5 --How far the spread can expand when you shoot.
-SWEP.Primary.SpreadIncrement = 1/3.5 --What percentage of the modifier is added on, per shot.
-SWEP.Primary.SpreadRecovery = 3 --How much the spread recovers, per second.
-
-]]--
-
-SWEP.Primary.NumShots			= 1 --The number of shots the gun/bow fires.  
-SWEP.Primary.RPM				= 600					-- This is in Rounds Per Minute / RPM
-SWEP.Primary.RPM_Semi			= nil					-- RPM for semi-automatic or burst fire.  This is in Rounds Per Minute / RPM
-SWEP.Primary.ClipSize			= 0					-- This is the size of a clip
-SWEP.Primary.DefaultClip		= 0					-- This is the number of bullets the gun gives you, counting a clip as defined directly above.
-SWEP.Primary.KickUp				= 0					-- This is the maximum upwards recoil (rise)
-SWEP.Primary.KickDown			= 0					-- This is the maximum downwards recoil (skeet)
-SWEP.Primary.KickHorizontal		= 0					-- This is the maximum sideways recoil (no real term)
-SWEP.Primary.StaticRecoilFactor = 0.5 	--Amount of recoil to directly apply to EyeAngles.  Enter what fraction or percentage (in decimal form) you want.  This is also affected by a convar that defaults to 0.5.
-SWEP.Primary.Automatic			= true					-- Automatic/Semi Auto
-SWEP.Primary.Ammo				= "none"					-- What kind of ammo
-SWEP.Primary.Range 				= -1 -- The distance the bullet can travel in source units.  Set to -1 to autodetect based on damage/rpm.
-SWEP.Primary.RangeFalloff 		= -1 -- The percentage of the range the bullet damage starts to fall off at.  Set to 0.8, for example, to start falling off after 80% of the range.
-
-SWEP.Secondary.ClipSize			= 0					-- Size of a clip
-SWEP.Secondary.DefaultClip		= 0					-- Default number of bullets in a clip
-SWEP.Secondary.Automatic		= false					-- Automatic/Semi Auto
-SWEP.Secondary.Ammo				= "none"
-SWEP.Secondary.IronFOV			= 0					-- How much you 'zoom' in. Less is more!  Don't have this be <= 0 
-SWEP.SprintFOVOffset 			= 3.75 --Add this onto the FOV when we're sprinting.
-
---Scoped vars.
-
-SWEP.BoltAction			= false  --Unscope/sight after you shoot?
-SWEP.Scoped				= false  --Draw a scope overlay?
-
-SWEP.ScopeOverlayThreshold = 0.875 --Percentage you have to be sighted in to see the scope.
-SWEP.BoltTimerOffset = 0.25 --How long you stay sighted in after shooting, with a bolt action.
-
---Shotgun Vars
-
-SWEP.Shotgun = false
-
-SWEP.ShellTime			= .35 -- For shotguns.  How long it takes to insert a shell.
-
-SWEP.SelectiveFire		= false --Allow selecting your firemode?
-SWEP.DisableBurstFire	= false --Only bursting?
-SWEP.OnlyBurstFire		= false --No auto, only burst?
-SWEP.DefaultFireMode 	= "" --Default to auto or whatev
-
-SWEP.VElements 				= {}
-SWEP.WElements 				= {}
-
-SWEP.SprintFOVOffset 		= 3.75 --Add this onto the FOV when we're sprinting.
-SWEP.Secondary.IronFOV		= 0	
-
---Inspection Pos/Ang.
-SWEP.InspectPosDef 			= Vector(0,0,0)
-SWEP.InspectAngDef 			= Vector(0,0,0)
-
---Sighting Code
-SWEP.CLNearWallProgress=0 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
-SWEP.CLRunSightsProgress=0 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
-SWEP.CLIronSightsProgress=0 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
-SWEP.CLCrouchProgress=0 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
-SWEP.CLJumpProgress=0 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
-SWEP.CLInspectingProgress=0
-SWEP.CLSpreadRatio=1--BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
-SWEP.CLAmmoHUDProgress=0--BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
-SWEP.ShouldDrawAmmoHUD=false--THIS IS PROCEDURALLY CHANGED AND SHOULD NOT BE TWEAKED.  BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
-SWEP.IronRecoilMultiplier=0.5 --Multiply recoil by this factor when we're in ironsights.  This is proportional, not inversely.
-SWEP.CrouchRecoilMultiplier=0.65  --Multiply recoil by this factor when we're crouching.  This is proportional, not inversely.
-SWEP.JumpRecoilMultiplier=1.3  --Multiply recoil by this factor when we're crouching.  This is proportional, not inversely.
-SWEP.WallRecoilMultiplier=1.1  --Multiply recoil by this factor when we're changing state e.g. not completely ironsighted.  This is proportional, not inversely.
-SWEP.ChangeStateRecoilMultiplier=1.3  --Multiply recoil by this factor when we're crouching.  This is proportional, not inversely.
-SWEP.CrouchAccuracyMultiplier=0.5--Less is more.  Accuracy * 0.5 = Twice as accurate, Accuracy * 0.1 = Ten times as accurate
-SWEP.ChangeStateAccuracyMultiplier=1.5 --Less is more.  A change of state is when we're in the progress of doing something, like crouching or ironsighting.  Accuracy * 2 = Half as accurate.  Accuracy * 5 = 1/5 as accurate
-SWEP.JumpAccuracyMultiplier=2--Less is more.  Accuracy * 2 = Half as accurate.  Accuracy * 5 = 1/5 as accurate
-SWEP.WalkAccuracyMultiplier=1.35--Less is more.  Accuracy * 2 = Half as accurate.  Accuracy * 5 = 1/5 as accurate
-SWEP.IronSightTime = 0.3 --The time to enter ironsights/exit it.
-SWEP.NearWallTime = 0.25 --The time to pull up  your weapon or put it back down
-SWEP.ToCrouchTime = 0.05 --The time it takes to enter crouching state
-SWEP.WeaponLength = 40 --Almost 3 feet Feet.  This should be how far the weapon sticks out from the player.  This is used for calculating the nearwall trace.
-SWEP.DefaultFOV=90 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
-SWEP.MoveSpeed = 1 --Multiply the player's movespeed by this.
-SWEP.IronSightsMoveSpeed = 0.8 --Multiply the player's movespeed by this when sighting.
---VAnimation Support
-SWEP.ShootWhileDraw=false --Can you shoot while draw anim plays?
-SWEP.AllowReloadWhileDraw=false --Can you reload while draw anim plays?
-SWEP.SightWhileDraw=false --Can we sight in while the weapon is drawing / the draw anim plays?
-SWEP.AllowReloadWhileHolster=true --Can we interrupt holstering for reloading?
-SWEP.ShootWhileHolster=true --Cam we interrupt holstering for shooting?
-SWEP.SightWhileHolster=false --Cancel out "iron"sights when we holster?
-SWEP.UnSightOnReload=true --Cancel out ironsights for reloading.
-SWEP.AllowReloadWhileSprinting=false --Can you reload when close to a wall and facing it?
-SWEP.AllowReloadWhileNearWall=false --Can you reload when close to a wall and facing it?
-SWEP.SprintBobMult=1.5 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this > 1 probably for sprinting.
-SWEP.IronBobMult=0  -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this < 1 for sighting, 0 to outright disable.
---These holdtypes are used in ironsights.  Syntax:  DefaultHoldType=NewHoldType
-SWEP.IronSightHoldTypes = { pistol = "revolver",
-	smg = "rpg",
-	grenade = "melee",
-	ar2 = "rpg",
-	shotgun = "ar2",
-	rpg = "rpg",
-	physgun = "physgun",
-	crossbow = "ar2",
-	melee = "melee2",
-	slam = "camera",
-	normal = "fist",
-	melee2 = "magic",
-	knife = "fist",
-	duel = "duel",
-	camera = "camera",
-	magic = "magic",
-	revolver = "revolver"
-}
---These holdtypes are used while sprinting.  Syntax:  DefaultHoldType=NewHoldType
-SWEP.SprintHoldTypes = { pistol = "normal",
-	smg = "passive",
-	grenade = "normal",
-	ar2 = "passive",
-	shotgun = "passive",
-	rpg = "passive",
-	physgun = "normal",
-	crossbow = "passive",
-	melee = "normal",
-	slam = "normal",
-	normal = "normal",
-	melee2 = "melee",
-	knife = "fist",
-	duel = "normal",
-	camera = "slam",
-	magic = "normal",
-	revolver = "normal"
-}
-
-SWEP.IronSightHoldTypeOverride=""  --This variable overrides the ironsights holdtype, choosing it instead of something from the above tables.  Change it to "" to disable.
-SWEP.SprintHoldTypeOverride=""  --This variable overrides the sprint holdtype, choosing it instead of something from the above tables.  Change it to "" to disable.
---Override allowed VAnimations.  Necessary for lazy modelers/animators.
-SWEP.ForceDryFireOff = true
-SWEP.DisableIdleAnimations = true
-SWEP.ForceEmptyFireOff = true
---Allowed VAnimations.  These are autodetected, so not really needed except as an extra precaution.  Don't change these until you get to the next category.
-SWEP.CanDrawAnimate=true
-SWEP.CanDrawAnimateEmpty=false
-SWEP.CanDrawAnimateSilenced=false
-SWEP.CanHolsterAnimate=true
-SWEP.CanHolsterAnimateEmpty=false
-SWEP.CanIdleAnimate=true
-SWEP.CanIdleAnimateEmpty=false
-SWEP.CanIdleAnimateSilenced=false
-SWEP.CanShootAnimate=true
-SWEP.CanShootAnimateSilenced=false
-SWEP.CanReloadAnimate=true
-SWEP.CanReloadAnimateEmpty=false
-SWEP.CanReloadAnimateSilenced=false
-SWEP.CanDryFireAnimate=false
-SWEP.CanDryFireAnimateSilenced=false
-SWEP.CanSilencerAttachAnimate=false
-SWEP.CanSilencerDetachAnimate=false
-SWEP.actlist = {
-	ACT_VM_DRAW,
-	ACT_VM_DRAW_EMPTY,
-	ACT_VM_DRAW_SILENCED,
-	ACT_VM_HOLSTER,
-	ACT_VM_HOLSTER_EMPTY,
-	ACT_VM_IDLE,
-	ACT_VM_IDLE_EMPTY,
-	ACT_VM_IDLE_SILENCED,
-	ACT_VM_PRIMARYATTACK,
-	ACT_VM_PRIMARYATTACK_EMPTY,
-	ACT_VM_PRIMARYATTACK_SILENCED,
-	ACT_VM_SECONDARYATTACK,
-	ACT_VM_RELOAD,
-	ACT_VM_RELOAD_EMPTY,
-	ACT_VM_RELOAD_SILENCED,
-	ACT_VM_ATTACH_SILENCER,
-	ACT_VM_DETACH_SILENCER,
-	ACT_VM_FIDGET,
-	ACT_VM_DRAW_DEPLOYED,
-	ACT_WALK,
-	ACT_RUN
-}
- --If you really want, you can remove things from SWEP.actlist and manually enable animations and set their lengths.
-SWEP.SequenceEnabled = {}
-SWEP.SequenceLength = {}
-
---WAnim Support
-SWEP.ThirdPersonReloadDisable=false --Disable third person reload?  True disables.
-
---FX Stuff.
---These are particle effects, not PCF files, that are played when you shoot.
-SWEP.SmokeParticles = { 
-	pistol = "smoke_trail_controlled",
-	smg = "smoke_trail_rev",
-	grenade = "smoke_trail_rev",
-	ar2 = "smoke_trail_rev",
-	shotgun = "smoke_trail_wild",
-	rpg = "smoke_trail_rev",
-	physgun = "smoke_trail_rev",
-	crossbow = "smoke_trail_rev",
-	melee = "smoke_trail_rev",
-	slam = "smoke_trail_rev",
-	normal = "smoke_trail_rev",
-	melee2 = "smoke_trail_rev",
-	knife = "smoke_trail_rev",
-	duel = "smoke_trail_rev",
-	camera = "smoke_trail_rev",
-	magic = "smoke_trail_rev",
-	revolver = "smoke_trail_rev",
-	silenced = "smoke_trail_controlled"
-}
-SWEP.DoMuzzleFlash = true --Do a muzzle flash?
-SWEP.CustomMuzzleFlash = true --Disable muzzle anim events and use our custom flashes?
-SWEP.AutoDetectMuzzleAttachment = false --For multi-barrel weapons, detect the proper attachment?
-SWEP.Tracer				= 0 --Bullet tracer.  TracerName overrides this.
-SWEP.TracerName = nil --Change to a string of your tracer name
-SWEP.MuzzleFlashEffect = nil --Change to a string of your muzzle flash effect
-SWEP.DisableChambering = false --Disable round-in-the-chamber
-
---Stuff you shouldn't touch after this 
-SWEP.PenetrationCounter = 0 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
-SWEP.DrawTime = 1  --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
-SWEP.TextCol = Color(255,255,255,255) --Primary text color
-SWEP.TextColContrast = Color(32,32,32,255) --Secondary Text Color (used for shadow)
-SWEP.AttachmentCache = {} -- Caches Attachments
-SWEP.ScopeScale = 0.5
-SWEP.ReticleScale = 0.7
-SWEP.Akimbo = false
-
-SWEP.AnimCycle = 1
-
-SWEP.IdleTimer = CurTime()
+--Sounds,Recoil and fire delay.
+SWEP.Primary.Sound          = Sound( "Weapon_Pistol.Empty" )
+SWEP.Primary.Recoil         = 1.5
+SWEP.Primary.Kick          	= 1
+SWEP.Primary.Damage         = 1
+SWEP.Primary.NumShots       = 1
+SWEP.Primary.RPM          	= 1
 
 
-for k,v in pairs(SWEP.SmokeParticles) do
-	PrecacheParticleSystem(v)
+SWEP.Primary.Spread			= 1
+SWEP.Primary.SpreadDiv		= 90
+
+--Primary Fire
+SWEP.Primary.ClipSize		= 8			-- Size of a clip
+SWEP.Primary.DefaultClip	= 32		-- Default number of bullets in a clip
+SWEP.Primary.Automatic		= false		-- Automatic/Semi Auto
+SWEP.Primary.Ammo			= "Pistol"
+SWEP.Primary.Tracer         = 4
+
+SWEP.VElements = {}
+SWEP.WElements = {}
+
+
+SWEP.PrimaryAnim = ACT_VM_PRIMARYATTACK
+SWEP.ReloadAnim = ACT_VM_RELOAD
+
+--Values Not For Touching.
+SWEP.BloomValue 	= 0
+SWEP.PrevBS 		= 0
+
+--[[---------------------------------------------------------
+	Name: SWEP:Initialize()
+	Desc: Called when the weapon is first loaded
+-----------------------------------------------------------]]
+function SWEP:Initialize()
+	local ply = self:GetOwner()
+
+	self.Ready = false
+
+	if self.SetHoldType then
+      self:SetHoldType(self.HoldType or "pistol")
+   end
+
+	self:SetNWBool("Passive", false)
+	self:SetNWBool("Inspecting", false)
+
+-- SCK Stuff
+	if CLIENT then
+	
+		-- Create a new table for every weapon instance
+		self.VElements = table.FullCopy( self.VElements )
+		self.WElements = table.FullCopy( self.WElements )
+		self.ViewModelBoneMods = table.FullCopy( self.ViewModelBoneMods )
+		self:CreateModels(self.VElements) // create viewmodels
+		self:CreateModels(self.WElements) // create worldmodels
+		
+		if IsValid(ply) && ply:IsPlayer() then
+			local vm = self.Owner:GetViewModel()
+			if IsValid(vm) then
+				self:ResetBonePositions(vm)
+				
+				-- Init viewmodel visibility
+				if (self.ShowViewModel == nil or self.ShowViewModel) then
+					vm:SetColor(Color(255,255,255,255))
+				else
+					-- we set the alpha to 1 instead of 0 because else ViewModelDrawn stops being called
+					vm:SetColor(Color(255,255,255,1))
+					-- ^ stopped working in GMod 13 because you have to do Entity:SetRenderMode(1) for translucency to kick in
+					-- however for some reason the view model resets to render mode 0 every frame so we just apply a debug material to prevent it from drawing
+					vm:SetMaterial("Debug/hsv")			
+				end
+			end
+		end
+		
+	end
+end
+
+--[[---------------------------------------------------------
+	Name: SWEP:SecondaryAttack()
+	Desc: Reload is being pressed
+-----------------------------------------------------------]]
+function SWEP:SecondaryAttack()
+   if self.NoSights or (not self.IronSightsPos) then return end
+
+   self:SetIronsights(not self:GetIronsights())
+
+   self:SetNextSecondaryFire(CurTime() + 0.3)
+end
+
+--[[---------------------------------------------------------
+	Name: SWEP:Reload()
+	Desc: Reload is being pressed
+-----------------------------------------------------------]]
+function SWEP:Reload()
+	if game.SinglePlayer() then self:CallOnClient("Reload") end -- why
+	local ply = self:GetOwner()
+	local usekey = ply:KeyDown(IN_USE)
+	local reloadkey = ply:KeyDown(IN_RELOAD)
+	local walkkey = ply:KeyDown(IN_WALK)
+	local sprintkey = ply:KeyDown(IN_SPEED)
+	local reloadkeypressed = ply:KeyPressed(IN_RELOAD)
+	local reloadkeyheld = ply:KeyDown(IN_RELOAD)
+
+	self:DefaultReload( ACT_VM_RELOAD )
+	self:CustomReload()
+
+end
+function SWEP:CustomReload()
+end
+
+--[[---------------------------------------------------------
+	Name: SWEP:Rev_ManageAnims()
+	Desc: Handles all things animated related.
+-----------------------------------------------------------]]
+function SWEP:Rev_ManageAnims()
+
+	if !IsFirstTimePredicted() then return end
+
+	local ply = self:GetOwner()
+	local vm = ply:GetViewModel()
+	local oa = self.OwnerActivity
+	local cv = ply:Crouching()
+	local slowvar = ply:Crouching() or ply:KeyDown(IN_WALK)
+	local walking = (ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT) or ply:KeyDown(IN_FORWARD) or ply:KeyDown(IN_BACK)) && !ply:KeyDown(IN_SPEED)
+	local sprinting = (ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT) or ply:KeyDown(IN_FORWARD) or ply:KeyDown(IN_BACK)) && ply:KeyDown(IN_SPEED)
+	
+		if self.ManuallyReloading == true or self.Loading == true or self.Idle == 0 then return end
+	
+		local idleanim = vm:SelectWeightedSequence( ACT_VM_IDLE )
+		local walkanim = vm:SelectWeightedSequence( ACT_WALK )
+		local sprintanim = vm:SelectWeightedSequence( ACT_RUN )
+		local swimidleanim = vm:SelectWeightedSequence( ACT_SWIM_IDLE )
+		local swimminganim = vm:SelectWeightedSequence( ACT_SWIM )
+		
+		local reloadanim = vm:SelectWeightedSequence( ACT_VM_RELOAD )
+		local walkanim = vm:SelectWeightedSequence( ACT_WALK )
+		
+		local anim = vm:GetSequence()
+		local animdata = vm:GetSequenceInfo(anim)
+		
+		if self.SightsDown then
+			vm:SendViewModelMatchingSequence(idleanim)
+		return end
+		
+				self.FPAnimMul = 1
+		
+		if !walking && !sprinting then
+			self.AnimToPlay = idleanim
+		elseif walking then
+			vm:SetPlaybackRate(self.FPAnimMul)
+			if walkanim == -1 then
+				self.AnimToPlay = idleanim
+			else
+				self.AnimToPlay = walkanim
+			end
+		elseif sprinting && !cv then
+			if sprintanim == -1 or self.AllowSprintShoot == true then
+				self.AnimToPlay = idleanim
+			else
+				self.AnimToPlay = sprintanim
+			end
+		end
+		
+		if walking then
+			if animdata.activityname == "ACT_VM_IDLE" or animdata.activityname == "ACT_RUN" then self.IdleTimer = CurTime() end
+		elseif sprinting then
+			if animdata.activityname == "ACT_WALK" or animdata.activityname == "ACT_VM_IDLE" then self.IdleTimer = CurTime() end
+		elseif !walking or !sprinting then
+			if animdata.activityname == "ACT_WALK" or animdata.activityname == "ACT_RUN" then self.IdleTimer = CurTime() end
+		end
+		
+		if self.IdleTimer <= CurTime() then
+			if idleanim == -1 then return end
+			vm:SendViewModelMatchingSequence(self.AnimToPlay)
+			if self.AnimToPlay == walkanim then
+				if slowvar then
+					self.IdleTimer = CurTime() + (vm:SequenceDuration(self.AnimToPlay) * 2)
+				else
+					self.IdleTimer = CurTime() + vm:SequenceDuration(self.AnimToPlay)
+				end
+			else
+				self.IdleTimer = CurTime() + vm:SequenceDuration(self.AnimToPlay)
+			end
+		end
+
+	if self.IdleTimer <= CurTime() then
+		vm:ResetSequence(idleanim)
+		vm:ResetSequence(reloadanim)
+		vm:ResetSequence(walkanim)
+	end
+end
+--[[---------------------------------------------------------
+	Name: SWEP:Holster( weapon_to_swap_to )
+	Desc: Weapon wants to holster
+	RetV: Return true to allow the weapon to holster
+-----------------------------------------------------------]]
+function SWEP:Holster(wep)
+	self.IdleTimer = CurTime()
+
+	--Lets add a function that we can add custom stuff to so that we don't call this on SWEPS and overwrite goods that we need.
+	self:CustomHolster()
+
+	-- SCK
+	if CLIENT and IsValid(self.Owner) && self:GetOwner():IsPlayer() then
+		local vm = self.Owner:GetViewModel()
+		if IsValid(vm) then
+			self:ResetBonePositions(vm)
+		end
+	end
+
+	return true
+end
+
+--Create custom Holster function for devs to place custom code into the SWEP directly.
+function SWEP:CustomHolster()
+end
+
+--[[---------------------------------------------------------
+	Name: SWEP:Deploy()
+	Desc: Deploy the weapon when swapped to the weapon. lol?
+-----------------------------------------------------------]]
+function SWEP:Deploy()
+
+	--Lets set some variables I want to use with the deploy.
+	local ply = self:GetOwner()
+	if not IsValid(ply) then return end
+	local cv = ply:Crouching()
+	local vm = ply:GetViewModel()
+	local drawanim = vm:SelectWeightedSequence( ACT_VM_DRAW )
+	local drawanimintial = vm:SelectWeightedSequence( ACT_VM_DRAW_EMPTY )
+	local drawanimdur = vm:SequenceDuration(drawanim)
+	local drawanimintialdur = vm:SequenceDuration(drawanimintial)
+	vm:SetPlaybackRate(1)
+	self.SightsDown = false
+	if self:GetNWBool("Passive") == true then self:TogglePassive() end
+	self.Idle = 1
+	self.Inspecting = false
+	self.EmptyReload = 0
+	self.Loading = false
+
+	self:BloomScore()
+
+
+	--Initial Draw and Regular Draw anim handling.
+	if ply:IsPlayer() then
+		self.Idle = 0
+		if self.Ready == true or drawanimintial == -1 then
+			self.Weapon:SendWeaponAnim( ACT_VM_DRAW )
+			timer.Simple(drawanimdur, function()
+				self.Ready = true
+				self.Idle = 1
+			end)
+			self.IdleTimer = CurTime() + drawanimdur
+		else
+			self.Weapon:SendWeaponAnim( ACT_VM_DRAW_EMPTY )
+			self.IdleTimer = CurTime() + drawanimintialdur
+			time.Simple(drawanimintialdur, function()
+				self.Ready = true
+				self:SetNWBool("Ready", true)
+				self.Idle = 1
+			end)
+		end
+	end
+
+	--Are they in the passive firemode?
+	if self.Passive == true then
+		self:DoPassiveHoldtype()
+	else
+
+	--Make sure they cant shoot when pulling out the weapon.
+	self:SetNextPrimaryFire( CurTime() + drawanimdur)
+
+	--Lets add a function that we can add custom stuff to so that we don't call this on SWEPS and overwrite goods that we need.
+	self:DoCustomDeploy()
+
+	--Make sure to return true so that they CAN deploy the weapon.
+	return true
+
+	end
+
+end
+--Create custom Deploy function for devs to place custom code into the SWEP directly.
+function SWEP:DoCustomDeploy()
 end
 
 
 --[[---------------------------------------------------------
-	Name: SWEP:SetupDataTables()
-	Desc: Initailize the Data Tables for the player.
+	Name: OnRemove
+	Desc: Called just before entity is deleted
+-----------------------------------------------------------]]
+function SWEP:OnRemove()
+	local ply = self:GetOwner()
+	self.IdleTimer = CurTime()
+
+
+	if self.BloomScoreName != nil then
+			timer.Remove( self.BloomScoreName )
+	else end
+
+	--Lets add a function that we can add custom stuff to so that we don't call this on SWEPS and overwrite goods that we need.
+	self:DoCustomRemove()
+
+	--SCK likes to see a Holster()? idk bro.
+	self:Holster()
+end
+
+--Create custom Remove function for devs to place custom code into the SWEP directly.
+function SWEP:DoCustomRemove()
+end
+
+--[[---------------------------------------------------------
+	Name: SWEP:OnRestore()
+	Desc: When the weapon exist again lol!
+-----------------------------------------------------------]]
+function SWEP:OnRestore()
+   self.NextSecondaryAttack = 0
+   self:SetIronsights( false )
+end
+
+--[[---------------------------------------------------------
+	Name: SetIronsights and GetIronsights
+	Desc: Allow the setting of IronSights.
+-----------------------------------------------------------]]
+function SWEP:SetIronsights(b)
+   if (b ~= self:GetIronsights()) then
+      self:SetIronsightsPredicted(b)
+      self:SetIronsightsTime(CurTime())
+      if CLIENT then
+         self:CalcViewModel()
+      end
+   end
+end
+
+function SWEP:GetIronsights()
+   return self:GetIronsightsPredicted()
+end
+
+function SWEP:CalcViewModel()
+   if (not CLIENT) or (not IsFirstTimePredicted()) then return end
+   self.bIron = self:GetIronsights()
+   self.fIronTime = self:GetIronsightsTime()
+   self.fCurrentTime = CurTime()
+   self.fCurrentSysTime = SysTime()
+end
+
+--- Dummy functions that will be replaced when SetupDataTables runs. These are
+--- here for when that does not happen (due to e.g. stacking base classes)
+function SWEP:GetIronsightsTime() return -1 end
+function SWEP:SetIronsightsTime() end
+function SWEP:GetIronsightsPredicted() return false end
+function SWEP:SetIronsightsPredicted() end
+
+
+--[[---------------------------------------------------------
+	Name: SWEP:Inspect()
+	Desc: Inspect function to check your gun out like a 2012 Airsoft montage.
+-----------------------------------------------------------]]
+function SWEP:Inspect()
+	self.Inspecting = true
+	self:SetNWBool("InspectingWeapon", true)
+	if game.SinglePlayer() && !IsFirstTimePredicted() then return end
+	local inspectanim = self:SelectWeightedSequence( ACT_VM_FIDGET )
+	local inspectdur = self:SequenceDuration(inspectanim)
+
+	self.Weapon:SendWeaponAnim( ACT_VM_FIDGET )
+
+	self.IdleTimer = CurTime() + inspectdur
+
+	timer.Simple( inspectdur, function() self:EnableInspection() end)
+
+end
+
+--Allow them to spectate after the fact they're done inspecting their pretty weapon I made.
+function SWEP:EnableInspection()
+	self:SetNWBool("PlayingInspectAnim", false)
+	self.Inspecting = false
+end
+
+--[[---------------------------------------------------------
+	Name: DoPassiveHoldType and DoInspectHoldType
+	Desc: Both are worldmodel anim handles for sending animations to a player to help dictate what they're seeing in first person to the rest of the players around them.
 -----------------------------------------------------------]]
 
-function SWEP:SetupDataTables()
-   self:NetworkVar("Bool", 0, "IronSights")
-   self:NetworkVar("Bool", 1, "IronSightsRaw")
-   self:NetworkVar("Bool", 2, "Holstering")
-   self:NetworkVar("Bool", 3, "Sprinting")
-   self:NetworkVar("Bool", 4, "Drawing")
-   self:NetworkVar("Bool", 5, "Reloading")
-   self:NetworkVar("Bool", 6, "Shooting")
-   self:NetworkVar("Bool", 7, "NearWall")
-   self:NetworkVar("Bool", 8, "Silenced")
-   self:NetworkVar("Bool", 9, "Bursting")
-   self:NetworkVar("Bool", 10, "ChangingSilence")
-   self:NetworkVar("Bool", 11, "FireModeChanging")
-   self:NetworkVar("Bool", 12, "HUDThreshold")
-   self:NetworkVar("Bool", 13, "ShotgunInsertingShell")
-   self:NetworkVar("Bool", 14, "ShotgunPumping")
-   self:NetworkVar("Bool", 15, "ShotgunNeedsPump")
-   self:NetworkVar("Bool", 16, "ShotgunCancel")
-   self:NetworkVar("Bool", 17, "BoltTimer")
-   self:NetworkVar("Bool", 18, "CanHolster")
-   self:NetworkVar("Bool", 19, "Inspecting")
-   self:NetworkVar("Float",0, "DrawingEnd")
-   self:NetworkVar("Float",1, "HolsteringEnd")
-   self:NetworkVar("Float",2, "ReloadingEnd")
-   self:NetworkVar("Float",3, "ShootingEnd")
-   self:NetworkVar("Float",4, "NextIdleAnim")
-   self:NetworkVar("Float",5, "NextBurst")
-   self:NetworkVar("Float",6, "NextSilenceChange")
-   self:NetworkVar("Float",7, "FireModeChangeEnd")
-   self:NetworkVar("Float",8, "HUDThresholdEnd")
-   self:NetworkVar("Float",9, "BoltTimerStart")
-   self:NetworkVar("Float",10, "BoltTimerEnd")
-   self:NetworkVar("Float",11, "IronSightsRatio")
-   self:NetworkVar("Float",12, "RunSightsRatio")
-   self:NetworkVar("Float",13, "CrouchingRatio")
-   self:NetworkVar("Float",14, "JumpingRatio")
-   self:NetworkVar("Float",15, "NearWallRatio")
-   self:NetworkVar("Float",16, "SpreadRatio")
-   self:NetworkVar("Float",17, "InspectingRatio")
-   self:NetworkVar("Int",0, "FireMode")
-   self:NetworkVar("Int",1, "BurstCount")
+--Passive Hold type Handling.
+function SWEP:DoPassiveHoldtype()
+	if self.HoldType == "pistol" or self.HoldType == "revolver" or self.HoldType == "knife" or self.HoldType == "melee" or self.HoldType == "slam" or self.HoldType == "fist" or self.HoldType == "grenade" or self.HoldType == "duel" then
+		self:SetHoldType("normal")
+	elseif self.HoldType == "smg" or self.HoldType == "ar2" or self.HoldType == "rpg" or self.HoldType == "crossbow" or self.HoldType == "shotgun" or self.HoldType == "physgun" then
+		self:SetHoldType("passive")
+	elseif self.HoldType == "magic" or self.HoldType == "melee2" then
+		self:SetHoldType("knife")
+	end
 end
 
-function SWEP:InitDrawCode( instr )
+--Inspecting HoldType handling.
+function SWEP:DoInspectHoldtype()
+	self:SetHoldType("slam")
+end
 
-	if CLIENT then
-		local t=string.Explode(",",instr,false)
-		if t[1] then
-			self.SequenceEnabled[ACT_VM_DRAW]=false
-			if t[1]==1 then
-				self.SequenceEnabled[ACT_VM_DRAW]=true
-			end
-		end
-		if t[2] then
-			self.SequenceEnabled[ACT_VM_DRAW_EMPTY]=false
-			if t[2]==1 then
-				self.SequenceEnabled[ACT_VM_DRAW_EMPTY]=true
-			end
-		end
-	end	
-	
-	if (CurTime()<self:GetReloadingEnd()) then
-		self:SetReloading(false)
-		self:SetReloadingEnd(CurTime()-1)
-	end
+--[[---------------------------------------------------------
+	Checks the objects before any action is taken
+	This is to make sure that the entities haven't been removed
+-----------------------------------------------------------]]
+function SWEP:DrawWeaponSelection( x, y, wide, tall, alpha )
 
-	
-	if (CurTime()<self:GetHolsteringEnd()) then
-		self:SetHolstering(false)
-		self:SetHolsteringEnd(CurTime()-1)
+	if isnumber(self.WepSelectIcon) then
+		surface.SetTexture( self.WepSelectIcon )
+	elseif isstring(self.WepSelectIcon) then
+		surface.SetTexture( surface.GetTextureID( self.WepSelectIcon ) )
 	end
+	surface.SetDrawColor( 255, 255, 255, alpha )
+
+
+	alpha = 150
+	surface.DrawTexturedRect( x + (wide/4), y + (tall / 16),  (wide*0.5) , ( wide / 2 ) )
 	
+	self:PrintWeaponInfo( x + wide, y, alpha )
+end
+--[[---------------------------------------------------------
+	This draws the weapon info box
+-----------------------------------------------------------]]
+function SWEP:PrintWeaponInfo( x, y, alpha )
+
+	if ( self.DrawWeaponInfoBox == false ) then return end
 	
-	local tmpact=self:GetActivity()
-	if !self.LastDrawAnimTime then
-		self.LastDrawAnimTime=-1
-	end
-	
-	local success, anim
-	if ( tmpact==0 or !(act==ACT_VM_DRAW or act==ACT_VM_DRAW_EMPTY or act==ACT_VM_DRAW_SILENCED) ) and ( CurTime()-self.LastDrawAnimTime > 0.2 )then
-		self.LastDrawAnimTime = CurTime()
-		success, anim = self:ChooseDrawAnim()
-	end
-	
-	self:SetDrawing(success)
-	
-	if success then
-		local vm = self.Owner:GetViewModel()
-		local seq = vm:SelectWeightedSequence( anim )
-		local seqtime=vm:SequenceDuration( seq )
-		if self.ShootWhileDraw==false then
-			self:SetNextPrimaryFire(CurTime()+seqtime)
-		end
+	if (self.InfoMarkup == nil ) then
+		local str
+		local title_color = "<color=0,200,255,255>"
+		local text_color = "<color=150,150,150,255>"
 		
-		self:SetDrawingEnd(CurTime()+seqtime)
-		local myhangtimev = 1
-		if self:OwnerIsValid() then
-			if SERVER then
-				myhangtimev = self.Owner:GetInfoNum("cl_rev_hud_hangtime",1)
-			else
-				myhangtimev = GetConVarNumber("cl_rev_hud_hangtime",1)
-			end
-		end
-		self:SetHUDThresholdEnd(CurTime()+seqtime+myhangtimev)
-	end
-end
-
---[[ 
-Function Name:  InitHolsterCode
-Syntax: self:InitHolsterCode("1 or 0, 1 or 0")
-Notes:  the instr parameter is deprecated since client autodetection has been improved and is actually better than the server.
-Returns:  Nothing
-Purpose:  Standard SWEP Function
-]]--
-
-function SWEP:InitHolsterCode( instr )
-
-	self.LastDrawAnimTime=-1
-
-	if CLIENT then
-		local t=string.Explode(",",instr,false)
-		if t[1] then
-			self.SequenceEnabled[ACT_VM_DRAW]=false
-			if t[1]==1 then
-				self.SequenceEnabled[ACT_VM_HOLSTER]=true
-			end
-		end
-		if t[2] then
-			self.SequenceEnabled[ACT_VM_HOLSTER_EMPTY]=false
-			if t[2]==1 then
-				self.SequenceEnabled[ACT_VM_HOLSTER_EMPTY]=true
-			end
-		end
-	end	
-	
-	if SERVER or ( CLIENT and IsFirstTimePredicted() )then
-		local ha, tact=self:ChooseHolsterAnim()
-		local vm = self.Owner:GetViewModel()
-		if (!ha) then
-			self:SetCanHolster(true)
-			self:Holster(self:GetNWEntity("SwitchToWep",nil))
-			self:SetHolstering(false)
-			return
-		end
+		str = "<font=HudSelectionText>"
+		if ( self.Author != "" ) then str = str .. title_color .. "Author:</color>\t\n"..text_color..self.Author.."</color>\n" end
+		if ( self.Contact != "" ) then str = str .. title_color .. "Contact:</color>\t\n"..text_color..self.Contact.."</color>\n\n" end
+		if ( self.Purpose != "" ) then str = str .. title_color .. "Purpose:</color>\t\n"..text_color..self.Purpose.."</color>\n\n" end
+		if ( self.Instructions != "" ) then str = str .. title_color .. "Instructions:</color>\t\n"..text_color..self.Instructions.."</color>\n" end
+		str = str .. "</font>"
 		
-		local seqtime=self.SequenceLength[tact]
+		self.InfoMarkup = markup.Parse( str, 250 )
+	end
 	
-		if self.ShootWhileHolster==false then
-			self:SetNextPrimaryFire(CurTime()+seqtime)
-		end
+	surface.SetDrawColor( 60, 60, 60, alpha )
+	surface.SetTexture( self.SpeechBubbleLid )
+
+	draw.RoundedBox( 8, x, y, 250, self.InfoMarkup:GetHeight(), Color( 0, 0, 0, 50 ) )
+	draw.RoundedBox( 0, x - 2, y, 2, self.InfoMarkup:GetHeight(), Color( 0, 200, 255, 255 ) )
 	
-		self:SetHolstering(true)
+	self.InfoMarkup:Draw( x+5, y, nil, nil, alpha )
 	
-		self:SetHolsteringEnd(CurTime()+seqtime)
+end
+
+function SWEP:DoPassiveHoldtype()
+	if self.HoldType == "pistol" or self.HoldType == "revolver" or self.HoldType == "knife" or self.HoldType == "melee" or self.HoldType == "slam" or self.HoldType == "fist" or self.HoldType == "grenade" or self.HoldType == "duel" then
+		self:SetHoldType("normal")
+	elseif self.HoldType == "smg" or self.HoldType == "ar2" or self.HoldType == "rpg" or self.HoldType == "crossbow" or self.HoldType == "shotgun" or self.HoldType == "physgun" then
+		self:SetHoldType("passive")
+	elseif self.HoldType == "magic" or self.HoldType == "melee2" then
+		self:SetHoldType("knife")
 	end
 end
 
---[[ 
-Function Name:  Precache
-Syntax: Should not be normally called.
-Returns:  Nothing.  Simply precaches models/sound.
-Purpose:  Standard SWEP Function
-]]--
-
-function SWEP:Precache()
-	if self.Primary.Sound then
-		util.PrecacheSound(self.Primary.Sound)
-	end
-	util.PrecacheModel(self.ViewModel)
-	util.PrecacheModel(self.WorldModel)
-end
-
---[[ 
-Function Name:  Initialize
-Syntax: Should not be normally called.
-Notes:   Called after actual SWEP code, but before deploy, and only once.
-Returns:  Nothing.  Sets the intial values for the SWEP when it's created. 
-Purpose:  Standard SWEP Function
-]]--
-
-function SWEP:Initialize()
-	
-	if (!self.Primary.Damage) or (self.Primary.Damage<=0.01) then
-		self:AutoDetectDamage()
-	end
-	
-	if !self.Primary.Accuracy then
-		if self.Primary.ConeSpray then
-			self.Primary.Accuracy  = ( 5 / self.Primary.ConeSpray) / 90
-		else
-			self.Primary.Accuracy = 0.01
-		end
-	end
-	
-	if !self.Primary.IronAccuracy then
-		self.Primary.IronAccuracy = self.Primary.Accuracy * 0.2
-	end
-	
-	if self.MuzzleAttachment == "1" then
-		self.CSMuzzleFlashes = true
-	end
-	
-	if self.Akimbo then
-		self.AutoDetectMuzzleAttachment = true
-		self.MuzzleAttachmentRaw = 2-self.AnimCycle
-	end	
-	
-	self:CreateFireModes()
-	
-	self:AutoDetectRange()
-	
-	self.DefaultHoldType = self.HoldType
-	self.ViewModelFOVDefault = self.ViewModelFOV
-	
-	self.DrawCrosshairDefault = self.DrawCrosshair
-	
-	self:SetUpSpread()
-	
-	self:CorrectScopeFOV( self.DefaultFOV and self.DefaultFOV or self.Owner:GetFOV() )
-	
-	if CLIENT then
-		self:InitMods()
-		self:IconFix()
-	end
-	self.drawcount=0
-	self.drawcount2=0
-	self.canholster=false
-	
-	self:DetectValidAnimations()
-	self:SetDeploySpeed(self.SequenceLength[ACT_VM_DRAW])
-	
-	if !self.Primary.ClipMax then
-		self.Primary.ClipMax = self.Primary.ClipSize * 3
-	end
-end
-
---[[ 
-Function Name:  Deploy
-Syntax: self:Deploy()
-Notes:  Called after self:Initialize().  Called each time you draw the gun.  This is also essential to clearing out old networked vars and resetting them.
-Returns:  True/False to allow quickswitch.  Why not?  You should really return true.
-Purpose:  Standard SWEP Function
-]]--
-
-function SWEP:Deploy()
-	
-	if (!self.Primary.Damage) or (self.Primary.Damage<=0.01) then
-		self:AutoDetectDamage()
-	end
-	
-	if !self.Primary.Accuracy then
-		if self.Primary.ConeSpray then
-			self.Primary.Accuracy  = ( 5 / self.Primary.ConeSpray) / 90
-		else
-			self.Primary.Accuracy = 0.01
-		end
-	end
-	
-	if !self.Primary.IronAccuracy then
-		self.Primary.IronAccuracy = self.Primary.Accuracy * 0.2
-	end
-	
-	if self.MuzzleAttachment == "1" then
-		self.CSMuzzleFlashes = true
-	end
-	
-	self:CreateFireModes()
-
-	self.ViewModelFOVDefault = self.ViewModelFOV
-	self.DefaultFOV=self.Owner:GetFOV()
-	
-	if self.DrawCrosshairDefault==nil then
-		self.DrawCrosshairDefault = self.DrawCrosshair
-	end
-	
-	self:ResetSightsProgress()
-	
-	self:DetectValidAnimations()
-	
-	self:AutoDetectRange()
-	
-	
-	self.isfirstdraw=false
-	if !self.hasdrawnbefore then
-		self.hasdrawnbefore = true
-		self.isfirstdraw=true
-		--self.Primary.DefaultClip = 0
-	end
-	
-	if self.isfirstdraw then
-		self:SetDeploySpeed(self.SequenceLength[ACT_VM_DRAW])
-	end
-	
-	
-	timer.Simple(0, function()
-		if IsValid(self) then
-			self:DetectValidAnimations()
-			self:ChooseDrawAnim()
-		end
-	end)
-	
-	if self.Owner:KeyDown(IN_ATTACK2) and self.SightWhileDraw then
-		self:SetIronSights(true)
-	end
-	
-	if self.Owner:KeyDown(IN_SPEED) and self.Owner:GetVelocity():Length()>self.Owner:GetWalkSpeed() then
-		self:SetSprinting(true)
-	end
-	
-	self:SetHoldType(self.HoldType)
-	
-	self.OldIronsights=(false)
-	self:SetIronSights(false)
-	self:SetIronSightsRaw(false)
-	self.OldSprinting=(false)
-	self.OldSafety=(false)
-	self:SetSprinting(false)
-	self:SetShooting(false)
-	self:SetChangingSilence(false)
-	self:SetCanHolster(false)
-	self:SetReloading(false)
-	self:SetShotgunInsertingShell(false)
-	self:SetShotgunCancel( false )
-	self:SetShotgunPumping(false)
-	self:SetShotgunNeedsPump(false )
-	self:SetFireModeChanging( false ) 
-	self:SetBoltTimer( false )
-	self:SetReloadingEnd(CurTime()-1)
-	self:SetShootingEnd(CurTime()-1)
-	self:SetDrawingEnd(CurTime()-1)
-	self:SetHolsteringEnd(CurTime()-1)
-	self:SetNextSilenceChange(CurTime()-1)
-	self:SetFireModeChangeEnd(CurTime()-1)
-	self:SetHUDThreshold(true)
-	self:SetHUDThresholdEnd(CurTime()+0.2)
-	self:SetBoltTimerStart(CurTime()-1)
-	self:SetBoltTimerEnd(CurTime()-1)
-	self:SetDrawing(true)
-	self:SetHolstering(false)
-	self:SetInspecting(false)
-	if self:GetSilenced()==nil then
-		self:SetSilenced(self.Silenced and self.Silenced or 0)
-	end
-	self:SetIronSightsRatio(0)
-	self:SetRunSightsRatio(0)
-	self:SetCrouchingRatio(0)
-	self:SetJumpingRatio(0)
-	self:SetSpreadRatio(0)
-	self:SetBurstCount(0)
-	self:SetInspectingRatio(0)
-	self:SetBursting(false)
-	self:SetUpSpread()
-	self.PenetrationCounter = 0
-	if CLIENT or game.SinglePlayer() then
-		self.CLSpreadRatio=1
-		self.CLIronSightsProgress = 0
-		self.CLRunSightsProgress = 0
-		self.CLCrouchProgress = 0
-		self.CLInspectingProgress = 0
-		self.CLNearWallProgressProgress = 0
-	end
-	self:SetNextIdleAnim(CurTime()-1)
-	local vm = self.Owner:GetViewModel()
-	if IsValid(vm) then
-		self:SendWeaponAnim(0)
-		self.DefaultAtt = vm:GetAttachment(self:GetFPMuzzleAttachment())
-	end
-	local drawtimerstring=(self.SequenceEnabled[ACT_VM_DRAW] and 1 or 0)..","..(self.SequenceEnabled[ACT_VM_DRAW_EMPTY] and 1 or 0)
-	
-	self:InitDrawCode(drawtimerstring)
-	
-	self:CorrectScopeFOV( self.DefaultFOV and self.DefaultFOV or self.Owner:GetFOV() )
-	
-	self.customboboffset=Vector(0,0,0)
-	
-	return true
-end
-
---[[ 
-Function Name:  Holster
-Syntax: self:Holster( weapon entity to switch to )
-Notes:  This is kind of broken.  I had to manually select the new weapon using ply:ConCommand.  Returning true is simply not enough.  This is also essential to clearing out old networked vars and resetting them.
-Returns:  True/False to allow holster.  Useful for animations.
-Purpose:  Standard SWEP Function
-]]--
-
-
-function SWEP:Holster( switchtowep )
-
-	self:SetShotgunCancel( true )
-	
-	self:CleanParticles()
-	
-	if SERVER then
-		self:CallOnClient("CleanParticles","")
-	end
-	
-	if IsValid(self.Owner:GetViewModel()) then
-		self.Owner:GetViewModel():StopParticles()
-	end
-		
-	self.PenetrationCounter = 0
-
-	if self==switchtowep then
-		return
-	end
-	
-	if switchtowep then
-		self:SetNWEntity("SwitchToWep",switchtowep)
-	end
-	
-	self:SetReloading(false)
-	self:SetDrawing(false)
-	
-	self:SetInspecting(false)
-	
-	if (CurTime()<self:GetDrawingEnd()) then
-		self:SetDrawingEnd(CurTime()-1)
-	end
-	
-	if (CurTime()<self:GetReloadingEnd()) then
-		self:SetReloadingEnd(CurTime()-1)
-	end
-	local hasholsteringanim = self.SequenceEnabled[ACT_VM_HOLSTER] or self.SequenceEnabled[ACT_VM_HOLSTER_EMPTY]
-	if self:GetCanHolster()==false and hasholsteringanim then
-		if !( self:GetHolstering() and CurTime()<self:GetHolsteringEnd() ) then
-			local holstertimerstring=(self.SequenceEnabled[ACT_VM_HOLSTER] and 1 or 0)..","..(self.SequenceEnabled[ACT_VM_HOLSTER_EMPTY] and 1 or 0)
-			self:InitHolsterCode(holstertimerstring)
-		else
-			if self:GetHolsteringEnd()-CurTime()<0.05 and self:GetHolstering() then
-				self:SetCanHolster(true)
-				self:Holster(self:GetNWEntity("SwitchToWep",switchtowep))
-				return true
-			end
-		end
+function SWEP:GetViewModelPosition( pos, ang )
+	local oa = self.OwnerActivity
+	if oa == "sprinting" and self.AllowSprintShoot == false then
+		self:DoPassiveHoldtype()
 	else
-		self.DrawCrosshair = self.DrawCrosshairDefault or self.DrawCrosshair
-		self:SendWeaponAnim( 0 )
-		dholdt = self.DefaultHoldType and self.DefaultHoldType or self.HoldType
-		self:SetHoldType( dholdt )
-		self:SetHolstering(false)
-		self:SetHolsteringEnd(CurTime()-0.1)
-		local wep=self:GetNWEntity("SwitchToWep",switchtowep)
-		if IsValid( wep ) and IsValid(self.Owner) and self.Owner:HasWeapon( wep:GetClass() ) then
-			if CLIENT then
-				self.Owner:ConCommand("use " .. wep:GetClass())
-			end
-		end
-		return true
+		self:SetHoldType(self.HoldType)
 	end
 end
 
---[[ 
-Function Name:  SecondaryAttack
-Syntax: self:SecondaryAttack( ).
-Returns:  Not sure that it returns anything.
-Notes: Unused.  We process ironsights elsewhere.
-Purpose:  Main SWEP function
-]]--
-
-function SWEP:SecondaryAttack()
+--[[---------------------------------------------------------
+	Name: SWEP:PreDrawViewModel
+	Desc:Calls before the ViewModel is drawn.
+-----------------------------------------------------------]]
+function SWEP:PreDrawViewModel(vm, wep, ply)
+	if game.SinglePlayer() then return end -- Find the singleplayer compatible version inside of Think() because why.
 	return false
 end
 
---[[ 
-Function Name:  Reload
-Syntax: self:Reload( ).
-Returns:  Not sure that it returns anything.
-Notes:  This reloads the gun, and the way it does so is slightly hacky and depends on holdtype.  Revolvers should be the only guns using revolver holdtype for this to properly function.
-Purpose:  Main SWEP function
-]]--
 
-function SWEP:Reload()
-	
-	self:SetBurstCount(0)
-	self:SetBursting(false)
-	self:SetNextBurst(CurTime()-1)
-	
-	if self:GetReloading() then return end
-	
-	if not ( self.Owner:KeyDown(IN_RELOAD) or self.Owner:KeyPressed(IN_ATTACK) ) then
-		return
-	end
-	
-	
-	if (self:GetBursting()) then
-		return
-	end
-	
-	--if self.SelectiveFire then
-		if IsValid(self.Owner) and self.Owner:KeyDown(IN_USE) then
-			return
-		end
-	--end
-	
-	if self.AllowReloadWhileNearWall==false then
-		if self:GetNearWallRatio()>0.05 then
-			return
-		end
-	end
-	
-	
-	if (self:GetDrawing() ) and self.AllowReloadWhileDraw==false then
-		return
-	end
-	
-	if (self:GetSprinting() ) and !self.AllowReloadWhileSprinting then
-		return
-	end
-	
-	if (CurTime()<self:GetReloadingEnd()) then
-		self:SetReloadingEnd(CurTime()-1)
-	end
- 
-	if ( self:Clip1() < (self.Primary.ClipSize + ( (not self.DisableChambering and not self.BoltAction and not self.Shotgun and not (self.Revolver) and not ( (self.DefaultHoldType and self.DefaultHoldType or self.HoldType) == "revolver" ) ) and 1 or 0 )  ) and self.Owner:GetAmmoCount( self.Primary.Ammo ) > 0 ) then
-	
-		self:SetReloading(true)
-		
-		--self:ProcessTimers()
-	
-		if self.UnSightOnReload then
-			self:SetIronSights(false)
-		end
-		
-		self:ProcessHoldType()
-		
-		self:SetInspecting(false)
-		--self:SetInspectingRatio(0)
-		
-		--self:DefaultReload( ACT_VM_RELOAD )
-		if !self.Shotgun then
-			--self:ChooseReloadAnim()
-			if self:Clip1() == 0 then
-				self:DefaultReload( ACT_VM_RELOAD_EMPTY )
-			else
-			self:DefaultReload( ACT_VM_RELOAD )
-			end
-		else
-			self:SendWeaponAnim( ACT_SHOTGUN_RELOAD_START )
-			self:SetShotgunInsertingShell(false)
-			self:SetShotgunPumping(false)
-		end
-		
-		self:SetHoldType(self.DefaultHoldType and self.DefaultHoldType or self.HoldType)
-		if !self.ThirdPersonReloadDisable then
-			self.Owner:SetAnimation( PLAYER_RELOAD ) -- 3rd Person Animation
-		end
-		if (CLIENT) then
-			timer.Simple(0, function()
-				if !IsValid(self) then return end
-				if !IsValid(self.Owner) then return end
-				if !self.ThirdPersonReloadDisable then
-					self.Owner:SetAnimation( PLAYER_RELOAD ) -- 3rd Person Animation
-				end
-			end)
-		end
-		local AnimationTime = self.Owner:GetViewModel():SequenceDuration()
-		self.prevdrawcount=self.drawcount
-		self:SetReloadingEnd(CurTime()+AnimationTime)
-        self.ReloadingTime = CurTime() + AnimationTime
-        self:SetNextPrimaryFire(CurTime() + AnimationTime)
-        self:SetNextSecondaryFire(CurTime() + AnimationTime)
-		
-	end 
-end
+--[[---------------------------------------------------------
+	Name: DO NOT TOUCH THIS. SCK RELATED STUFF.
+-----------------------------------------------------------]]
 
---[[ 
-Function Name:  ProcessTimers
-Syntax: self:ProcessTimers().  This is called per-think.
-Returns:  Nothing.  However, calculates OMG so much stuff what is this horrible hacky code that allows you to use bolt action snipers, shotguns, and normal guns all in the same base?!!!111oneoneone
-Notes:  This is essential.
-Purpose:  Don't remove this, seriously.
-]]--
-
-function SWEP:ProcessTimers()
-	local isreloading,isshooting,isdrawing,isholstering, issighting, issprinting, htv, hudhangtime, isbolttimer, isinspecting
-	
-	isreloading=self:GetReloading()
-	isshooting=self:GetShooting()
-	isdrawing=self:GetDrawing()
-	isholstering=self:GetHolstering()
-	issighting=self:GetIronSights()
-	issprinting=self:GetSprinting()
-	isbursting = self:GetBursting()
-	ischangingsilence = self:GetChangingSilence()
-	isfiremodechanging = self:GetFireModeChanging()
-	isinspecting = self:GetInspecting()
-	htv = self:GetHUDThreshold()
-	hudhangtime = 1
-	--[[
-	if self.DisableIdleAnimations and !isinspecting then
-		self:SetNextIdleAnim(CurTime()+30)
-	end
-	]]--
-	if self:OwnerIsValid() then
-		if SERVER then
-			hudhangtime = self.Owner:GetInfoNum("cl_rev_hud_hangtime",1)
-		else
-			hudhangtime = GetConVarNumber("cl_rev_hud_hangtime",1)
-		end
-	end
-	isbolttimer = self:GetBoltTimer()
-	if isdrawing and CurTime()>self:GetDrawingEnd() then
+if CLIENT then
+	SWEP.vRenderOrder = nil
+	function SWEP:ViewModelDrawn()
+		
 		local vm = self.Owner:GetViewModel()
-		if IsValid(vm) then
-			self.DefaultAtt = vm:GetAttachment(self:GetFPMuzzleAttachment())
-		end
-		self:SetDrawing(false)
-		isdrawing=false
-	end
-	if isbolttimer and CurTime()>self:GetBoltTimerEnd() then
-		self:SetBoltTimer(false)
-		self:SetBoltTimerStart(CurTime()-1)
-		self:SetBoltTimerEnd(CurTime()-1)
-	end
-	
-	if isreloading and CurTime()>self:GetReloadingEnd() then
-		if !self.Shotgun then
-			if IsValid(self.Owner) then
-				local maxclip=self.Primary.ClipSize
-				local curclip = self:Clip1()
-				local amounttoreplace=math.min(maxclip-curclip+( ( (self:Clip1()>0) and not self.DisableChambering and not self.BoltAction and not (self.Revolver) and not ( (self.DefaultHoldType and self.DefaultHoldType or self.HoldType) == "revolver" ) and 1 or 0 ) ),self.Owner:GetAmmoCount(self.Primary.Ammo))
-				self:SetClip1(curclip+amounttoreplace)
-				self.Owner:RemoveAmmo(amounttoreplace, self.Primary.Ammo)
+		if !IsValid(vm) then return end
+		
+		if (!self.VElements) then return end
+		
+		self:UpdateBonePositions(vm)
+		if (!self.vRenderOrder) then
+			
+			// we build a render order because sprites need to be drawn after models
+			self.vRenderOrder = {}
+			for k, v in pairs( self.VElements ) do
+				if (v.type == "Model") then
+					table.insert(self.vRenderOrder, 1, k)
+				elseif (v.type == "Sprite" or v.type == "Quad") then
+					table.insert(self.vRenderOrder, k)
+				end
 			end
-			self:SetReloading(false)
-			self:SetBurstCount(0)
-			self:SetBursting(false)
-			isreloading=false
-			self:SetHUDThreshold(true)
-			self:SetHUDThresholdEnd(CurTime() + hudhangtime)
+			
+		end
+		for k, name in ipairs( self.vRenderOrder ) do
+		
+			local v = self.VElements[name]
+			if (!v) then self.vRenderOrder = nil break end
+			if (v.hide) then continue end
+			
+			local model = v.modelEnt
+			local sprite = v.spriteMaterial
+			
+			if (!v.bone) then continue end
+			
+			local pos, ang = self:GetBoneOrientation( self.VElements, v, vm )
+			
+			if (!pos) then continue end
+			
+			if (v.type == "Model" and IsValid(model)) then
+				model:SetPos(pos + ang:Forward() * v.pos.x + ang:Right() * v.pos.y + ang:Up() * v.pos.z )
+				ang:RotateAroundAxis(ang:Up(), v.angle.y)
+				ang:RotateAroundAxis(ang:Right(), v.angle.p)
+				ang:RotateAroundAxis(ang:Forward(), v.angle.r)
+				model:SetAngles(ang)
+				//model:SetModelScale(v.size)
+				local matrix = Matrix()
+				matrix:Scale(v.size)
+				model:EnableMatrix( "RenderMultiply", matrix )
+				
+				if (v.material == "") then
+					model:SetMaterial("")
+				elseif (model:GetMaterial() != v.material) then
+					model:SetMaterial( v.material )
+				end
+				
+				if (v.skin and v.skin != model:GetSkin()) then
+					model:SetSkin(v.skin)
+				end
+				
+				if (v.bodygroup) then
+					for k, v in pairs( v.bodygroup ) do
+						if (model:GetBodygroup(k) != v) then
+							model:SetBodygroup(k, v)
+						end
+					end
+				end
+				
+				if (v.surpresslightning) then
+					render.SuppressEngineLighting(true)
+				end
+				
+				render.SetColorModulation(v.color.r/255, v.color.g/255, v.color.b/255)
+				render.SetBlend(v.color.a/255)
+				model:DrawModel()
+				render.SetBlend(1)
+				render.SetColorModulation(1, 1, 1)
+				
+				if (v.surpresslightning) then
+					render.SuppressEngineLighting(false)
+				end
+				
+			elseif (v.type == "Sprite" and sprite) then
+				
+				local drawpos = pos + ang:Forward() * v.pos.x + ang:Right() * v.pos.y + ang:Up() * v.pos.z
+				render.SetMaterial(sprite)
+				render.DrawSprite(drawpos, v.size.x, v.size.y, v.color)
+				
+			elseif (v.type == "Quad" and v.draw_func) then
+				
+				local drawpos = pos + ang:Forward() * v.pos.x + ang:Right() * v.pos.y + ang:Up() * v.pos.z
+				ang:RotateAroundAxis(ang:Up(), v.angle.y)
+				ang:RotateAroundAxis(ang:Right(), v.angle.p)
+				ang:RotateAroundAxis(ang:Forward(), v.angle.r)
+				
+				cam.Start3D2D(drawpos, ang, v.size)
+					v.draw_func( self )
+				cam.End3D2D()
+			end
+			
+		end
+		
+	end
+	SWEP.wRenderOrder = nil
+	function SWEP:DrawWorldModel()
+		
+		if (self.ShowWorldModel == nil or self.ShowWorldModel) then
+			self:DrawModel()
+		end
+		
+		if (!self.WElements) then return end
+		
+		if (!self.wRenderOrder) then
+			self.wRenderOrder = {}
+			for k, v in pairs( self.WElements ) do
+				if (v.type == "Model") then
+					table.insert(self.wRenderOrder, 1, k)
+				elseif (v.type == "Sprite" or v.type == "Quad") then
+					table.insert(self.wRenderOrder, k)
+				end
+			end
+		end
+		
+		if (IsValid(self.Owner)) then
+			bone_ent = self.Owner
 		else
-			if (self:GetShotgunInsertingShell() == false) then
-				if !self:GetShotgunPumping() then
-					self:SetShotgunInsertingShell(true)
-					self.Weapon:SendWeaponAnim(ACT_VM_RELOAD)
-					if IsValid(self.Owner) then
-						local vm = self.Owner:GetViewModel()
-						if !self.ShellTime and IsValid(vm) then
-							self:SetReloadingEnd(CurTime()+vm:SequenceDuration( vm:SelectWeightedSequence(ACT_VM_RELOAD) ) )
-						else
-							self:SetReloadingEnd(CurTime()+self.ShellTime)
-						end
-					else
-						self:SetReloadingEnd(CurTime()+self.ShellTime)
-					end
-					self:SetReloading(true)
-					isreloading=true
-				else
-					self:SetReloading(false)
-					self:SetShotgunPumping(false)
-					self:SetReloadingEnd(CurTime()-1)
-					isreloading=false
-					self:SetHUDThreshold(true)
-					self:SetHUDThresholdEnd(CurTime() + hudhangtime)
-				end
+			// when the weapon is dropped
+			bone_ent = self
+		end
+		
+		for k, name in pairs( self.wRenderOrder ) do
+		
+			local v = self.WElements[name]
+			if (!v) then self.wRenderOrder = nil break end
+			if (v.hide) then continue end
+			
+			local pos, ang
+			
+			if (v.bone) then
+				pos, ang = self:GetBoneOrientation( self.WElements, v, bone_ent )
 			else
-				local maxclip=self.Primary.ClipSize
-				local curclip = self:Clip1()
-				local ammopool = self:GetAmmoReserve()
-				if curclip>=maxclip or ammopool<=0 or self:GetShotgunNeedsPump() then
-					self:SetShotgunInsertingShell(false)
-					self:SendWeaponAnim(ACT_SHOTGUN_RELOAD_FINISH)
-					if IsValid(self.Owner) then
-						local vm = self.Owner:GetViewModel()
-						if IsValid(vm) then
-							self:SetReloadingEnd(CurTime()+vm:SequenceDuration( vm:SelectWeightedSequence(ACT_SHOTGUN_RELOAD_FINISH) ) )
-						else
-							self:SetReloadingEnd(CurTime()+self.ShellTime)
+				pos, ang = self:GetBoneOrientation( self.WElements, v, bone_ent, "ValveBiped.Bip01_R_Hand" )
+			end
+			
+			if (!pos) then continue end
+			
+			local model = v.modelEnt
+			local sprite = v.spriteMaterial
+			
+			if (v.type == "Model" and IsValid(model)) then
+				model:SetPos(pos + ang:Forward() * v.pos.x + ang:Right() * v.pos.y + ang:Up() * v.pos.z )
+				ang:RotateAroundAxis(ang:Up(), v.angle.y)
+				ang:RotateAroundAxis(ang:Right(), v.angle.p)
+				ang:RotateAroundAxis(ang:Forward(), v.angle.r)
+				model:SetAngles(ang)
+				//model:SetModelScale(v.size)
+				local matrix = Matrix()
+				matrix:Scale(v.size)
+				model:EnableMatrix( "RenderMultiply", matrix )
+				
+				if (v.material == "") then
+					model:SetMaterial("")
+				elseif (model:GetMaterial() != v.material) then
+					model:SetMaterial( v.material )
+				end
+				
+				if (v.skin and v.skin != model:GetSkin()) then
+					model:SetSkin(v.skin)
+				end
+				
+				if (v.bodygroup) then
+					for k, v in pairs( v.bodygroup ) do
+						if (model:GetBodygroup(k) != v) then
+							model:SetBodygroup(k, v)
 						end
-					else
-						self:SetReloadingEnd(CurTime()+self.ShellTime)
-					end
-					self:SetReloading(true)
-					self:SetShotgunPumping(true)
-					self:SetShotgunNeedsPump(false)
-				else
-					local amounttoreplace=1
-					self:SetClip1(curclip+amounttoreplace)
-					self.Owner:RemoveAmmo(amounttoreplace, self.Primary.Ammo)
-					curclip = self:Clip1()
-					if (curclip<maxclip) then
-						self.Weapon:SendWeaponAnim(ACT_VM_RELOAD)
-						self:SetReloading(true)
-						self:SetShotgunInsertingShell(true)
-						if IsValid(self.Owner) then
-							local vm = self.Owner:GetViewModel()
-							if !self.ShellTime and IsValid(vm) then
-								self:SetReloadingEnd(CurTime()+vm:SequenceDuration( vm:SelectWeightedSequence(ACT_VM_RELOAD) ) )
-							else
-								self:SetReloadingEnd(CurTime()+self.ShellTime)
-							end
-						else
-							self:SetReloadingEnd(CurTime()+self.ShellTime)
-						end
-					else
-						self:SetReloadingEnd(CurTime()-1)
-						self:SetReloading(true)
-						self:SetShotgunInsertingShell(true)
-					end
-					if self:GetShotgunCancel() then
-						self:SetShotgunCancel( false )
-						self:SetReloading(true)
-						self:SetShotgunNeedsPump( true )
-						self:SetReloadingEnd(CurTime()-1)
 					end
 				end
+				
+				if (v.surpresslightning) then
+					render.SuppressEngineLighting(true)
+				end
+				
+				render.SetColorModulation(v.color.r/255, v.color.g/255, v.color.b/255)
+				render.SetBlend(v.color.a/255)
+				model:DrawModel()
+				render.SetBlend(1)
+				render.SetColorModulation(1, 1, 1)
+				
+				if (v.surpresslightning) then
+					render.SuppressEngineLighting(false)
+				end
+				
+			elseif (v.type == "Sprite" and sprite) then
+				
+				local drawpos = pos + ang:Forward() * v.pos.x + ang:Right() * v.pos.y + ang:Up() * v.pos.z
+				render.SetMaterial(sprite)
+				render.DrawSprite(drawpos, v.size.x, v.size.y, v.color)
+				
+			elseif (v.type == "Quad" and v.draw_func) then
+				
+				local drawpos = pos + ang:Forward() * v.pos.x + ang:Right() * v.pos.y + ang:Up() * v.pos.z
+				ang:RotateAroundAxis(ang:Up(), v.angle.y)
+				ang:RotateAroundAxis(ang:Right(), v.angle.p)
+				ang:RotateAroundAxis(ang:Forward(), v.angle.r)
+				
+				cam.Start3D2D(drawpos, ang, v.size)
+					v.draw_func( self )
+				cam.End3D2D()
+			end
+			
+		end
+		
+	end
+	function SWEP:GetBoneOrientation( basetab, tab, ent, bone_override )
+		
+		local bone, pos, ang
+		if (tab.rel and tab.rel != "") then
+			
+			local v = basetab[tab.rel]
+			
+			if (!v) then return end
+			
+			// Technically, if there exists an element with the same name as a bone
+			// you can get in an infinite loop. Let's just hope nobody's that stupid.
+			pos, ang = self:GetBoneOrientation( basetab, v, ent )
+			
+			if (!pos) then return end
+			
+			pos = pos + ang:Forward() * v.pos.x + ang:Right() * v.pos.y + ang:Up() * v.pos.z
+			ang:RotateAroundAxis(ang:Up(), v.angle.y)
+			ang:RotateAroundAxis(ang:Right(), v.angle.p)
+			ang:RotateAroundAxis(ang:Forward(), v.angle.r)
+				
+		else
+		
+			bone = ent:LookupBone(bone_override or tab.bone)
+			if (!bone) then return end
+			
+			pos, ang = Vector(0,0,0), Angle(0,0,0)
+			local m = ent:GetBoneMatrix(bone)
+			if (m) then
+				pos, ang = m:GetTranslation(), m:GetAngles()
+			end
+			
+			if (IsValid(self.Owner) and self.Owner:IsPlayer() and 
+				ent == self.Owner:GetViewModel() and self.ViewModelFlip) then
+				ang.r = -ang.r // Fixes mirrored models
+			end
+		
+		end
+		
+		return pos, ang
+	end
+	function SWEP:CreateModels( tab )
+		if (!tab) then return end
+		// Create the clientside models here because Garry says we can't do it in the render hook
+		for k, v in pairs( tab ) do
+			if (v.type == "Model" and v.model and v.model != "" and (!IsValid(v.modelEnt) or v.createdModel != v.model) and 
+					string.find(v.model, ".mdl") and file.Exists (v.model, "GAME") ) then
+				
+				v.modelEnt = ClientsideModel(v.model, RENDER_GROUP_VIEW_MODEL_OPAQUE)
+				if (IsValid(v.modelEnt)) then
+					v.modelEnt:SetPos(self:GetPos())
+					v.modelEnt:SetAngles(self:GetAngles())
+					v.modelEnt:SetParent(self)
+					v.modelEnt:SetNoDraw(true)
+					v.createdModel = v.model
+				else
+					v.modelEnt = nil
+				end
+				
+			elseif (v.type == "Sprite" and v.sprite and v.sprite != "" and (!v.spriteMaterial or v.createdSprite != v.sprite) 
+				and file.Exists ("materials/"..v.sprite..".vmt", "GAME")) then
+				
+				local name = v.sprite.."-"
+				local params = { ["$basetexture"] = v.sprite }
+				// make sure we create a unique name based on the selected options
+				local tocheck = { "nocull", "additive", "vertexalpha", "vertexcolor", "ignorez" }
+				for i, j in pairs( tocheck ) do
+					if (v[j]) then
+						params["$"..j] = 1
+						name = name.."1"
+					else
+						name = name.."0"
+					end
+				end
+
+				v.createdSprite = v.sprite
+				v.spriteMaterial = CreateMaterial(name,"UnlitGeneric",params)
+				
 			end
 		end
-	end
-	if isholstering and CurTime()>self:GetHolsteringEnd() then
-		self:SetCanHolster(true)
-		self:Holster(self:GetNWEntity("SwitchToWep",nil))
-		self:SetHolstering(false)
-		isholstering=false
-	end
-	if isbursting then
-		if CurTime()>self:GetNextBurst() then
-			local maxbursts = 1
-			local firemode = self.FireModes[self:GetFireMode()]
-			local bpos = string.find(firemode,"Burst")
-			if bpos then
-				maxbursts = tonumber(string.sub(firemode,1,bpos-1)) or 3
-			end
-			if self:GetBurstCount() >= maxbursts then
-				self:SetBursting(false)
-				self:SetBurstCount(0)
-			else
-				self:PrimaryAttack()
-			end
-		end
-	end
-	if isshooting and CurTime()>self:GetShootingEnd() then
-		self:SetShooting(false)
-		isshooting=false
-	end
-	if isfiremodechanging and CurTime() > self:GetFireModeChangeEnd() then
-		self:SetFireModeChanging(false)
-		self:SetFireModeChangeEnd(CurTime() - 1)
-		self:SetHUDThreshold(true)
-		self:SetHUDThresholdEnd(CurTime() + hudhangtime)
-	end
-	if ischangingsilence and CurTime()>self:GetNextSilenceChange() then
-		self:SetSilenced(!self:GetSilenced())
-		self:SetChangingSilence(false)
-		self:SetNextSilenceChange(CurTime() - 1)
-	end
-	if htv and CurTime()>self:GetHUDThresholdEnd() then
-		self:SetHUDThreshold(false)
-		self:SetHUDThresholdEnd(CurTime() - 1)
+		
 	end
 	
-end
+	local allbones
+	local hasGarryFixedBoneScalingYet = false
 
-function SWEP:ToggleInspect()
-	local oldinsp = self:GetInspecting()
-	self:SetInspecting(!oldinsp)
-	if CLIENT then
-		net.Start("revInspect")
-		net.WriteBool(!oldinsp)
-		net.SendToServer()
+	function SWEP:UpdateBonePositions(vm)
+		
+		if self.ViewModelBoneMods then
+			
+			if (!vm:GetBoneCount()) then return end
+			
+			// !! WORKAROUND !! //
+			// We need to check all model names :/
+			local loopthrough = self.ViewModelBoneMods
+			if (!hasGarryFixedBoneScalingYet) then
+				allbones = {}
+				for i=0, vm:GetBoneCount() do
+					local bonename = vm:GetBoneName(i)
+					if (self.ViewModelBoneMods[bonename]) then 
+						allbones[bonename] = self.ViewModelBoneMods[bonename]
+					else
+						allbones[bonename] = { 
+							scale = Vector(1,1,1),
+							pos = Vector(0,0,0),
+							angle = Angle(0,0,0)
+						}
+					end
+				end
+				
+				loopthrough = allbones
+			end
+			// !! ----------- !! //
+			
+			for k, v in pairs( loopthrough ) do
+				local bone = vm:LookupBone(k)
+				if (!bone) then continue end
+				
+				// !! WORKAROUND !! //
+				local s = Vector(v.scale.x,v.scale.y,v.scale.z)
+				local p = Vector(v.pos.x,v.pos.y,v.pos.z)
+				local ms = Vector(1,1,1)
+				if (!hasGarryFixedBoneScalingYet) then
+					local cur = vm:GetBoneParent(bone)
+					while(cur >= 0) do
+						local pscale = loopthrough[vm:GetBoneName(cur)].scale
+						ms = ms * pscale
+						cur = vm:GetBoneParent(cur)
+					end
+				end
+				
+				s = s * ms
+				// !! ----------- !! //
+				
+				if vm:GetManipulateBoneScale(bone) != s then
+					vm:ManipulateBoneScale( bone, s )
+				end
+				if vm:GetManipulateBoneAngles(bone) != v.angle then
+					vm:ManipulateBoneAngles( bone, v.angle )
+				end
+				if vm:GetManipulateBonePosition(bone) != p then
+					vm:ManipulateBonePosition( bone, p )
+				end
+			end
+		else
+			self:ResetBonePositions(vm)
+		end
+		   
 	end
-	self:SetNextIdleAnim( CurTime() - 1)
+	 
+	function SWEP:ResetBonePositions(vm)
+		
+		if (!vm:GetBoneCount()) then return end
+		for i=0, vm:GetBoneCount() do
+			vm:ManipulateBoneScale( i, Vector(1, 1, 1) )
+			vm:ManipulateBoneAngles( i, Angle(0, 0, 0) )
+			vm:ManipulateBonePosition( i, Vector(0, 0, 0) )
+		end
+		
+	end
+
+	/**************************
+		Global utility code
+	**************************/
+
+	// Fully copies the table, meaning all tables inside this table are copied too and so on (normal table.Copy copies only their reference).
+	// Does not copy entities of course, only copies their reference.
+	// WARNING: do not use on tables that contain themselves somewhere down the line or you'll get an infinite loop
+	function table.FullCopy( tab )
+		if (!tab) then return nil end
+		
+		local res = {}
+		for k, v in pairs( tab ) do
+			if (type(v) == "table") then
+				res[k] = table.FullCopy(v) // recursion ho!
+			elseif (type(v) == "Vector") then
+				res[k] = Vector(v.x, v.y, v.z)
+			elseif (type(v) == "Angle") then
+				res[k] = Angle(v.p, v.y, v.r)
+			else
+				res[k] = v
+			end
+		end
+		
+		return res
+		
+	end
+	
 end
