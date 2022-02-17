@@ -7,45 +7,40 @@ Purpose:  Autodetection
 ]]--
 
 function SWEP:RevManageAnims()
+	
 	if not IsFirstTimePredicted() then return end
+
 	local ply = self:GetOwner()
 	local vm = ply:GetViewModel()
 	local oa = self.OwnerActivity
 	local cv = ply:Crouching()
 	local slowvar = ply:Crouching() or ply:KeyDown(IN_WALK)
 	local walking = (ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT) or ply:KeyDown(IN_FORWARD) or ply:KeyDown(IN_BACK)) && !ply:KeyDown(IN_SPEED)
-	local sprinting = (ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT) or ply:KeyDown(IN_FORWARD) or ply:KeyDown(IN_BACK)) && ply:KeyDown(IN_SPEED)
+	local sprinting = self:GetSprinting()
 
 	if self:GetReloading() then return end
 
-	local idleanim = vm:SelectWeightedSequence( ACT_VM_IDLE )
-	local walkanim = vm:SelectWeightedSequence( ACT_WALK )
-	local sprintanim = vm:SelectWeightedSequence( ACT_RUN )
-	local swimidleanim = vm:SelectWeightedSequence( ACT_SWIM_IDLE )
-	local swimminganim = vm:SelectWeightedSequence( ACT_SWIM )
-		
-	local reloadanim = vm:SelectWeightedSequence( ACT_VM_RELOAD )
-	local walkanim = vm:SelectWeightedSequence( ACT_WALK )
+	if self:GetDrawing() then return end
 
-	local anim = vm:GetSequence()
-	local animdata = vm:GetSequenceInfo(anim)
+	self:DetectValidAnimations()
 
 	if not walking && not sprinting then
 		self:ChooseIdleAnim()
 	elseif walking then
-		if walkanim == -1 then
+		local tanim,success = self:ChooseWalkAnim()
+		if not tanim then
 			self:ChooseIdleAnim()
 		else
 			self:ChooseWalkAnim()
 		end
 	elseif sprinting && not cv then
-		if sprintanim == -1 then
+		local tanim,success = self:ChooseSprintAnim()
+		if not tanim then
 			self:ChooseIdleAnim()
 		else
 			self:ChooseSprintAnim()
 		end
 	end
-
 end
 
 --[[ 
