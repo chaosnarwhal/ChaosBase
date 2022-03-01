@@ -8,7 +8,6 @@ Purpose:  Standard SWEP Function
 ]]--
 
 function SWEP:Think()
-
 end
 
 --[[ 
@@ -27,7 +26,6 @@ function SWEP:Think2()
 	self:IronsSprint()
 	self:ProcessHoldType()
 	self:RevManageAnims()
-
 end
 
 --[[ 
@@ -96,8 +94,6 @@ function SWEP:PlayerThink( ply )
 
 	if ply != self:GetOwner() then return end
 	
-	self:CalculateNearWallSH()
-	
 	local is = 0
 	local isr=self:GetIronSightsRatio()
 	local rs = 0
@@ -165,7 +161,6 @@ Purpose:  Main SWEP function
 ]]--
 
 function SWEP:PlayerThinkClient( ply )
-	
 end
 
 --[[ 
@@ -184,9 +179,6 @@ function SWEP:PlayerThinkClientFrame( ply )
 	end
 
 	self.ShouldDrawAmmoHUD=( ply:KeyDown(IN_USE) and ply:KeyDown(IN_RELOAD) ) or self:GetReloading() or self:GetFireModeChanging() or self:GetHUDThreshold() or (self:GetBoltTimer() and CurTime()>self:GetBoltTimerStart() and CurTime()<self:GetBoltTimerEnd() )
-
-	
-	self:CalculateNearWallCLF()
 	
 	local is = 0
 	local isr=self.CLIronSightsProgress

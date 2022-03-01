@@ -262,74 +262,92 @@ if CLIENT then
 	if GetConVar("cl_rev_viewbob_reloading") == nil then
 		CreateClientConVar("cl_rev_viewbob_reloading", 1, true, true)
 	end
+
+	if GetConVar("cl_rev_vmflip") == nil then
+		CreateClientConVar("cl_rev_vmflip", 0, true, true)
+	end
+
+	if GetConVar("cl_rev_vm_offset_fov") == nil then
+		CreateClientConVar("cl_rev_vm_offset_fov", 0, true, true)
+	end
+
+	if GetConVar("cl_rev_vm_multiplier_fov") == nil then
+		CreateClientConVar("cl_rev_vm_multiplier_fov", 0, true, true)
+	end
 	
 	
 end
 
+--[[
+Hook: PlayerTick
+Function: Weapon Logic
+Used For: Main weapon "think" logic
+]]--
+hook.Add("PlayerTick", "PlayerTickRev", function(plyv)
 
-local function PlayerCarryingRevWeapon( ply )
-	if !ply then
-		if CLIENT then
-			if IsValid(LocalPlayer()) then
-				ply = LocalPlayer()
-			else
-				return false, nil, nil
-			end
-		else	
-			return false, nil, nil
-		end
-	end
-	
-	if not ( IsValid(ply) and ply:IsPlayer() and ply:Alive() )then return end
+	wep = plyv:GetActiveWeapon()
 
-	local wep = ply:GetActiveWeapon()
-	if IsValid(wep) then
-		local n=wep:GetClass()
-		local nfind=string.find(n,"rev")
-		if (wep.Base and string.find(wep.Base,"rev_base")) then
-			return true, ply, wep
-		end
-		return false, ply, wep
-	end
-	return false, ply, nil
-end
-
---Main weapon think
-
-hook.Add( "PlayerTick" , "PlayerTickrev", function( ply )
-	local isc, ply, wep = PlayerCarryingRevWeapon(ply)
-	if isc then
-		if wep.PlayerThink then
-			wep:PlayerThink( ply )
-		end
+	if wep:IsValid() and wep.PlayerThink and (wep.Base == "rev_base") then
+		wep:PlayerThink(plyv)
 	end
 end)
 
-if CLIENT then
-	if GetConVarNumber("sv_rev_compatibility_clientframe",0)!=1 then
-		hook.Add("PreRender", "prerender_revbase", function()
+--[[
+Hook: PreRender & PreDrawViewModel
+Function: Weapon Logic & Calculating Viewmodel offsets
+Used For: Per-frame weapon "think" logic & viewmodel sway, offset and flips?
+]]
 
-			local iscarryingrevweapon, pl, wep = PlayerCarryingRevWeapon()
+if CLIENT then
+
+
+	local st_old, host_ts, cheats, vec, ang
+	host_ts = GetConVar("host_timescale")
+	cheats = GetConVar("sv_cheats")
+	vec = Vector()
+	ang = Angle()
+
+	local IsGameUIVisible = gui and gui.IsGameUIVisible
+
+	--PreRender
+	hook.Add("PreRender", "PreRender_RevBase", function()
+
+		if not IsValid(ply) then
+			ply = LocalPlayer()
+			return
+		end
+
+		wep = ply:GetActiveWeapon()
+
+		if wep:IsValid() and wep.PlayerThinkClientFrame and (wep.Base == "rev_base") then
+			wep:PlayerThinkClientFrame(ply)
+		end
 			
-			if iscarryingrevweapon then
-				if wep.PlayerThinkClientFrame then
-					wep:PlayerThinkClientFrame(pl)
-				end
-			end
-			
-		end)
-	else
-		hook.Add("Think", "prerender_revbase", function()
-			local iscarryingrevweapon, pl, wep = PlayerCarryingRevWeapon()
-			
-			if iscarryingrevweapon then
-				if wep.PlayerThinkClientFrame then
-					wep:PlayerThinkClientFrame(pl)
-				end
-			end
-			
-		end)
-	end
+	end)
+
+	--PreDrawViewModel
+	hook.Add("PreDrawViewModel", "RevCalculateViewmodel", function(vm, plyv, wepv)
+		if not wepv:IsValid() or not (wep.Base == "rev_base") then return end
+
+		local st = SysTime()
+		st_old = st_old or st
+
+		local delta = st - st_old
+		st_old = st
+
+		if game.SinglePlayer() and IsGameUIVisible and IsGameUIVisible() then return end
+
+		delta = delta * game.GetTimeScale() * 1
+
+		--Weapon SWAY code does not work, needs re-write.
+		--wepv:Sway(vec, ang, delta)
+		wepv:CalculateViewModelOffset(delta)
+		wepv:CalculateViewModelFlip()
+
+	end)
+
+
+
 end
 
 if game.AddParticles then
@@ -343,6 +361,7 @@ end )
 hook.Add( "PopulateToolMenu", "RevGunBaseCategorySettings", function()
 	spawnmenu.AddToolMenuOption( "Options", "WeaponSettings", "Client", "#Client", "", "", function( panel )
 		panel:ClearControls()
+		panel:CheckBox( "ViewModel Flip", "cl_rev_vmflip")
 		panel:NumSlider( "ViewModel offset x", "cl_rev_vmoffset_x", -10, 10 )
 		panel:NumSlider( "ViewModel offset y", "cl_rev_vmoffset_y", -10, 10 )
 		panel:NumSlider( "ViewModel offset z", "cl_rev_vmoffset_z", -10, 10 )

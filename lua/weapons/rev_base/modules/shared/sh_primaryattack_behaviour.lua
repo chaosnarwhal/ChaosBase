@@ -9,7 +9,6 @@ Purpose:  Main SWEP function
 
 function SWEP:PrimaryAttack()
 	
-
 	--Low TickRate RPM Fix.
 	local delay = 60 / self.Primary.RPM
 
@@ -33,11 +32,6 @@ function SWEP:PrimaryAttack()
 	
 	--If the weapon is saftey you cant shoot either.
 	if self:IsSafety() then self.Weapon:EmitSound("Weapon_AR2.Empty") return end
-	
-	--Are you too close to a wall? how would you shoot that close anyways..
-	if (self:GetNearWallRatio()>0.05) then
-		return
-	end
 	
 	--Are you valid? do you exist? we'll find out here. If you don't exist than how are you even holding this weapon.
 	if !self:OwnerIsValid() then return end

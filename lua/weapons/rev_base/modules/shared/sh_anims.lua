@@ -7,35 +7,36 @@ Purpose:  Autodetection
 ]]--
 
 function SWEP:RevManageAnims()
-	
+
 	if not IsFirstTimePredicted() then return end
 
 	local ply = self:GetOwner()
 	local vm = ply:GetViewModel()
 	local oa = self.OwnerActivity
 	local cv = ply:Crouching()
-	local slowvar = ply:Crouching() or ply:KeyDown(IN_WALK)
-	local walking = (ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT) or ply:KeyDown(IN_FORWARD) or ply:KeyDown(IN_BACK)) && !ply:KeyDown(IN_SPEED)
+	local walking = (ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT) or ply:KeyDown(IN_FORWARD) or ply:KeyDown(IN_BACK)) && not ply:KeyDown(IN_SPEED)
 	local sprinting = self:GetSprinting()
-
-	if self:GetReloading() then return end
 
 	if self:GetDrawing() then return end
 
-	self:DetectValidAnimations()
+	if self:GetReloading() then return end
+
+	if not self.HasDetectedValidAnimations then
+		self:DetectValidAnimations()
+	end
 
 	if not walking && not sprinting then
 		self:ChooseIdleAnim()
 	elseif walking then
-		local tanim,success = self:ChooseWalkAnim()
-		if not tanim then
+		local success = self:ChooseWalkAnim()
+		if not success then
 			self:ChooseIdleAnim()
 		else
 			self:ChooseWalkAnim()
 		end
 	elseif sprinting && not cv then
-		local tanim,success = self:ChooseSprintAnim()
-		if not tanim then
+		local success = self:ChooseSprintAnim()
+		if not success then
 			self:ChooseIdleAnim()
 		else
 			self:ChooseSprintAnim()
@@ -43,13 +44,86 @@ function SWEP:RevManageAnims()
 	end
 end
 
---[[ 
+
+--WIP SYSTEM TO CACHE ANIMATIONS INSTEAD OF RUNNING IT PER TICK.
+
+--[[
+Function Name:  CacheAnimations
+Syntax: self:CacheAnimations( ).  Call as much as you like.
+Returns:  Nothing.
+Notes:  This is what autodetects animations for the SWEP.SequenceEnabled and SWEP.SequenceLength tables.
+Purpose:  Autodetection
+]]--
+
+
+--[[
+SWEP.actlist = {ACT_VM_DRAW, ACT_VM_DRAW_EMPTY, ACT_VM_DRAW_SILENCED, ACT_VM_DRAW_DEPLOYED, ACT_VM_HOLSTER, ACT_VM_HOLSTER_EMPTY, ACT_VM_IDLE, ACT_VM_IDLE_EMPTY, ACT_VM_IDLE_SILENCED, ACT_VM_PRIMARYATTACK, ACT_VM_PRIMARYATTACK_1, ACT_VM_PRIMARYATTACK_EMPTY, ACT_VM_PRIMARYATTACK_SILENCED, ACT_VM_SECONDARYATTACK, ACT_VM_RELOAD, ACT_VM_RELOAD_EMPTY, ACT_VM_RELOAD_SILENCED, ACT_VM_ATTACH_SILENCER, ACT_VM_RELEASE, ACT_VM_DETACH_SILENCER, ACT_VM_FIDGET, ACT_VM_FIDGET_EMPTY, ACT_SHOTGUN_RELOAD_START}
+--If you really want, you can remove things from SWEP.actlist and manually enable animations and set their lengths.
+SWEP.SequenceEnabled = {}
+SWEP.SequenceLength = {}
+SWEP.SequenceLengthOverride = {} --Override this if you want to change the length of a sequence but not the next idle
+
+SWEP.ActCache = {}
+
+local vm,seq
+
+function SWEP:CacheAnimations()
+
+	table.Empty(self.ActCache)
+
+	if self.CanBeSilenced and self.SequenceEnabled[ACT_VM_IDLE_SILENCED] == nil then
+		self.SequenceEnabled[ACT_VM_IDLE_SILENCED] = true
+	end
+
+	if not self:VMIV() then return end
+	vm = self.OwnerViewModel
+
+	if IsValid(vm) then
+
+		for k, v in ipairs(self.actlist) do
+			seq = vm:SelectWeightedSequence(v)
+
+			if seq ~= -1 and vm:GetSequenceActivity(seq) == v and not self.ActCache[seq] then
+				self.SequenceEnabled[v] = true
+				self.SequenceLength[v] = vm:SequenceDuration(seq)
+				self.ActCache[seq] = v
+			else
+				self.SequenceEnabled[v] = false
+				self.SequenceLength[v] = 0.0
+			end
+		end
+	else
+		return false
+	end
+
+	if self.ProceduralHolsterEnabled == nil then
+		if self.SequenceEnabled[ACT_VM_HOLSTER] then
+			self.ProceduralHolsterEnabled = false
+		else
+			self.ProceduralHolsterEnabled = true
+		end
+	end
+
+	if string.find(self:GetClass(),"nmrih") then
+		self.ShotgunEmptyAnim = false
+	end
+
+	self.HasDetectedValidAnimations = true
+
+	return true
+end
+
+--]]
+
+
+--[[
 Function Name:  DetectValidAnimations
 Syntax: self:DetectValidAnimations( ).  Call as much as you like.
 Returns:  Nothing.
 Notes:  This is what autodetects animations for the SWEP.SequenceEnabled and SWEP.SequenceLength tables.
 Purpose:  Autodetection
 ]]--
+
 function SWEP:DetectValidAnimations()
 	if !IsValid(self) then
 		return
@@ -111,6 +185,8 @@ function SWEP:DetectValidAnimations()
 		end
 	end
 	
+	self.HasDetectedValidAnimations = true
+
 	return true
 	
 end

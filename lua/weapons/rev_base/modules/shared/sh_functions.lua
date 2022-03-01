@@ -61,7 +61,6 @@ Purpose:  Utility
 function SWEP:ResetSightsProgress()
 	self.RunSightsProgress=0
 	if CLIENT then
-		self.CLNearWallProgress=0 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
 		self.CLRunSightsProgress=0 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
 		self.CLIronSightsProgress=0 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
 		self.CLCrouchProgress=0 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
@@ -518,83 +517,6 @@ function SWEP:ClientCalculateConeRecoil()
 	CurrentCone = CurrentCone * self.CLSpreadRatio
 	
 	return CurrentCone, CurrentRecoil
-end
-
---[[ 
-Function Name:  CalculateNearWallSH
-Syntax: self:CalculateNearWallSH().
-Returns:  Nothing.  However, calculates nearwall for the server.
-Notes:  This is the server/shared equivalent of CalculateNearWallCLF.
-Purpose:  Feature
-]]--
-
-function SWEP:CalculateNearWallSH()
-
-	if !IsValid(self.Owner) then return end
-	
-	local vnearwall
-	
-	vnearwall=false
-	
-	local tracedata = {}
-	tracedata.start=self.Owner:GetShootPos()
-	tracedata.endpos=tracedata.start+self.Owner:EyeAngles():Forward()*self.WeaponLength
-	tracedata.mask=MASK_SHOT
-	tracedata.ignoreworld=false
-	tracedata.filter=self.Owner
-	local traceres=util.TraceLine(tracedata)
-	if traceres.Hit then
-		if traceres.Fraction>0 and traceres.Fraction<1 then
-			if traceres.MatType!=MAT_FLESH and traceres.MatType!=MAT_GLASS then
-				vnearwall = true
-			end
-		end
-	end
-	
-	if GetConVarNumber("sv_rev_near_wall",1)==0 then
-		vnearwall = false
-	end
-	
-	self:SetNearWallRatio( math.Approach( self:GetNearWallRatio(), vnearwall and 1 or 0 , FrameTime() / self.NearWallTime ) )
-	
-end
-
---[[ 
-Function Name:  CalculateNearWallCLF
-Syntax: self:CalculateNearWallCLF().  This is called per-frame.
-Returns:  Nothing.  However, calculates nearwall for the client.
-Notes:  This is clientside only.
-Purpose:  Feature
-]]--
-
-function SWEP:CalculateNearWallCLF()
-
-	if !( CLIENT or game.SinglePlayer() ) then return end
-	if !IsValid(self.Owner) then return end
-	
-	local vnearwall
-	
-	vnearwall=false
-	local tracedata = {}
-	tracedata.start=self.Owner:GetShootPos()
-	tracedata.endpos=tracedata.start+self.Owner:EyeAngles():Forward()*self.WeaponLength
-	tracedata.mask=MASK_SHOT
-	tracedata.ignoreworld=false
-	tracedata.filter=self.Owner
-	local traceres=util.TraceLine(tracedata)
-	if traceres.Hit then
-		if traceres.Fraction>0 and traceres.Fraction<1 then
-			if traceres.MatType!=MAT_FLESH and traceres.MatType!=MAT_GLASS then
-				vnearwall = true
-			end
-		end
-	end
-	
-	if GetConVarNumber("sv_rev_near_wall",1)==0 then
-		vnearwall = false
-	end
-	
-	self.CLNearWallProgress =  math.Approach( self.CLNearWallProgress, vnearwall and 1 or 0 , FrameTime() / self.NearWallTime )
 end
 
 --[[ 

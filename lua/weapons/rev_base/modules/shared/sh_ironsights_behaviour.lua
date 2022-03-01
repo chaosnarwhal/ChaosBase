@@ -75,9 +75,6 @@ function SWEP:IronsSprint()
 		end
 	end
 		
-	if self:GetNearWallRatio()>0.01 then
-		nw = true
-	end
 	
 	if (isbolttimer) and (CurTime()>self:GetBoltTimerStart()) and (CurTime()<self:GetBoltTimerEnd()) then
 		is=false	

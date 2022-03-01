@@ -18,63 +18,90 @@ include("modules/client/cl_calcviewmodelview.lua")
 include("modules/client/cl_effects.lua")
 include("modules/client/cl_sck.lua")
 
-
+--Define the base GMOD base because we want to make sure we keep functions I don't declear intact.
 SWEP.base = "weapon_base"
 DEFINE_BASECLASS("weapon_base")
+
+--Define the SWEP name for the base.
 SWEP.Gun = "rev_base"
 
-SWEP.PrintName			= "Revival Weapons Base" -- 'Nice' Weapon name (Shown on HUD)
-SWEP.Author				= ""
-SWEP.Contact			= ""
-SWEP.Purpose			= ""
-SWEP.Instructions		= ""
-SWEP.Category			= "Revival"
+--Flavor Text and The name/category of the weapon.
+SWEP.PrintName = "Revival Weapons Base" -- 'Nice' Weapon name (Shown on HUD)
+SWEP.Author	= ""
+SWEP.Contact = ""
+SWEP.Purpose = ""
+SWEP.Instructions = ""
+SWEP.Category = "Revival"
+
+--WorldModels Defaults.
+SWEP.WorldModel = "models/weapons/w_357.mdl"
+SWEP.SightsDown = false
+SWEP.MuzzleAttachment = "1" 		-- Should be "1" for CSS models or "muzzle" for hl2 models
 
 
---ViewModels and WorldModels Defaults.
-SWEP.ViewModelFOV			= 62
-SWEP.ViewModelFlip			= false
-SWEP.ViewModel				= "models/weapons/v_pistol.mdl"
-SWEP.WorldModel				= "models/weapons/w_357.mdl"
-SWEP.SightsDown 			= false
-SWEP.MuzzleAttachment		= "1" 		-- Should be "1" for CSS models or "muzzle" for hl2 models
 
 --Some Viewmodel shit I guess.
-SWEP.VMPos 					= Vector(0, 0, 0)
-SWEP.VMAng 					= Vector(0, 0, 0)
+SWEP.ViewModel = "models/your/path/here.mdl" -- Viewmodel path
+SWEP.ViewModelFOV = 65        -- This controls how big the viewmodel looks.  Less is more.
+SWEP.ViewModelFlip = false     -- Set this to true for CSS models, or false for everything else (with a righthanded viewmodel.)
+SWEP.UseHands = false -- Use gmod c_arms system.
+SWEP.VMPos = Vector(0, 0, 0) -- The viewmodel positional offset, constantly.  Subtract this from any other modifications to viewmodel position.
+SWEP.VMAng = Vector(0, 0, 0) -- The viewmodel angular offset, constantly.   Subtract this from any other modifications to viewmodel angle.
+SWEP.VMPos_Additive = true -- Set to false for an easier time using VMPos. If true, VMPos will act as a constant delta ON TOP OF ironsights, run, whateverelse
+SWEP.AdditiveViewModelPosition = true
 
+-- The viewmodel positional offset, constantly.
+-- Subtract this from any other modifications to viewmodel position.
+-- AKA VMPos (SWEP Construction Kit naming, VMPos is always checked for presence and it always override ViewModelPosition if present)
+SWEP.ViewModelPosition  = Vector(0, 0, 0)
+-- AKA VMAng (SWEP Construction Kit naming)
+-- The viewmodel angular offset, constantly.
+-- Subtract this from any other modifications to viewmodel angle.
+SWEP.ViewModelAngle     = Vector(0, 0, 0)
+
+
+
+
+--Iron sights related
+-- AKA data.ironsights
+SWEP.Secondary.IronSightsEnabled = true
+-- Controls Field of View when scoping in.
+-- Default FoV of Garry's Mod is 75, most of players prefer 90
+-- Lesser FoV value means stronger "zoom"
+-- Good value to begin experimenting with is 70
+-- AKA Secondary.IronFOV
+SWEP.Secondary.OwnerFOV = 70
+-- AKA IronViewModelFOV
+SWEP.Secondary.ViewModelFOV = nil -- Defaults to 65. Target viewmodel FOV when aiming down the sights.
 -- Time needed to enter / leave the ironsight in seconds
-SWEP.IronSightTime 			= 0.25
+SWEP.IronSightTime = 0.25
 -- The position offset applied when entering the ironsight
-SWEP.IronSightPos 			= Vector(0, 0, 0)
+SWEP.IronSightsPos = Vector(0, 0, 0)
 -- The rotational offset applied when entering the ironsight
-SWEP.IronSightsAng 			= Vector(0, 0, 0)
+SWEP.IronSightsAng = Vector(0, 0, 0)
 
-SWEP.AllowSprintShoot 		= false
+
+
+SWEP.AllowSprintShoot = false
 
 --Lmfao gmod be like ME WANT THESE.
-SWEP.Spawnable				= false
-SWEP.AdminOnly				= false
+SWEP.Spawnable = false
+SWEP.AdminOnly = false
 
-SWEP.Primary.Sound 			= Sound("")				-- This is the sound of the gun/bow, when you shoot.
-SWEP.Primary.Round 			= ("")					-- What kind of bullet does it shoot?
-SWEP.Primary.Cone			= 0.2					-- This is the accuracy of NPCs.  Not necessary in almost all cases, since I don't even think this base is compatible with NPCs.
-SWEP.Primary.Recoil			= 1						-- This is the recoil multiplier.  Really, you should keep this at 1 and change the KickUp, KickDown, and KickHorizontal variables.  However, you can change this as a multiplier too.
-SWEP.Primary.Damage			= 0.01					-- Damage, in standard damage points.
-SWEP.Primary.Spread			= .01					--This is hip-fire acuracy.  Less is more (1 is horribly awful, .0001 is close to perfect)
-SWEP.FiresUnderwater 		= false
- 
---[[
-
-Unless you can do this manually, autodetect it.  If you decide to manually do these, uncomment this block and rmeove this line.
+SWEP.Primary.Sound 	= Sound("")				-- This is the sound of the gun/bow, when you shoot.
+SWEP.Primary.DistSound 	= Sound("")				--The Distant Sound to play.
+SWEP.Primary.Round 	= ("")					-- What kind of bullet does it shoot?
+SWEP.Primary.Cone = 0.2					-- This is the accuracy of NPCs.  Not necessary in almost all cases, since I don't even think this base is compatible with NPCs.
+SWEP.Primary.Recoil	= 1						-- This is the recoil multiplier.  Really, you should keep this at 1 and change the KickUp, KickDown, and KickHorizontal variables.  However, you can change this as a multiplier too.
+SWEP.Primary.Damage = 0.01					-- Damage, in standard damage points.
+SWEP.Primary.Spread	= .01					--This is hip-fire acuracy.  Less is more (1 is horribly awful, .0001 is close to perfect)
+SWEP.FiresUnderwater = false
 
 SWEP.Primary.SpreadMultiplierMax = 2.5 --How far the spread can expand when you shoot.
 SWEP.Primary.SpreadIncrement = 1/3.5 --What percentage of the modifier is added on, per shot.
 SWEP.Primary.SpreadRecovery = 3 --How much the spread recovers, per second.
 
-]]--
-
-SWEP.Primary.NumShots			= 1 --The number of shots the gun/bow fires.  
+SWEP.Primary.NumShots 			= 1 --The number of shots the gun/bow fires.  
 SWEP.Primary.RPM				= 600					-- This is in Rounds Per Minute / RPM
 SWEP.Primary.RPM_Semi			= nil					-- RPM for semi-automatic or burst fire.  This is in Rounds Per Minute / RPM
 SWEP.Primary.ClipSize			= 0					-- This is the size of a clip
@@ -125,7 +152,6 @@ SWEP.InspectPosDef 			= Vector(0,0,0)
 SWEP.InspectAngDef 			= Vector(0,0,0)
 
 --Sighting Code
-SWEP.CLNearWallProgress=0 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
 SWEP.CLRunSightsProgress=0 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
 SWEP.CLIronSightsProgress=0 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
 SWEP.CLCrouchProgress=0 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
@@ -143,10 +169,7 @@ SWEP.CrouchAccuracyMultiplier=0.5--Less is more.  Accuracy * 0.5 = Twice as accu
 SWEP.ChangeStateAccuracyMultiplier=1.5 --Less is more.  A change of state is when we're in the progress of doing something, like crouching or ironsighting.  Accuracy * 2 = Half as accurate.  Accuracy * 5 = 1/5 as accurate
 SWEP.JumpAccuracyMultiplier=2--Less is more.  Accuracy * 2 = Half as accurate.  Accuracy * 5 = 1/5 as accurate
 SWEP.WalkAccuracyMultiplier=1.35--Less is more.  Accuracy * 2 = Half as accurate.  Accuracy * 5 = 1/5 as accurate
-SWEP.IronSightTime = 0.3 --The time to enter ironsights/exit it.
-SWEP.NearWallTime = 0.25 --The time to pull up  your weapon or put it back down
 SWEP.ToCrouchTime = 0.05 --The time it takes to enter crouching state
-SWEP.WeaponLength = 40 --Almost 3 feet Feet.  This should be how far the weapon sticks out from the player.  This is used for calculating the nearwall trace.
 SWEP.DefaultFOV=90 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.
 SWEP.MoveSpeed = 1 --Multiply the player's movespeed by this.
 SWEP.IronSightsMoveSpeed = 0.8 --Multiply the player's movespeed by this when sighting.
@@ -159,7 +182,6 @@ SWEP.ShootWhileHolster=true --Cam we interrupt holstering for shooting?
 SWEP.SightWhileHolster=false --Cancel out "iron"sights when we holster?
 SWEP.UnSightOnReload=true --Cancel out ironsights for reloading.
 SWEP.AllowReloadWhileSprinting=false --Can you reload when close to a wall and facing it?
-SWEP.AllowReloadWhileNearWall=false --Can you reload when close to a wall and facing it?
 SWEP.SprintBobMult=1.5 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this > 1 probably for sprinting.
 SWEP.IronBobMult=0  -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this < 1 for sighting, 0 to outright disable.
 --These holdtypes are used in ironsights.  Syntax:  DefaultHoldType=NewHoldType
@@ -293,7 +315,6 @@ SWEP.TextColContrast = Color(32,32,32,255) --Secondary Text Color (used for shad
 SWEP.AttachmentCache = {} -- Caches Attachments
 SWEP.ScopeScale = 0.5
 SWEP.ReticleScale = 0.7
-SWEP.Akimbo = false
 
 SWEP.AnimCycle = 1
 
@@ -318,7 +339,6 @@ function SWEP:SetupDataTables()
    self:NetworkVar("Bool", 4, "Drawing")
    self:NetworkVar("Bool", 5, "Reloading")
    self:NetworkVar("Bool", 6, "Shooting")
-   self:NetworkVar("Bool", 7, "NearWall")
    self:NetworkVar("Bool", 8, "Silenced")
    self:NetworkVar("Bool", 9, "Bursting")
    self:NetworkVar("Bool", 10, "ChangingSilence")
@@ -346,7 +366,6 @@ function SWEP:SetupDataTables()
    self:NetworkVar("Float",12, "RunSightsRatio")
    self:NetworkVar("Float",13, "CrouchingRatio")
    self:NetworkVar("Float",14, "JumpingRatio")
-   self:NetworkVar("Float",15, "NearWallRatio")
    self:NetworkVar("Float",16, "SpreadRatio")
    self:NetworkVar("Float",17, "InspectingRatio")
    self:NetworkVar("Int",0, "FireMode")
@@ -512,11 +531,6 @@ function SWEP:Initialize()
 		self.CSMuzzleFlashes = true
 	end
 	
-	if self.Akimbo then
-		self.AutoDetectMuzzleAttachment = true
-		self.MuzzleAttachmentRaw = 2-self.AnimCycle
-	end	
-	
 	self:CreateFireModes()
 	
 	self:AutoDetectRange()
@@ -538,7 +552,6 @@ function SWEP:Initialize()
 	self.drawcount2=0
 	self.canholster=false
 	
-	self:DetectValidAnimations()
 	self:SetDeploySpeed(self.SequenceLength[ACT_VM_DRAW])
 	
 	if !self.Primary.ClipMax then
@@ -555,7 +568,7 @@ Purpose:  Standard SWEP Function
 ]]--
 
 function SWEP:Deploy()
-	
+
 	if (!self.Primary.Damage) or (self.Primary.Damage<=0.01) then
 		self:AutoDetectDamage()
 	end
@@ -587,8 +600,6 @@ function SWEP:Deploy()
 	
 	self:ResetSightsProgress()
 	
-	self:DetectValidAnimations()
-	
 	self:AutoDetectRange()
 	
 	
@@ -606,7 +617,6 @@ function SWEP:Deploy()
 	
 	timer.Simple(0, function()
 		if IsValid(self) then
-			self:DetectValidAnimations()
 			self:ChooseDrawAnim()
 		end
 	end)
@@ -669,7 +679,6 @@ function SWEP:Deploy()
 		self.CLRunSightsProgress = 0
 		self.CLCrouchProgress = 0
 		self.CLInspectingProgress = 0
-		self.CLNearWallProgressProgress = 0
 	end
 	self:SetNextIdleAnim(CurTime()-1)
 	local vm = self.Owner:GetViewModel()
@@ -805,13 +814,6 @@ function SWEP:Reload()
 		end
 	--end
 	
-	if self.AllowReloadWhileNearWall==false then
-		if self:GetNearWallRatio()>0.05 then
-			return
-		end
-	end
-	
-	
 	if (self:GetDrawing() ) and self.AllowReloadWhileDraw==false then
 		return
 	end
@@ -845,7 +847,7 @@ function SWEP:Reload()
 			if self:Clip1() == 0 then
 				self:DefaultReload( ACT_VM_RELOAD_EMPTY )
 			else
-			self:DefaultReload( ACT_VM_RELOAD )
+				self:DefaultReload( ACT_VM_RELOAD )
 			end
 		else
 			self:SendWeaponAnim( ACT_SHOTGUN_RELOAD_START )
@@ -857,6 +859,7 @@ function SWEP:Reload()
 		if !self.ThirdPersonReloadDisable then
 			self.Owner:SetAnimation( PLAYER_RELOAD ) -- 3rd Person Animation
 		end
+
 		if (CLIENT) then
 			timer.Simple(0, function()
 				if !IsValid(self) then return end
@@ -868,6 +871,7 @@ function SWEP:Reload()
 		end
 		local AnimationTime = self.Owner:GetViewModel():SequenceDuration()
 		self.prevdrawcount=self.drawcount
+
 		self:SetReloadingEnd(CurTime()+AnimationTime)
         self.ReloadingTime = CurTime() + AnimationTime
         self:SetNextPrimaryFire(CurTime() + AnimationTime)

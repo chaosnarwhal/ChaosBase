@@ -38,24 +38,25 @@ Purpose:  FX
 	
 local blankvec = Vector(0,0,0)
 
+function SWEP:ShootEffects()
+	self.Owner:MuzzleFlash()						-- Crappy muzzle light
+end
 
-
+--[[
 function SWEP:ShootEffects()
 	
 	if ( ( (CLIENT and !SERVER) and !game.SinglePlayer() ) and !IsFirstTimePredicted() and !self.AutoDetectMuzzleAttachment) then print("canceled") return end
 	
-	--[[
-	if game.SinglePlayer() then
-		if !self.Owner.ShouldDrawLocalPlayer then
-			self:CallOnClient("ShootEffects","")
-			return
-		end
-	end
-	]]--
+	--if game.SinglePlayer() then
+		--if !self.Owner.ShouldDrawLocalPlayer then
+			--self:CallOnClient("ShootEffects","")
+			--return
+		--end
+	--end
 	
 	if !IsValid(self) or !self:OwnerIsValid() then return end
-	
-	self:MuzzleLight()
+
+	self.Owner:MuzzleFlash()
 	
 	local fp =  self:IsFirstPerson()
 	local vm = self.Owner:GetViewModel()
@@ -85,7 +86,7 @@ function SWEP:ShootEffects()
 	if attid == 0 then
 		attid = 1
 	end
-		
+	
 	if ( CLIENT or game.SinglePlayer() ) and self.DoMuzzleFlash and self.CustomMuzzleFlash then
 		if !self:IsCurrentlyScoped() then
 			if fp then
@@ -131,6 +132,7 @@ function SWEP:ShootEffects()
 	end
 	
 end
+--]]
 
 local svflashvec = Vector(1,1,1)
 
@@ -237,7 +239,7 @@ function SWEP:MuzzleLight()
 		if self:OwnerIsValid() then
 			self.Owner:MuzzleFlash()
 		end
-		--[[
+		
 		local att,dylight
 		if self:IsFirstPerson() then
 			local vm = self.Owner:GetViewModel()
@@ -268,7 +270,7 @@ function SWEP:MuzzleLight()
 		dylight.dieTime = CurTime() + lifetime
 		dylight.style = 3
 		dylight.key = true
-		]]--
+		
 	end
 	
 end

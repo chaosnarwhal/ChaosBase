@@ -20,12 +20,20 @@ SWEP.WorldModel				= "models/chaosnarwhal/halo/weapons/unsc/ma37/w_unsc_ma37.mdl
 SWEP.UseHands				= true
 SWEP.HoldType 				= "ar2"
 SWEP.MuzzleAttachment       = "muzzle"       -- Should be "1" for CSS models or "muzzle" for hl2 models
+SWEP.Tracer                 = 2
+SWEP.TracerName             = "rev_halo_ar_bullet" --Change to a string of your tracer name
 
+--[[
 SWEP.VMPos                  = Vector(4, 2, -2)
 SWEP.VMAng                  = Vector(0, 0, 0)
+]]--
 
-SWEP.IronSightsPos          = Vector(-3.5, 0, -2)
+SWEP.ViewModelPosition      = Vector(4,2,-2)
+SWEP.ViewModelAngle         = Vector(0,0,0)
+
+SWEP.IronSightsPos          = Vector(-7.6, 0, 0)
 SWEP.IronSightsAng          = Vector(0, 0, 0)
+
 SWEP.Secondary.IronFOV      = 60
 
 SWEP.Primary.Sound          = Sound("chaosnarwhal/weapons/unsc/ma37/gunfire/rifle_fire_"..math.random(1,3)..".wav")
@@ -33,11 +41,16 @@ SWEP.Primary.Damage         = 20
 SWEP.Primary.NumShots       = 1
 SWEP.Primary.RPM          	= 550
 
-SWEP.Primary.KickUp         = 0                 -- This is the maximum upwards recoil (rise)
+SWEP.Primary.KickUp         = 0.1                 -- This is the maximum upwards recoil (rise)
 SWEP.Primary.KickDown       = 0                 -- This is the maximum downwards recoil (skeet)
 SWEP.Primary.KickHorizontal = 0 
 
-SWEP.Primary.Spread         = .01                   --This is hip-fire acuracy.  Less is more (1 is horribly awful, .0001 is close to perfect)
+SWEP.Primary.Spread         = 0.01                   --This is hip-fire acuracy.  Less is more (1 is horribly awful, .0001 is close to perfect)
+
+SWEP.Primary.SpreadMultiplierMax = 5 --How far the spread can expand when you shoot.
+SWEP.Primary.SpreadIncrement = 1/7.5 --What percentage of the modifier is added on, per shot.
+SWEP.Primary.SpreadRecovery = 3 --How much the spread recovers, per second.
+
 
 SWEP.AllowSprintShoot		= false
 
