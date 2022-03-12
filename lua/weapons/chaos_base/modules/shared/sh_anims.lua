@@ -1,63 +1,15 @@
---[[ 
-Function Name:  RevManageAnims
-Syntax: self:RevManageAnims().  Call as much as you like.
-Returns:  Nothing.
-Notes:  This is the main bulkhead for handling Anims. I do not LUA bob code so anims are hardcoded to events.
-Purpose:  Autodetection
-]]--
-
---[[
-function SWEP:RevManageAnims()
-
-	if not IsFirstTimePredicted() then return end
-
-	local ply = self:GetOwner()
-	local vm = ply:GetViewModel()
-	local oa = self.OwnerActivity
-	local cv = ply:Crouching()
-	local walking = (ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT) or ply:KeyDown(IN_FORWARD) or ply:KeyDown(IN_BACK)) && not ply:KeyDown(IN_SPEED)
-	local sprinting = self:GetSprinting()
-
-	if self:GetDrawing() then return end
-
-	if self:GetReloading() then return end
-
-	if self:GetShooting() then return end
-
-	local idleanim = vm:SelectWeightedSequence(ACT_VM_IDLE)
-	local walkanim = vm:SelectWeightedSequence(ACT_WALK)
-	local sprintanim = vm:SelectWeightedSequence(ACT_RUN)
-
-	local anim = vm:GetSequence()
-	local animdata = vm:GetSequenceInfo(anim)
-
-	if not walking && not sprinting then
-		self.AnimToPlay = idleanim
-	elseif walking then
-		if walkanim == -1 then
-			self.AnimToPlay = idleanim
-		else
-			self.AnimToPlay = walkanim
-		end
-	elseif sprinting && not cv then
-		if sprintanim == -1 then
-			self.AnimToPlay = idleanim
-		else
-			self.AnimToPlay = sprintanim
-		end
-	end
-
-	vm:SendViewModelMatchingSequence(self.AnimToPlay)
-end
-]]
 
 function SWEP:SelectAnimation(anim)
-	if self:GetNWState() == Chaos.STATE_SPRINT and self.Animations[anim .. "_sprint"] and not self:GetBuff_Override("Override_ShootWhileSprint", self.ShootWhileSprint) then
+	if self:GetNWState() == ChaosBase.STATE_SPRINT and self.Animations[anim .. "_sprint"] then
 		anim = anim .. "_sprint"
 	end
 
 	if self:Clip1() == 0 and self.Animations[anim .. "_empty"] then
         anim = anim .. "_empty"
+    end
+
+    if self:GetNWState() == ChaosBase.STATE_WALK and self.Animations[anim .. "_walk"] then
+    	anim = anim .. "_walk"
     end
 
     if not self.Animations[anim] then return end
@@ -70,13 +22,13 @@ SWEP.LastAnimStartTime = 0
 SWEP.LastAnimFinishTime = 0
 
 function SWEP:PlayAnimationEZ(key, mult, ignorereload)
-	return self:PlayAnimation(key, mult, true, 0, false, false, ignorereload, false)
+	return self:PlayAnimation(key, mult, true, 0, false, fdalse, ignorereload, false)
 end
 
 function SWEP:PlayAnimation(key, mult, pred, startfrom, tt, skipholster, ignorereload, absolute)
 	mult = mult or 1
 	pred = pred or false
-	startfrom = startfrom or false
+	startfrom = startfrom or 0
 	tt = tt or false
 	ignorereload = ignorereload or false
 	absolute = absolute or false
@@ -130,10 +82,12 @@ function SWEP:PlayAnimation(key, mult, pred, startfrom, tt, skipholster, ignorer
     	end
     end
 
+    --[[
     if not (game.SinglePlayer() and CLIENT) then
     	self.EventTable = {}
     	self:PlaySoundTable(anim.SoundTable or {}, 1 / mult, startfrom)
     end
+    ]]
 
     if seq then
     	vm:SendViewModelMatchingSequence(seq)
@@ -148,13 +102,18 @@ function SWEP:PlayAnimation(key, mult, pred, startfrom, tt, skipholster, ignorer
 end
 
 function SWEP:PlayIdleAnimation(pred)
+
 	local ianim = self:SelectAnimation("idle")
 
-	if (self:Clip() == 0) and self.Animations.idle_empty then
-		ianim = ianim or "idle_empty"
-	else
-		ianim = ianim or "idle"
-	end
+	if (self:Clip1() == 0 or self:GetNeedCycle()) and self.Animations.idle_empty then
+        ianim = ianim or "idle_empty"
+    else
+        ianim = ianim or "idle"
+    end
+
+    if self.LastAnimKey ~= ianim then
+        ianim = ianim
+    end
 
 	self:PlayAnimation(ianim, 1, pred, nil, nil, nil, true)
 end
@@ -198,7 +157,7 @@ function SWEP:GetAnimKeyTime(key, min)
 end
 
 if CLIENT then
-	net.Receive(chaos_networktpanim, function()
+	net.Receive("chaos_networktpanim", function()
 		local ent = net.ReadEntity()
 		local aseq = net.ReadUInt(16)
 		local starttime = net.ReadFloat()

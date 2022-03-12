@@ -44,16 +44,19 @@ function SWEP:PrimaryAttack()
 		end
 		return
 	end
+
+
+
 	
 	--Shotgun Handling.
 	if (self:GetReloading() and self.Shotgun and !self:GetShotgunPumping() and !self:GetShotgunNeedsPump()) then
 		self:SetShotgunCancel( true )
-		--[[
+		
 		self:SetShotgunInsertingShell(true)
 		self:SetShotgunPumping(false)
 		self:SetShotgunNeedsPump(true)
 		self:SetReloadingEnd(CurTime()-1)
-		]]--
+		
 	end
 	
 	--Can the man truly attack? if he does lets start running some fun times stuff.
@@ -64,15 +67,16 @@ function SWEP:PrimaryAttack()
 			self:SetInspectingRatio(0)
 			self:SendWeaponAnim(0)
 			self:ShootBulletInformation()
-			local success, tanim = self:ChooseShootAnim( ) -- View model animation
+			local vm = self.Owner:GetViewModel()
+			local shootanim = vm:SelectWeightedSequence(ACT_VM_PRIMARYATTACK)
 			if self:OwnerIsValid() and self.Owner.SetAnimation then
 				self.Owner:SetAnimation( PLAYER_ATTACK1 ) -- 3rd Person Animation
 			end
 			self:TakePrimaryAmmo(1)
 			self:SetShooting(true)
-			local vm = self.Owner:GetViewModel()
-			if tanim then
-				local seq = vm:SelectWeightedSequence(tanim)
+			vm:SendViewModelMatchingSequence(shootanim)
+			if shootanim == -1 then
+				local seq = vm:SelectWeightedSequence(shootanim)
 				self:SetShootingEnd(CurTime()+vm:SequenceDuration( seq ))
 			else
 				self:SetShootingEnd(CurTime()+vm:SequenceDuration( ))

@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-SWEP.Base 					= "rev_base"
+SWEP.Base 					= "chaos_base"
 
 SWEP.PrintName				= "MA37 TEST GUN." -- 'Nice' Weapon name (Shown on HUD)
 SWEP.Author					= "ChaosNarwhal"
@@ -59,6 +59,51 @@ SWEP.Primary.ClipSize		= 32			-- Size of a clip
 SWEP.Primary.DefaultClip	= 256		-- Default number of bullets in a clip
 SWEP.Primary.Automatic		= true		-- Automatic/Semi Auto
 SWEP.Primary.Ammo			= "Pistol"
+
+SWEP.Animations = {
+    ["idle"] = {
+        Source = "idle",
+        MinProgress = 0,
+    },
+     ["idle_sprint"] = {
+        Source = "sprint",
+    },
+    ["draw"] = {
+        Source = "draw",
+    },
+    ["ready"] = {
+        Source = "draw_initial",
+    },
+    ["reload_empty"] = {
+        Source = "reload_empty",
+        LHIK = true,
+        LHIKIn = 0.5,
+        LHIKOut = 0.5,
+    },
+    ["reload"] = {
+        Source = "reload",
+        LHIK = true,
+        LHIKIn = 0.5,
+        LHIKOut = 0.5,
+    },
+    ["fire"] = {
+        Source = {"fire_rand1","fire_rand2","fire_rand3"},
+    },
+    ["idle_walk"] = {
+        Source = "walk",
+        MinProgress = 0,
+    },
+}
+
+SWEP.Firemodes = {
+    {
+        Mode = 2,
+    },
+    {
+        Mode = 0
+    }
+}
+
 
 SWEP.VElements = {
 	["ammo_counterV"] = { type = "Quad", bone = "b_gun", rel = "", pos = Vector(5.393, 0, 7.596), angle = Angle(180, 90, -116), size = 0.005, draw_func = nil}

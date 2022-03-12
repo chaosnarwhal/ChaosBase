@@ -8,6 +8,21 @@ Purpose:  Standard SWEP Function
 ]]--
 
 function SWEP:Think()
+	if IsValid(self:GetOwner()) and self:GetClass() == "rev_base" then
+        self:Remove()
+        return
+    end
+
+    local owner = self:GetOwner()
+
+    if !IsValid(owner) or owner:IsNPC() then return end
+
+	self:ProcessFireMode()
+	self:ProcessTimers()
+	self:UserInput()
+	self:IronsSprint()
+	self:ProcessHoldType()
+	self:RevManageAnims()
 end
 
 --[[ 
@@ -17,16 +32,6 @@ Returns:  Nothing.
 Notes:  Essential for calling other important functions.  This is called from PlayerThink.  It's used because SWEP:Think() isn't always called.
 Purpose:  Standard SWEP Function
 ]]--
-
-function SWEP:Think2()
-	if !self:OwnerIsValid() then return end
-	self:ProcessFireMode()
-	self:ProcessTimers()
-	self:UserInput()
-	self:IronsSprint()
-	self:ProcessHoldType()
-	self:RevManageAnims()
-end
 
 --[[ 
 Function Name:  UserInput
@@ -79,8 +84,6 @@ Purpose:  Main SWEP function
 ]]--
 
 function SWEP:PlayerThink( ply )
-	
-	self:Think2()
 	
 	if SERVER then
 		if self.PlayerThinkServer then

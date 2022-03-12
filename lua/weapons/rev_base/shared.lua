@@ -59,29 +59,6 @@ SWEP.ViewModelPosition  = Vector(0, 0, 0)
 -- Subtract this from any other modifications to viewmodel angle.
 SWEP.ViewModelAngle     = Vector(0, 0, 0)
 
-
-
-
---Iron sights related
--- AKA data.ironsights
-SWEP.Secondary.IronSightsEnabled = true
--- Controls Field of View when scoping in.
--- Default FoV of Garry's Mod is 75, most of players prefer 90
--- Lesser FoV value means stronger "zoom"
--- Good value to begin experimenting with is 70
--- AKA Secondary.IronFOV
-SWEP.Secondary.OwnerFOV = 70
--- AKA IronViewModelFOV
-SWEP.Secondary.ViewModelFOV = nil -- Defaults to 65. Target viewmodel FOV when aiming down the sights.
--- Time needed to enter / leave the ironsight in seconds
-SWEP.IronSightTime = 0.25
--- The position offset applied when entering the ironsight
-SWEP.IronSightsPos = Vector(0, 0, 0)
--- The rotational offset applied when entering the ironsight
-SWEP.IronSightsAng = Vector(0, 0, 0)
-
-
-
 SWEP.AllowSprintShoot = false
 
 --Lmfao gmod be like ME WANT THESE.
@@ -150,6 +127,10 @@ SWEP.Secondary.IronFOV		= 0
 --Inspection Pos/Ang.
 SWEP.InspectPosDef 			= Vector(0,0,0)
 SWEP.InspectAngDef 			= Vector(0,0,0)
+
+
+
+
 
 --Sighting Code
 SWEP.CLRunSightsProgress=0 --BASE DEPENDENT VALUE.  DO NOT CHANGE OR THINGS MAY BREAK.  NO USE TO YOU.

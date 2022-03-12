@@ -117,6 +117,10 @@ if CLIENT then
 		CreateConVar("cl_rev_vmoffset_x", 0, {FCVAR_USERINFO, FCVAR_ARCHIVE})
 	end
 	
+	if GetConVar("chaosbase_dev_shootinfo") == nil then
+		CreateConVar("chaosbase_dev_shootinfo", 0, 0, "Show debug overlay firing information. Only works when developer is set to 1.", 0, 3)
+	end
+
 	if GetConVar("cl_rev_vmoffset_y") == nil then
 		CreateConVar("cl_rev_vmoffset_y", 0, {FCVAR_USERINFO, FCVAR_ARCHIVE})
 	end
@@ -274,6 +278,22 @@ if CLIENT then
 	if GetConVar("cl_rev_vm_multiplier_fov") == nil then
 		CreateClientConVar("cl_rev_vm_multiplier_fov", 0, true, true)
 	end
+
+	if GetConVar("chaosbase_vm_fov") == nil then
+		CreateClientConVar("chaosbase_vm_fov", 0, true, true)
+	end
+
+	if GetConVar("chaosbase_vm_add_ads") == nil then
+		CreateClientConVar("chaosbase_vm_add_ads", 0, true, true)
+	end
+
+	if GetConVar("chaosbase_cheapscopesv2_ratio") == nil then
+		CreateClientConVar("chaosbase_cheapscopesv2_ratio", 0, true, true)
+	end
+
+	if GetConVar("chaosbase__cheapscopes") == nil then
+		CreateClientConVar("chaosbase__cheapscopes", 0, true, true)
+	end
 	
 	
 end
@@ -283,6 +303,8 @@ Hook: PlayerTick
 Function: Weapon Logic
 Used For: Main weapon "think" logic
 ]]--
+
+--[[
 hook.Add("PlayerTick", "PlayerTickRev", function(plyv)
 
 	wep = plyv:GetActiveWeapon()
@@ -291,6 +313,7 @@ hook.Add("PlayerTick", "PlayerTickRev", function(plyv)
 		wep:PlayerThink(plyv)
 	end
 end)
+]]--
 
 --[[
 Hook: PreRender & PreDrawViewModel
@@ -309,6 +332,7 @@ if CLIENT then
 
 	local IsGameUIVisible = gui and gui.IsGameUIVisible
 
+	--[[
 	--PreRender
 	hook.Add("PreRender", "PreRender_RevBase", function()
 
@@ -324,10 +348,11 @@ if CLIENT then
 		end
 			
 	end)
+	]]
 
 	--PreDrawViewModel
 	hook.Add("PreDrawViewModel", "RevCalculateViewmodel", function(vm, plyv, wepv)
-		if not wepv:IsValid() or not (wep.Base == "rev_base") then return end
+		if not wepv:IsValid() or not (wepv.Base == "chaos_base") then return end
 
 		local st = SysTime()
 		st_old = st_old or st
