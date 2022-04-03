@@ -1,0 +1,9 @@
+"UnlitGeneric"
+{
+	$vertexcolor 	1 
+	$vertexalpha 	1 
+	$nolod 		1 
+	$basetexture	 "chaosnarwhal/vuthakral/halo/HUD/scope_elements/br_element3"
+}
+
+

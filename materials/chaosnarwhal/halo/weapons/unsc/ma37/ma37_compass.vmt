@@ -1,0 +1,30 @@
+UnlitGeneric
+{
+	"$basetexture"	"chaosnarwhal\halo\weapons\unsc\ma37\ma37_compass"
+
+	$additive 1
+	$translucent 1
+	$model 1
+
+	$angle		 0
+	$translate		 "[0 0]"
+	$center		 "[.5 .5]"
+
+	$compassSnap 45
+
+	Proxies
+	{
+		rev_Compass
+		{
+			resultVar $angle
+		}
+		TextureTransform
+		{
+			"translateVar" "$translate"
+                		"rotateVar" "$angle"
+                		"centerVar" "$center"
+                		"resultVar" "$basetexturetransform"
+		}
+	}
+}
+

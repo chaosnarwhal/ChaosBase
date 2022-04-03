@@ -1,0 +1,15 @@
+VertexLitGeneric
+{
+	"$basetexture"	"chaosnarwhal\halo\weapons\unsc\ma37\ma37_diffuse"
+  	"$bumpmap"	"chaosnarwhal\halo\weapons\unsc\ma37\ma37_normal"
+
+                $phong "1" 
+                $phongexponent "44"
+                $phongboost "13"
+                 
+	$color2	"[ .75 .75 .75 ]"
+
+                 $phongfresnelranges "[ 0.05 0.3 1 ]" 
+}
+
+

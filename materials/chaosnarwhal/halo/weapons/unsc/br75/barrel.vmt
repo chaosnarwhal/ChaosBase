@@ -1,0 +1,22 @@
+VertexLitGeneric
+{
+"$basetexture"	"chaosnarwhal\halo\weapons\unsc\br75\barrel_2_d"
+"$bumpmap"	"chaosnarwhal\halo\weapons\unsc\br75\barrel_2_n"
+
+"$nocull" "1"
+
+"$detail"				"chaosnarwhal\halo\weapons\unsc\br75\default_detail"
+"$detailblendmode"			"0.00"
+"$detailblendfactor"			"1.00"
+"$detailscale"			"60.00"
+
+"$phong"				"1.00"
+"$phongboost"			"10.00"
+"$phongexponent"			"17.00"
+"$phongexponenttexture"		"chaosnarwhal\halo\weapons\unsc\br75\barrel_2_exp"
+"$phongfresnelranges"		"[1.00 1.25 1.50]"
+"$phongalbedotint"			"1.00"
+"$phongdisablehalflambert"		"1.00"
+
+"$blendtintbybasealpha" "1"
+}

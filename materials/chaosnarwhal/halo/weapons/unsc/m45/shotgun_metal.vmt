@@ -1,0 +1,45 @@
+VertexLitGeneric
+{
+	"$basetexture"	"chaosnarwhal\halo\weapons\unsc\m45\diffuse"
+  	"$bumpmap"	"chaosnarwhal\halo\weapons\unsc\m45\normal"
+
+                $phong		1
+                $phongexponent	24
+                $phongboost	17
+                 
+                 "$phongfresnelranges" "[ 0.1 0.3 1.5 ]" 
+
+	$color2	"[ 1 1 1 ]"
+
+	"$lightwarptexture"	"chaosnarwhal\halo\weapons\unsc\lw_metaldull_dark"
+
+	$envmap		"env_cubemap"
+	$normalmapalphaenvmapmask	1
+	$cubemaptint	"[ 1 1 1 ]"
+	$cubemappower	0.6
+
+	$rimlight	1
+	$rimlightpower	-0.3
+	$rimlightexponent	12
+
+	Proxies
+	{
+		drc_ReflectionTint
+		{
+			resultVar $envmaptint
+		}
+		Clamp 
+		{
+			min 0.1
+			max 1
+			srcVar1 "$color2"
+			resultVar "$color2"
+		}
+		drc_ScalingRimLight
+		{
+			resultVar $rimlightboost
+		}
+	}
+}
+
+

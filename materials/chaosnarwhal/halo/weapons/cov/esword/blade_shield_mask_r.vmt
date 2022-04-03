@@ -1,0 +1,67 @@
+"VertexlitGeneric"
+{
+	$no_draw 0
+	"$basetexture" "chaosnarwhal/halo/weapons/cov/esword/blade_shield_mask1_r"
+	"$bumpmap" "chaosnarwhal/halo/weapons/cov/esword/blade_n"
+
+	$translucent	"0"
+	$additive "1"
+	
+	$detail		"chaosnarwhal/halo/weapons/cov/esword/halo_energy_sword_detail2"
+	$detailscale	3
+	$detailblendmode	6
+	$detailblendfactor 	25
+
+	$phong		1
+	$phongexponent 	1
+	$phongboost 	1
+	$phongfresnelranges 	"[ 0 0 0 ]"
+
+	$selfillum "1"
+
+	$emissiveBlendEnabled 		1
+	$emissiveBlendTexture		"chaosnarwhal/halo/weapons/cov/esword/h3_glow"
+	$emissiveBlendBaseTexture		"chaosnarwhal/halo/weapons/cov/esword/blade_shield_mask1_r"
+	$emissiveBlendFlowTexture		"chaosnarwhal/halo/weapons/cov/esword/h3_blade_flow"
+	$emissiveBlendTint 			"[ 3 3 3 ]"
+	$emissiveBlendStrength 		1
+	$emissiveBlendScrollVector 		"[ -0.25 0.5 0 ]" 
+
+Proxies
+	{
+		Sine
+		{
+			sineperiod	2
+			sinemin		0
+			sinemax		0.1
+			timeoffset		1
+			resultvar		$detailblendfactor
+		}
+            		"TextureScroll"
+            		{
+                		"textureScrollVar" "$detailtexturetransform"
+               		 	"textureScrollRate" -0.1
+                		"textureScrollAngle" 0
+           		 }
+		Sine
+		{
+			sineperiod	4
+			sinemin		0.85
+			sinemax		1
+			timeoffset		0
+			resultvar		$color2
+		}
+		Sine
+		{
+			sineperiod	4
+			sinemin		0.45
+			sinemax		1
+			timeoffset		0
+			resultvar		$emissiveBlendStrength
+		}
+
+	}
+
+
+}
+	

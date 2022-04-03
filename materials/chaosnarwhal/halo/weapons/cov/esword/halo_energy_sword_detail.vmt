@@ -1,0 +1,24 @@
+"UnlitGeneric"
+//"Modulate"
+{
+	"$baseTexture" "chaosnarwhal/halo/weapons/cov/esword/halo_energy_sword_detail"
+	"$nocull" "1"	
+	"$additive" "1"
+	"$translucent" "1"
+	"$model" "1"
+	
+	"Proxies"
+	{
+
+		"TextureScroll"
+		{
+			"texturescrollvar" "$basetexturetransform"
+			"texturescrollrate" -0.3
+			"texturescrollangle" 45
+		}
+
+
+	}
+
+}
+
