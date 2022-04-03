@@ -3,6 +3,7 @@ AddCSLuaFile()
 function SWEP:PreDrawViewModel(vm)
 
     --Weapon SWAY code does not work, needs re-write.
+    --Delta is unpassed for now. Was needing to do a SysTime check. But forgoing it with current Predicted Clientside values with approaches.
     self:CalculateViewModelOffset(delta)
     self:CalculateViewModelFlip()
 

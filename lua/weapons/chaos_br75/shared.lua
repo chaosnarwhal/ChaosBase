@@ -35,7 +35,7 @@ SWEP.OnlyBurstFire                = false -- No auto, only burst/single?
 SWEP.ViewModelPosition  = Vector(0, -4, 0)
 SWEP.ViewModelAngle     = Vector(0, 0, 0)
 
-SWEP.IronSightsPos      = Vector(-3.8,0,-2)
+SWEP.IronSightsPos      = Vector(-3.8,-20,-3)
 SWEP.IronSightsAng      = Vector(0,0,0)
 
 SWEP.SafetyPos          = Vector(0,0,-2)
@@ -72,21 +72,26 @@ SWEP.Cone = {
 
 SWEP.IronSightTime = 0.05
 --Scopes
-SWEP.Scoped                = false  --Draw a scope overlay?
-SWEP.ScopeOverlayThreshold = 0.875 --Percentage you have to be sighted in to see the scope.
+SWEP.Scoped = true  --Draw a scope overlay?
+SWEP.ScopeOverlayThreshold = 0.875
 
-SWEP.IronSightStruct = {
-    Pos = Vector(0, 0, 0),
-    Ang = Angle(0, 0, 0),
-    Magnification = 1,
-    BlackBox = true,
-    ScopeTexture = nil,
+SWEP.Scope = {
+    Magnification = 0,
+    ScopeTexture = "chaosnarwhal/halo/HUD/scope_rifle.png",
+    Q2Mat = nil,
+    Q3Mat = nil,
+    Q4Mat = nil,
+    ScopeColor = Color(0,0,0,255),
+    ScopeBGColor = Color(0,0,0,200),
+    ScopeYOffset = -1,
+    ScopeScale = 1,
+    ScopeWidth = 1,
+    ScopeHeight = 1,
     SwitchToSound = "", -- sound that plays when switching to this sight
     SwitchFromSound = "",
     ScrollFunc = ChaosBase.SCROLL_NONE,
-    CrosshairInSights = true,
+    CrosshairInSights = false,
 }
-
 SWEP.Zoom = {
     FovMultiplier = 0.85,
     ViewModelFovMultiplier = 0.9,

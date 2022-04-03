@@ -59,8 +59,26 @@ SWEP.FovMultiplier = 0
 
 
 --Scopes
-SWEP.Scoped                = false  --Draw a scope overlay?
-SWEP.ScopeOverlayThreshold = 0.875 --Percentage you have to be sighted in to see the scope.
+SWEP.Scoped = false  --Draw a scope overlay?
+SWEP.ScopeOverlayThreshold = 0.875
+
+SWEP.Scope = {
+    Magnification = 0,
+    ScopeTexture = nil,
+    Q2Mat = nil,
+    Q3Mat = nil,
+    Q4Mat = nil,
+    ScopeColor = Color(0,0,0,255),
+    ScopeBGColor = Color(0,0,0,200),
+    ScopeYOffset = -1,
+    ScopeScale = 1,
+    ScopeWidth = 0,
+    ScopeHeight = 0,
+    SwitchToSound = "", -- sound that plays when switching to this sight
+    SwitchFromSound = "",
+    ScrollFunc = ChaosBase.SCROLL_NONE,
+    CrosshairInSights = false,
+}
 
 --Custom Muzzle Flashes to Code in.
 SWEP.ParticleEffects = {
@@ -220,18 +238,6 @@ SWEP.Secondary.ViewModelFOV = 65 -- Defaults to 65. Target viewmodel FOV when ai
 SWEP.IronSightTime = 0.1
 SWEP.KeepBaseIrons = false -- do not override iron sights when scope installed
 SWEP.BaseIronsFirst = false -- If a sight keeps base irons, irons comes first
-
-SWEP.IronSightStruct = {
-    Pos = Vector(0, 0, 0),
-    Ang = Vector(0, 0, 0),
-    Magnification = 0,
-    BlackBox = false,
-    ScopeTexture = nil,
-    SwitchToSound = "", -- sound that plays when switching to this sight
-    SwitchFromSound = "",
-    ScrollFunc = ChaosBase.SCROLL_NONE,
-    CrosshairInSights = false,
-}
 
 -- If Jamming is enabled, a heat meter will gradually build up until it reaches HeatCapacity.
 -- Once that happens, the gun will overheat, playing an animation. If HeatLockout is true, it cannot be fired until heat is 0 again.

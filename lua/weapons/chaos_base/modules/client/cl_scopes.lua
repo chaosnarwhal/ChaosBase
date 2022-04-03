@@ -1,31 +1,108 @@
-function SWEP:DrawHUDBackground()
-	--Scope Overlay Handle
-	if self.IronSightsProgressUnpredicted > self.ScopeOverlayThreshold and self.Scoped then
-		self:DrawScopeOverlay()
-	end
+function SWEP:chaos_scope()
+    if GetConVar("cl_drawhud"):GetFloat() == 0 then return end
+    if not self.ChaosBase then return end
+
+    local scopetable = self.Scope
+    
+    local w, h = ScrW(), ScrH()
+    local ss = 4 * scopetable.ScopeScale
+    local sw = scopetable.ScopeWidth
+    local sh = scopetable.ScopeHeight
+    local wi = w / 10 * ss
+    local hi = h / 10 * ss
+    local Q1Mat = scopetable.ScopeTexture
+    local Q2Mat = scopetable.Q2Mat
+    local Q3Mat = scopetable.Q3Mat
+    local Q4Mat = scopetable.Q4Mat
+    local YOffset = -scopetable.ScopeYOffset
+
+
+        surface.SetDrawColor(scopetable.ScopeBGColor)
+        surface.DrawRect(0, (h / 2 - hi * sh) * YOffset, w / 2 - hi / 2 * sw * 2, hi * 2)
+        surface.DrawRect(w / 2 + hi * sw, (h / 2 - hi * sh) * YOffset, w / 2 + wi * sw, hi * 2)
+        surface.DrawRect(0, 0, w * ss, h / 2 - hi * sh)
+        surface.DrawRect(0, (h / 2 + hi * sh) * YOffset, w * ss, h / 1.99 - hi * sh)
+
+        if scopetable.ScopeColor ~= nil then
+            surface.SetDrawColor(scopetable.ScopeColor)
+        else
+            surface.SetDrawColor(Color(0, 0, 0, 255))
+        end
+
+        if Q1Mat == nil then
+            surface.SetMaterial(Material("sprites/scope_arc"))
+        else
+            surface.SetMaterial(Material(Q1Mat))
+        end
+
+        surface.DrawTexturedRectUV(w / 2 - hi / 2 * sw * 2, (h / 2 - hi) * YOffset, hi * sw, hi * sh, 1, 1, 0, 0)
+
+        if Q2Mat == nil then
+            if Q1Mat == nil then
+                surface.SetMaterial(Material("sprites/scope_arc"))
+            else
+                surface.SetMaterial(Material(Q1Mat))
+            end
+        else
+            surface.SetMaterial(Material(Q2Mat))
+        end
+
+        surface.DrawTexturedRectUV(w / 2, (h / 2 - hi) * YOffset, hi * sw, hi * sh, 0, 1, 1, 0)
+
+        if Q3Mat == nil then
+            if Q1Mat == nil then
+                surface.SetMaterial(Material("sprites/scope_arc"))
+            else
+                surface.SetMaterial(Material(Q1Mat))
+            end
+        else
+            surface.SetMaterial(Material(Q3Mat))
+        end
+
+        surface.DrawTexturedRectUV(w / 2 - hi / 2 * sw * 2, h / 2, hi * sw, hi * sh, 1, 0, 0, 1)
+
+        if Q4Mat == nil then
+            if Q1Mat == nil then
+                surface.SetMaterial(Material("sprites/scope_arc"))
+            else
+                surface.SetMaterial(Material(Q1Mat))
+            end
+        else
+            surface.SetMaterial(Material(Q4Mat))
+        end
+
+        surface.DrawTexturedRectUV(w / 2, h / 2, hi * sw, hi * sh, 0, 0, 1, 1)
 end
 
-local w,h = ScrW(), ScrH()
+function SWEP:DrawHUDBackground()
+	if not self.Scoped then return end
+    --Scope Overlay Handle
+    if self.IronSightsProgressUnpredicted > self.ScopeOverlayThreshold then
+        self:chaos_scope()
+    end
+end
+
+local w, h = ScrW(), ScrH()
 
 function SWEP:DrawScopeOverlay()
-	local ScopeTable = self.IronSightStruct
+    local ScopeTable = self.IronSightStruct
+    local ScopeTexture = ScopeTable.ScopeTexture
 
-	local ScopeTexture = ScopeTable.ScopeTexture
+    if ScopeTexture then
+        local dimension = h
 
-	if ScopeTexture then
-		local dimension = h
-		local quad = {
-			texture = ScopeTexture,
-			color = Color(255,255,255,255),
-			x = w/2-dimension/2,
-			y = (h-dimension)/2,
-			w = dimension,
-			h = dimension,
-		}
-		draw.TexturedQuad(quad)
-	end
+        local quad = {
+            texture = ScopeTexture,
+            color = Color(255, 255, 255, 255),
+            x = w / 2 - dimension / 2,
+            y = (h - dimension) / 2,
+            w = dimension,
+            h = dimension,
+        }
+
+        draw.TexturedQuad(quad)
+    end
 end
-
 --[[
 --RT SCOPE CODE TO FINISH. NEED TO FORMAT ATTACHMENTS FOR SCOPED WEAPONS TO DRAW RT/CHEAP SCOPE.
 function SWEP:ShouldFlatScope()
