@@ -1,30 +1,37 @@
-AddCSLuaFile()
-AddCSLuaFile("shared.lua")
-AddCSLuaFile("cl_init.lua")
---Modules
---Shared Functions
-AddCSLuaFile("modules/shared/sh_aim_behaviour.lua")
-AddCSLuaFile("modules/shared/sh_anims.lua")
-AddCSLuaFile("modules/shared/sh_bullet.lua")
-AddCSLuaFile("modules/shared/sh_common.lua")
-AddCSLuaFile("modules/shared/sh_deploy.lua")
-AddCSLuaFile("modules/shared/sh_effects.lua")
-AddCSLuaFile("modules/shared/sh_firemode_behaviour.lua")
-AddCSLuaFile("modules/shared/sh_primaryattack_behaviour.lua")
-AddCSLuaFile("modules/shared/sh_reload.lua")
-AddCSLuaFile("modules/shared/sh_sprint.lua")
-AddCSLuaFile("modules/shared/sh_think.lua")
---Clientside Functions.
-AddCSLuaFile("modules/client/cl_calcview.lua")
-AddCSLuaFile("modules/client/cl_calcviewmodelview.lua")
-AddCSLuaFile("modules/client/cl_effects.lua")
-AddCSLuaFile("modules/client/cl_hud.lua")
-AddCSLuaFile("modules/client/cl_sck.lua")
-AddCSLuaFile("modules/client/cl_scopes.lua")
-AddCSLuaFile("modules/client/cl_viewmodel_render.lua")
+--[[ AddCSLua our other essential functions. ]]--
+
+AddCSLuaFile( "cl_init.lua" )
+AddCSLuaFile( "shared.lua" )
+
+--[[ Load up our shared code. ]]--
+
+include('shared.lua')
+
+--[[ Include these modules]]--
+
+for k,v in pairs(SWEP.SV_MODULES) do
+    include(v)
+end
+
+--[[ Include these modules, and AddCSLua them, since they're shared.]]--
+
+for k,v in pairs(SWEP.SH_MODULES) do
+    AddCSLuaFile(v)
+    include(v)
+end
+
+--[[ Include these modules if singleplayer, and AddCSLua them, since they're clientside.]]--
+
+for k,v in pairs(SWEP.CLSIDE_MODULES) do
+    AddCSLuaFile(v)
+end
+if game.SinglePlayer() then
+    for k,v in pairs(SWEP.CLSIDE_MODULES) do
+        include(v)
+    end
+end
 
 
-include("shared.lua")
 util.AddNetworkString("chaosbase_clienthitreg")
 
 net.Receive("chaosbase_clienthitreg", function(len, ply)

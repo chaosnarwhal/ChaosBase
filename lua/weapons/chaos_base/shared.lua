@@ -1,24 +1,30 @@
-AddCSLuaFile()
---Modules
---Shared Functions
-include("modules/shared/sh_aim_behaviour.lua")
-include("modules/shared/sh_anims.lua")
-include("modules/shared/sh_bullet.lua")
-include("modules/shared/sh_common.lua")
-include("modules/shared/sh_deploy.lua")
-include("modules/shared/sh_effects.lua")
-include("modules/shared/sh_firemode_behaviour.lua")
-include("modules/shared/sh_primaryattack_behaviour.lua")
-include("modules/shared/sh_reload.lua")
-include("modules/shared/sh_sprint.lua")
-include("modules/shared/sh_think.lua")
---Clientside Functions.
-include("modules/client/cl_calcview.lua")
-include("modules/client/cl_calcviewmodelview.lua")
-include("modules/client/cl_effects.lua")
-include("modules/client/cl_hud.lua")
-include("modules/client/cl_sck.lua")
-include("modules/client/cl_viewmodel_render.lua")
+--[[Define Modules]]--
+SWEP.SV_MODULES = {
+    
+}
+SWEP.SH_MODULES = {
+    "modules/shared/sh_aim_behaviour.lua",
+    "modules/shared/sh_anims.lua",
+    "modules/shared/sh_bullet.lua",
+    "modules/shared/sh_common.lua",
+    "modules/shared/sh_deploy.lua",
+    "modules/shared/sh_effects.lua",
+    "modules/shared/sh_firemode_behaviour.lua",
+    "modules/shared/sh_primaryattack_behaviour.lua",
+    "modules/shared/sh_reload.lua",
+    "modules/shared/sh_sprint.lua",
+    "modules/shared/sh_think.lua"
+}
+SWEP.CLSIDE_MODULES = {
+    "modules/client/cl_calcview.lua",
+    "modules/client/cl_calcviewmodelview.lua",
+    "modules/client/cl_effects.lua",
+    "modules/client/cl_hud.lua",
+    "modules/client/cl_sck.lua",
+    "modules/client/cl_scopes.lua",
+    "modules/client/cl_viewmodel_render.lua"
+}
+
 
 
 --START GUN CODE.
@@ -50,14 +56,20 @@ SWEP.VMAng = Vector(0, 0, 0) -- The viewmodel angular offset, constantly.   Subt
 SWEP.VMPos_Additive = true -- Set to false for an easier time using VMPos. If true, VMPos will act as a constant delta ON TOP OF ironsights, run, whateverelse
 SWEP.AdditiveViewModelPosition = true
 SWEP.FovMultiplier = 0
-SWEP.DisableSway = false
 
+
+--Scopes
+SWEP.Scoped                = false  --Draw a scope overlay?
+SWEP.ScopeOverlayThreshold = 0.875 --Percentage you have to be sighted in to see the scope.
+
+--Custom Muzzle Flashes to Code in.
 SWEP.ParticleEffects = {
     ["MuzzleFlash"] = "",
     ["MuzzleFlash_Suppressed"] = "",
     ["Ejection"] = "",
 }
 
+--Passed to CalcView
 SWEP.Zoom = {
     FovMultiplier = 0.85,
     ViewModelFovMultiplier = 0.9,

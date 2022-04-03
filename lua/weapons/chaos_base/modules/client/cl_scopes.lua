@@ -1,3 +1,33 @@
+function SWEP:DrawHUDBackground()
+	--Scope Overlay Handle
+	if self.IronSightsProgressUnpredicted > self.ScopeOverlayThreshold and self.Scoped then
+		self:DrawScopeOverlay()
+	end
+end
+
+local w,h = ScrW(), ScrH()
+
+function SWEP:DrawScopeOverlay()
+	local ScopeTable = self.IronSightStruct
+
+	local ScopeTexture = ScopeTable.ScopeTexture
+
+	if ScopeTexture then
+		local dimension = h
+		local quad = {
+			texture = ScopeTexture,
+			color = Color(255,255,255,255),
+			x = w/2-dimension/2,
+			y = (h-dimension)/2,
+			w = dimension,
+			h = dimension,
+		}
+		draw.TexturedQuad(quad)
+	end
+end
+
+--[[
+--RT SCOPE CODE TO FINISH. NEED TO FORMAT ATTACHMENTS FOR SCOPED WEAPONS TO DRAW RT/CHEAP SCOPE.
 function SWEP:ShouldFlatScope()
     return false -- this system was removed, but we need to keep this function
 end
@@ -225,3 +255,4 @@ hook.Add("RenderScene", "ChaosBase", function()
 
 	wpn:FormRTScope()
 end)
+]]

@@ -3,8 +3,9 @@ AddCSLuaFile()
 local lst2 = SysTime()
 function SWEP:PreDrawViewModel(vm)
     if ChaosBase.VM_OverDraw then return end
-    if !vm then return end
+    if not vm then return end
 
+    --[[
     local asight = self:GetActiveSights()
 
     if asight then
@@ -16,4 +17,5 @@ function SWEP:PreDrawViewModel(vm)
             self:FormCheapScope()
         end
     end
+    ]]
 end

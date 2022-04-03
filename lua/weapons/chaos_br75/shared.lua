@@ -71,6 +71,9 @@ SWEP.Cone = {
 }
 
 SWEP.IronSightTime = 0.05
+--Scopes
+SWEP.Scoped                = false  --Draw a scope overlay?
+SWEP.ScopeOverlayThreshold = 0.875 --Percentage you have to be sighted in to see the scope.
 
 SWEP.IronSightStruct = {
     Pos = Vector(0, 0, 0),
