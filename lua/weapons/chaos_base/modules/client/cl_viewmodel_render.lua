@@ -1,9 +1,10 @@
 AddCSLuaFile()
 
-local lst2 = SysTime()
 function SWEP:PreDrawViewModel(vm)
-    if ChaosBase.VM_OverDraw then return end
-    if not vm then return end
+
+    --Weapon SWAY code does not work, needs re-write.
+    self:CalculateViewModelOffset(delta)
+    self:CalculateViewModelFlip()
 
     --[[
     local asight = self:GetActiveSights()

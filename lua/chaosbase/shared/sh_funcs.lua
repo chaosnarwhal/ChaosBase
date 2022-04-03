@@ -57,25 +57,6 @@ if CLIENT then
 
 	--PreDrawViewModel
 	
-	hook.Add("PreDrawViewModel", "RevCalculateViewmodel", function(vm, plyv, wepv)
-		if not wepv:IsValid() or not (wepv.Base == "chaos_base") then return end
-
-		local st = SysTime()
-		st_old = st_old or st
-
-		local delta = st - st_old
-		st_old = st
-
-		if game.SinglePlayer() and IsGameUIVisible and IsGameUIVisible() then return end
-
-		delta = delta * game.GetTimeScale() * 1
-
-		--Weapon SWAY code does not work, needs re-write.
-		wepv:CalculateViewModelOffset(delta)
-		wepv:CalculateViewModelFlip()
-
-	end)
-	
 end
 
 net.Receive("chaosbase_firemode", function(len, ply)
