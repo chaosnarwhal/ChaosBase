@@ -1,9 +1,13 @@
+function SWEP:ChaosDrawCustom2DScopeElements()
+end
+
+
 function SWEP:chaos_scope()
     if GetConVar("cl_drawhud"):GetFloat() == 0 then return end
     if not self.ChaosBase then return end
 
     local scopetable = self.Scope
-    
+
     local w, h = ScrW(), ScrH()
     local ss = 4 * scopetable.ScopeScale
     local sw = scopetable.ScopeWidth
@@ -79,6 +83,7 @@ function SWEP:DrawHUDBackground()
     --Scope Overlay Handle
     if self.IronSightsProgressUnpredicted > self.ScopeOverlayThreshold then
         self:chaos_scope()
+        self:ChaosDrawCustom2DScopeElements()
     end
 end
 
