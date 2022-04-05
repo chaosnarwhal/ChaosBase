@@ -1,7 +1,6 @@
 function SWEP:ChaosDrawCustom2DScopeElements()
 end
 
-
 function SWEP:chaos_scope()
     if GetConVar("cl_drawhud"):GetFloat() == 0 then return end
     if not self.ChaosBase then return end

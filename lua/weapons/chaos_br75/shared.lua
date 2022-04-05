@@ -145,3 +145,29 @@ SWEP.Firemodes = {
         end
     },
 }
+
+function SWEP:DrawCustom2DScopeElements()
+    local w = ScrW()
+    local h = ScrH()
+    
+    local ratio = w/h
+    
+    local ss = 4 * self.Secondary.ScopeScale
+    local sw = self.Secondary.ScopeWidth
+    local sh = self.Secondary.ScopeHeight
+    
+    local wi = w / 10 * ss
+    local hi = h / 10 * ss
+    
+    surface.SetDrawColor(Color(0, 0, 0, 255))
+    surface.SetMaterial(Material("chaosnarwhal/halo/HUD/scope_elements/br_e1"))
+    surface.DrawTexturedRectUV( wi * 1.4, h/2 * 1.1, hi * sw, hi / 2, 0, 0, 1, 1 )
+    
+    surface.SetMaterial(Material("chaosnarwhal/halo/HUD/scope_elements/br_e2"))
+    surface.DrawTexturedRectUV( w/2 - hi / 2 * 1.65, h/2 - (hi / 2 * 0.2), hi * sw, hi / 2 * 0.4, 0, 0, 1, 1 )
+    surface.DrawTexturedRectUV( w/2 - hi / 6, h/2 - (hi / 2 * 0.2), hi * sw, hi / 2 * 0.4, 1, 0, 0, 1 )
+    
+    surface.SetMaterial(Material("chaosnarwhal/halo/HUD/scope_elements/br_e3"))
+    surface.DrawTexturedRectUV( w/2 - hi / 16, hi * 1.775, wi / 14, hi, 0, 1, 1, 0 )
+    surface.DrawTexturedRectUV( w/2 - hi / 17, hi * 1.1, wi / 14, hi, 1, 0, 0, 1 )
+end
