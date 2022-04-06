@@ -8,14 +8,13 @@ end
 
 function SWEP:EnterSprint()
     if self:GetState() == ChaosBase.STATE_SPRINT then return end
-    if self:GetSafety() then return end
     self:SetState(ChaosBase.STATE_SPRINT)
     self.Sighted = false
     self.Sprinted = true
     local ct = CurTime()
     self:HoldTypeHandler()
 
-    local s = self.ShootWhileSprint
+    local a,b,s = self:IsHighTier()
 
     if not s and self:GetNextPrimaryFire() <= ct then
         self:SetNextPrimaryFire(ct)
@@ -23,7 +22,7 @@ function SWEP:EnterSprint()
 
     local anim = self:SelectAnimation("idle")
 
-    if anim and not s and self:GetNextSecondaryFire() <= ct then
+    if anim and self:GetNextSecondaryFire() <= ct then
         self:PlayAnimation(anim, 1, true, nil, false, nil, false, true)
     end
 end
@@ -57,7 +56,7 @@ function SWEP:ExitSprint()
     self.Sighted = false
     self.Sprinted = false
     self:HoldTypeHandler()
-    local s = self.ShootWhileSprint
+    local a,b,s = self:IsHighTier()
 
     if not s and self:GetNextPrimaryFire() <= ct then
         self:SetNextPrimaryFire(ct)

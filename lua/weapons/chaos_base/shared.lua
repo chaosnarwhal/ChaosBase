@@ -119,6 +119,16 @@ SWEP.HoldtypeCustomize = "slam"
 SWEP.HoldtypeSprintShoot = nil
 SWEP.HoldtypeNPC = nil
 
+SWEP.AnimatedSprint = false
+
+SWEP.HighTierAllow = false
+
+SWEP.HighTier = {
+    --["Xerxes"] = "SPARTAN"
+    --["ODST"] = "ODST"
+    --["Freelancer"] = "ODST"
+}
+
 --Spread weapon defaults
 --SWEP.Primary.SpreadMultiplierMax = 2.5 --How far the spread can expand when you shoot.
 --SWEP.Primary.SpreadIncrement = 1/3.5 --What percentage of the modifier is added on, per shot.
@@ -284,6 +294,7 @@ SWEP.IronSightsProgressUnpredicted = 0
 SWEP.CLIronSightsProgress = 0
 SWEP.BurstCount = 0
 SWEP.SafetyProgressUnpredicted = 0
+SWEP.SprintProgressUnpredicted = 0
 
 function SWEP:SetupDataTables()
     self:NetworkVar("Int", 0, "NWState")

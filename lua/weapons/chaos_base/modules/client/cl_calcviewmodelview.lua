@@ -94,10 +94,16 @@ function SWEP:CalculateViewModelOffset(delta)
     --Safety Offset
     local SafetyPos = self.SafetyPos
     local SafetyAng = self.SafetyAng
-
+    
     if self.SafetyProgressUnpredicted > 0.005 then
         self:SafeLerpVector(self.SafetyProgressUnpredicted, target_pos, SafetyPos)
         self:SafeLerpVector(self.SafetyProgressUnpredicted, target_ang, SafetyAng)
+    end
+
+    if self.SprintProgressUnpredicted > 0.005 and self.SafetyProgressUnpredicted < 0.99 then
+        if self.AnimatedSprint then return end
+        self:SafeLerpVector(self.SprintProgressUnpredicted, target_pos, SafetyPos)
+        self:SafeLerpVector(self.SprintProgressUnpredicted, target_ang, SafetyAng)
     end
 
     target_pos.x = target_pos.x + chaosbase_vmoffset_x:GetFloat() * (1 - AimDelta)
@@ -153,13 +159,17 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
     vars.LerpAimDelta = self:SafeLerp(10 * FrameTime(), vars.LerpAimDelta, self:GetAimDelta())
     --jump
     self:CalcViewModelJump()
+
     --movement sway
     self:CalcMovementSway()
+
     --fake recoil
     self:CalcRecoil()
     local recoilPos, recoilAng = vars.Recoil.Translation, vars.Recoil.Rotation
     --sway
+
     self:CalcSway(EyeAng)
+
     --idle and aim offsets
     local aimPos, aimAng = self:GetAvailableAimOffsets()
     aimAng = aimAng * 1
@@ -169,53 +179,64 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
     EyeAng:Add(vars.LerpAimAngles)
     EyeAng:Add(idleAng)
     --end idle and aim offsets
+
     --viewpunch
     local vpAngles = self:GetOwner():GetViewPunchAngles()
     vpAngles:Mul(self:SafeLerp(self:GetAimDelta(), 0.2, 0.01))
     EyeAng:Add(vpAngles)
     --end viewpunch
+
     --jump
     local jumpAngles = Angle(vars.Jump.Lerp, 0, 0)
     jumpAngles:Mul(self:SafeLerp(vars.LerpAimDelta, 1, 0.1))
     EyeAng:Add(jumpAngles)
     --end jump
+
     --sway
     local swayAngles = Angle(vars.Sway.Y.Lerp, vars.Sway.X.Lerp, 0)
     swayAngles:Mul(self:SafeLerp(vars.LerpAimDelta, 1, 0.1))
     EyeAng:Add(swayAngles)
     --end sway
+
     --fake recoil
     EyeAng:Add(recoilAng)
     --end fake recoil
+
     local forward = EyeAng:Forward()
     local right = EyeAng:Right()
     local up = EyeAng:Up()
     --recoil
+
     local intensity = (math.Clamp(self:GetOwner():GetViewPunchAngles().p / 90, -1, 1) * 20) * self:SafeLerp(self:GetAimDelta(), 0.3 * self.ViewModelOffsets.RecoilMultiplier, 0.01 * self.ViewModelOffsets.RecoilMultiplier)
     self:VectorAddAndMul(EyePos, up, intensity * 0.3)
     self:VectorAddAndMul(EyePos, forward, intensity)
     self:VectorAddAndMul(EyePos, forward, -self.Camera.Shake * self:SafeLerp(self:GetAimDelta(), 0.7, 1.3) * self:SafeLerp(self:GetAimDelta(), self.ViewModelOffsets.KickMultiplier or 1, self.ViewModelOffsets.AimKickMultiplier or 1))
     --end recoil
+
     --movement
     self:VectorAddAndMul(EyePos, up, vars.Jump.LerpZ * -0.05 * self:SafeLerp(vars.LerpAimDelta, 1, 0.1))
     self:VectorAddAndMul(EyePos, forward, -vars.LerpForward * self:SafeLerp(vars.LerpAimDelta, 2, 0.3))
     self:VectorAddAndMul(EyePos, right, -vars.LerpRight * self:SafeLerp(vars.LerpAimDelta, 1, 0.05))
     --end movement
+
     --idle
     self:VectorAddAndMul(EyePos, up, math.cos(CurTime() * 2) * math.cos(CurTime()) * 0.1 * self:SafeLerp(vars.LerpAimDelta, 1, 0))
     self:VectorAddAndMul(EyePos, right, math.cos(CurTime() * 2) * math.sin(CurTime()) * 0.1 * self:SafeLerp(vars.LerpAimDelta, 1, 0))
     -- end of idle
+
     --sway
     self:VectorAddAndMul(EyePos, up, (vars.Sway.PosY.Lerp * 0.25) * self:SafeLerp(vars.LerpAimDelta, 1, 0.1))
     self:VectorAddAndMul(EyePos, forward, (vars.Sway.PosForward.Lerp * 0.1) * self:SafeLerp(vars.LerpAimDelta, 1, 0.1))
     self:VectorAddAndMul(EyePos, right, (vars.Sway.PosX.Lerp * 0.25) * self:SafeLerp(vars.LerpAimDelta, 1, 0.1))
     --end sway
+
     --offsets
     self:SafeLerpVector(50 * FrameTime(), vars.LerpAimPos, aimPos)
     local idleOffset = self:CalcOffset(self.ViewModelOffsets.Idle.Pos, EyeAng * 1)
     idleOffset:Mul(self:SafeLerp(self:GetAimDelta(), 1, 0))
     EyePos:Add(idleOffset)
     --end offsets
+
     --crouch
     self:SafeLerpVector(10 * FrameTime(), vars.LerpCrouch, self:CalcCrouchOffset())
     vars.LerpCrouch:Mul(1 - self:GetAimDelta())
@@ -223,11 +244,13 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
     self:VectorAddAndMul(EyePos, forward, vars.LerpCrouch.y)
     self:VectorAddAndMul(EyePos, right, vars.LerpCrouch.x)
     --end crouch
+
     --fake recoil
     self:VectorAddAndMul(EyePos, up, recoilPos.z)
     self:VectorAddAndMul(EyePos, forward, recoilPos.y)
     self:VectorAddAndMul(EyePos, right, recoilPos.x)
     --end fake recoil
+
     CalcVMViewHookBypass = true
     EyePos, EyeAng = hook.Run("CalcViewModelView", self, vm, vm:GetPos(), vm:GetAngles(), EyePos * 1, EyeAng * 1)
     CalcVMViewHookBypass = false

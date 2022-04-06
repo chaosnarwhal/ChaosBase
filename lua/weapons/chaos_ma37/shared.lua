@@ -40,12 +40,24 @@ SWEP.SafetyAng          = Vector(-10, -15, 25)
 
 --HoldType Handling.
 SWEP.HoldtypeHolstered = "passive"
-SWEP.HoldtypeActive = "shotgun"
-SWEP.HoldtypeSights = "smg"
+SWEP.HoldtypeActive = "ar2"
+SWEP.HoldtypeSights = "rpg"
 SWEP.HoldtypeSprintShoot = "shotgun"
 SWEP.HoldtypeNPC = nil
 
 SWEP.IronSightsEnable   = true
+
+SWEP.HighTierAllow = true
+
+SWEP.HighTier = {
+    ["Xerxes"] = {
+        Type = "SPARTAN",
+        RecoilReduce = 0.01,
+        SprintShoot = true
+    }
+    --["ODST"] = "ODST"
+    --["Freelancer"] = "ODST"
+}
 
 SWEP.Bullet = {
     Damage = 200, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range
@@ -102,13 +114,15 @@ SWEP.ViewModelOffsets = {
     AimKickMultiplier = 0.15
 }
 
-SWEP.AllowSprintShoot		= true
+SWEP.AllowSprintShoot		= false
 
 --Primary Fire
 SWEP.Primary.ClipSize		= 32			-- Size of a clip
 SWEP.Primary.DefaultClip	= 32		-- Default number of bullets in a clip
 SWEP.Primary.Automatic		= true		-- Automatic/Semi Auto
 SWEP.Primary.Ammo			= "Pistol"
+
+SWEP.AnimatedSprint = true
 
 SWEP.Animations = {
     ["idle"] = {

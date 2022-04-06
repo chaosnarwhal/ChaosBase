@@ -10,6 +10,8 @@ function SWEP:CanReload()
 
      if self:GetOwner():KeyDown(IN_USE) then return false end
 
+     if self:GetSafety() then return false end
+
      return true
 
 end

@@ -136,7 +136,11 @@ function SWEP:HoldTypeHandler()
     end
 
     if self:GetIsAiming() then
-        self:SetHoldType(self.HoldtypeSights)
+        if self.Augmented then
+            self:SetHoldType(self.HoldtypeActive)
+        else
+            self:SetHoldType(self.HoldtypeSights)
+        end
     elseif self:GetIsSprinting() then
         if self.AllowSprintShoot then
             self:SetHoldType(self.HoldtypeSprintShoot or self.HoldtypeActive)

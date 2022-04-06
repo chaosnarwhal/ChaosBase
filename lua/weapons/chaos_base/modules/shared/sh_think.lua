@@ -10,14 +10,21 @@ end
 function SWEP:ChaosPlayerThinkCL(plyv)
     --IronSight Pred Handling.
     local ft = FrameTime()
+
     local is = self:GetIsAiming()
     local ist = is and 1 or 0
-    local speed = 1 / self.IronSightTime
+    local speed = 5
     self.IronSightsProgressUnpredicted = math.Approach(self.IronSightsProgressUnpredicted or 0, ist, (ist - (self.IronSightsProgressUnpredicted or 0)) * ft * speed * 1.2)
+    
     --Safety Pred handling.
     local issafety = self:GetSafety()
     local issafetyt = issafety and 1 or 0
     self.SafetyProgressUnpredicted = math.Approach(self.SafetyProgressUnpredicted or 0, issafetyt, (issafetyt - (self.SafetyProgressUnpredicted or 0)) * ft * speed * 1.2)
+
+    --Sprint Anim Handling
+    local issprinting = self:InSprint()
+    local issprintingt = issprinting and 1 or 0
+    self.SprintProgressUnpredicted = math.Approach(self.SprintProgressUnpredicted or 0, issprintingt, (issprintingt - (self.SprintProgressUnpredicted or 0)) * ft * speed * 1)
 end
 
 function SWEP:ChaosThink2(is_working_out_prediction_errors)

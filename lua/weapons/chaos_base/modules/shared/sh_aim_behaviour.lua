@@ -35,12 +35,13 @@ end
 function SWEP:SafetyHandlerModule()
     if CLIENT and game.SinglePlayer() then return end
     if not IsFirstTimePredicted() then return end
+    if self:GetIsSprinting() then return end
     local owner = self:GetOwner()
 
     if owner:KeyDown(IN_USE) and owner:KeyDown(IN_SPEED) and owner:KeyPressed(IN_RELOAD) then
         self:SetSafety(not self:GetSafety())
         self:HoldTypeHandler()
     end
-    
+
     self:HoldTypeHandler()
 end

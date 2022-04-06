@@ -39,9 +39,10 @@ function SWEP:CanPrimaryAttack()
         return
     end
 
+    local a,b,SprintShoot = self:IsHighTier()
     --Sprinting ? (Check for Sprint Attack Value)
     if (self:GetIsSprinting() == true) then
-        if self.AllowSprintShoot then
+        if SprintShoot then
             return true
         else
             return false
@@ -209,6 +210,12 @@ function SWEP:CalculateRecoil()
     local verticalRecoil = math.min(self:GetSprayRounds(), math.min(self:GetMaxClip1() * 0.33, 20)) * 0.1 + math.Rand(self.Recoil.Vertical[1], self.Recoil.Vertical[2])
     local horizontalRecoil = math.Rand(self.Recoil.Horizontal[1], self.Recoil.Horizontal[2])
     local angles = Angle(-verticalRecoil, horizontalRecoil, horizontalRecoil * -0.3)
+
+    local Allowed,RecoilReduce,SprintShoot = self:IsHighTier()
+
+    if Allowed then
+        return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier) * RecoilReduce
+    end
 
     return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier)
 end

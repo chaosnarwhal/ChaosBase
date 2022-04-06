@@ -16,6 +16,8 @@ function SWEP:Deploy(fromFallback)
 
     self:HoldTypeHandler()
 
+    self:IsHighTier()
+
     --Reset NW Values when weapon is pulled out.
     self:SetReloading(false)
     self:SetState(0)
@@ -218,6 +220,26 @@ function SWEP:IsAuthorizedToUse()
         timer.Simple(0.1, function()
             ply:StripWeapon(self:GetClass())
         end)
+        return false
+    end
+
+end
+
+function SWEP:IsHighTier(Allowed, RecoilReduce, SprintShoot)
+    if not self.HighTierAllow then return end
+
+    HighTierTable = self.HighTier
+
+    local ply = self:GetOwner()
+
+    local index = ply:getJobTable().category or ply:getJobTable().name
+
+    if HighTierTable[index] then
+        Allowed = HighTierTable[index]
+        RecoilReduce = HighTierTable[index].RecoilReduce
+        SprintShoot = HighTierTable[index].SprintShoot
+        return Allowed,RecoilReduce,SprintShoot
+    else
         return false
     end
 
