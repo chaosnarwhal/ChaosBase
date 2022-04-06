@@ -54,6 +54,11 @@ SWEP.HighTier = {
         Type = "SPARTAN",
         RecoilReduce = 0.01,
         SprintShoot = true
+    },
+    ["Nexus"] = {
+        Type = "SPARTAN",
+        RecoilReduce = 0.01,
+        SprintShoot = true
     }
     --["ODST"] = "ODST"
     --["Freelancer"] = "ODST"

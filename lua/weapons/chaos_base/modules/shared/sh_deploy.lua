@@ -189,8 +189,7 @@ Syntax: self:Holster(wep).
 Returns: returns if allowed to swap weapons or not.
 Notes: Code when ran to allow swapping of weapon and to what weapon?.
 Purpose: SWEP Main function.
-]]
---
+]]--
 function SWEP:Holster(weapon, fromFallback)
     if not self:GetIsHolstering() and fromFallback then
         self:SetIsHolstering(true)
@@ -206,6 +205,12 @@ function SWEP:Holster(weapon, fromFallback)
     return CurTime() >= self:GetNextHolsterTime() or self:IsDrawing() or not IsValid(weapon)
 end
 
+--[[ 
+Function Name: IsAuthorizedToUse.
+Syntax: self:IsAuthorizedToUse().
+Returns: returns if allowed to Use a Protected Weapon.
+Purpose: SWEP Aux function.
+]]--
 function SWEP:IsAuthorizedToUse()
     if not self.AuthorizedUserEnable then return end
 
@@ -225,6 +230,12 @@ function SWEP:IsAuthorizedToUse()
 
 end
 
+--[[ 
+Function Name: IsHighTier.
+Syntax: self:IsHighTier(Allowed, RecoilReduce, SprintShoot).
+Returns: Returns Some Values from a HighTier Table. Only if the player is Allowed the HighTier Values.
+Purpose: SWEP Aux function.
+]]--
 function SWEP:IsHighTier(Allowed, RecoilReduce, SprintShoot)
     if not self.HighTierAllow then return end
 

@@ -15,8 +15,8 @@ SWEP.AdminOnly				= false
 SWEP.ViewModelFOV			= 65
 SWEP.ViewModelFlip			= false
 
-SWEP.ViewModel              = "models/chaosnarwhal/halo/weapons/unsc/chaos_trigun/chaos_trigun.mdl"
-SWEP.WorldModel				= "models/chaosnarwhal/halo/weapons/unsc/ma37/w_unsc_ma37.mdl"
+SWEP.ViewModel              = "models/chaosnarwhal/halo/weapons/unsc/chaos_trigun/v_chaos_trigun.mdl"
+SWEP.WorldModel				= "models/chaosnarwhal/halo/weapons/unsc/chaos_trigun/w_chaos_trigun.mdl"
 SWEP.RenderGroup            = RENDERGROUP_TRANSLUCENT
 SWEP.RenderMode             = RENDERMODE_ENVIROMENTAL
 SWEP.UseHands				= true
@@ -39,6 +39,18 @@ SWEP.SafetyPos          = Vector(0,0,-2)
 SWEP.SafetyAng          = Vector(-10, -15, 25)
 
 SWEP.IronSightsEnable   = true
+
+SWEP.HighTierAllow = true
+
+SWEP.HighTier = {
+    ["Xerxes"] = {
+        Type = "SPARTAN",
+        RecoilReduce = 1,
+        SprintShoot = true
+    },
+    --["ODST"] = "ODST"
+    --["Freelancer"] = "ODST"
+}
 
 SWEP.Bullet = {
     Damage = 750, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range
