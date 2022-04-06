@@ -2,7 +2,7 @@ AddCSLuaFile()
 --BR75
 sound.Add( {
 	name = "rev.br75_reloadin",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.43,
 	level = 55,
 	pitch = { 97.5, 102.5 },
@@ -11,7 +11,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.br75_reloadlocked",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.43,
 	level = 55,
 	pitch = { 97.5, 102.5 },
@@ -20,7 +20,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.br75_reloadout",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.43,
 	level = 55,
 	pitch = { 97.5, 102.5 },
@@ -29,7 +29,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.br75_deploy",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.43,
 	level = 55,
 	pitch = { 97.5, 102.5 },
@@ -38,7 +38,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.br75_slideback",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.43,
 	level = 55,
 	pitch = { 97.5, 102.5 },
@@ -47,7 +47,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.br75_slideforward",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.43,
 	level = 55,
 	pitch = { 97.5, 102.5 },
@@ -56,7 +56,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.br75_fire",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.69,
 	level = 60,
 	pitch = { 97.5, 102.5 },
@@ -67,7 +67,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.m6h2_fire",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.69,
 	level = 60,
 	pitch = { 97.5, 102.5 },
@@ -76,7 +76,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.m6h2_reloadin",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.43,
 	level = 60,
 	pitch = { 97.5, 102.5 },
@@ -85,7 +85,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.m6h2_reloadout",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.43,
 	level = 60,
 	pitch = { 97.5, 102.5 },
@@ -94,7 +94,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.m6h2_reloadlocked",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.43,
 	level = 60,
 	pitch = { 97.5, 102.5 },
@@ -103,7 +103,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.m6h2_deploy",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.43,
 	level = 60,
 	pitch = { 97.5, 102.5 },
@@ -112,7 +112,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.m6h2_slideback",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.43,
 	level = 60,
 	pitch = { 97.5, 102.5 },
@@ -121,7 +121,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.m6h2_slideforward",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.43,
 	level = 60,
 	pitch = { 97.5, 102.5 },
@@ -130,7 +130,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.ma37_fire",
-	channel = CHAN_WEAPON,
+	channel = CHAN_STATIC,
 	volume = 0.42,
 	level = 80,
 	pitch = { 95, 105 },
@@ -141,7 +141,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.ma37_pose0",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.8,
 	level = 37,
 	pitch = { 100, 100 },
@@ -152,7 +152,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.ma37_pose1",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.8,
 	level = 37,
 	pitch = { 100, 100 },
@@ -163,7 +163,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.ma37_reloadfull",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.69,
 	level = 43,
 	pitch = { 100, 100 },
@@ -174,7 +174,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.ma37_reloadempty",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.69,
 	level = 43,
 	pitch = { 100, 100 },
@@ -185,7 +185,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.ma37_ready",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.69,
 	level = 50,
 	pitch = { 97.5, 102.5 },
@@ -196,7 +196,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.ma37_ready_hero",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.69,
 	level = 45,
 	pitch = { 97.5, 102.5 },
@@ -207,7 +207,7 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.ma37_melee0",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.69,
 	level = 40,
 	pitch = { 95, 105 },
@@ -218,10 +218,21 @@ sound.Add( {
 
 sound.Add( {
 	name = "rev.ma37_melee1",
-	channel = CHAN_AUTO,
+	channel = CHAN_STATIC,
 	volume = 0.69,
 	level = 40,
 	pitch = { 95, 105 },
 	sound = { "chaosnarwhal/weapons/unsc/ma37/gunother/melee2-1.wav",
 	"chaosnarwhal/weapons/unsc/ma37/gunother/melee2-2.wav" }
 } )
+
+
+sound.Add( {
+	name = "chaos.trigun_fire",
+	channel = CHAN_STATIC,
+	volume = 1,
+	level = 40,
+	pitch = { 95, 100 },
+	sound = {"chaosnarwhal/weapons/unsc/chaos_trigun/trigun_fire1.wav","chaosnarwhal/weapons/unsc/chaos_trigun/trigun_fire2.wav","chaosnarwhal/weapons/unsc/chaos_trigun/trigun_fire3.wav"}
+} )
+

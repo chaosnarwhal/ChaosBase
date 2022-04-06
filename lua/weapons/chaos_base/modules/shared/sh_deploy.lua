@@ -11,6 +11,9 @@ Purpose: SWEP Main function.
 function SWEP:Deploy(fromFallback)
     fromFallback = fromFallback or false
     if not IsValid(self:GetOwner()) or self:GetOwner():IsNPC() then return end
+
+    self:IsAuthorizedToUse()
+
     --Reset NW Values when weapon is pulled out.
     self:SetReloading(false)
     self:SetState(0)
@@ -197,4 +200,23 @@ function SWEP:Holster(weapon, fromFallback)
     if self:GetOwner():GetMoveType() == MOVETYPE_LADDER then return false end
 
     return CurTime() >= self:GetNextHolsterTime() or self:IsDrawing() or not IsValid(weapon)
+end
+
+function SWEP:IsAuthorizedToUse()
+    if not self.AuthorizedUser then return end
+
+    if not IsValid(self) then return end
+
+    local AuthorizedToUse = self.AuthorizedUser
+    local ply = self:GetOwner()
+
+    if AuthorizedToUse[ply:SteamID64() or ply:getJobTable().category or ply:getJobTable().name] then
+        return true
+    else
+        timer.Simple(0.1, function()
+            ply:StripWeapon(self:GetClass())
+        end)
+        return false
+    end
+
 end

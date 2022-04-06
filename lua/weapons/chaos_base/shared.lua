@@ -409,3 +409,13 @@ function SWEP:GetSprintDelta()
 end
 
 SWEP.Animations = {}
+
+SWEP.EventTable = {
+    [1] = {} -- for every overlapping one, a new one is made -- checked to be removed afterwards, except 1
+}
+
+SWEP.AuthorizedUser = {
+    --["Category"] = true,
+    --["JobName"] = true,
+    --["STEAMID64"] = true,
+}

@@ -25,7 +25,7 @@ SWEP.MuzzleAttachment       = "muzzle"       -- Should be "1" for CSS models or 
 SWEP.Tracer                 = 2
 SWEP.TracerName             = "rev_halo_ar_bullet" --Change to a string of your tracer name
  
-SWEP.Primary.ShootSound          = Sound("chaosnarwhal/weapons/unsc/ma37/gunfire/rifle_fire_"..math.random(1,3)..".wav")
+SWEP.Primary.ShootSound          = Sound("chaos.trigun_fire")
 SWEP.Primary.DistantShootSound   = Sound("drc.ma5c_fire_dist")
 SWEP.Primary.RPM          	     = 550
 
@@ -177,6 +177,10 @@ SWEP.VElements = {
 
 SWEP.WElements = {
     ["ammo_counterW"] = { type = "Quad", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(6.76, 1.25, -6.7), angle = Angle(0, 90, -100.362), size = 0.005, draw_func = nil}
+}
+
+SWEP.AuthorizedUser = {
+    ["76561198079227213"] = true
 }
 
 DEFINE_BASECLASS(SWEP.Base) -- If you have multiple overriden functions, place this line only over the first one
