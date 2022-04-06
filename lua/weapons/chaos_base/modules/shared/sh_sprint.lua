@@ -13,7 +13,8 @@ function SWEP:EnterSprint()
     self.Sighted = false
     self.Sprinted = true
     local ct = CurTime()
-    self:SetShouldHoldType()
+    self:HoldTypeHandler()
+
     local s = self.ShootWhileSprint
 
     if not s and self:GetNextPrimaryFire() <= ct then
@@ -55,7 +56,7 @@ function SWEP:ExitSprint()
     self:SetState(ChaosBase.STATE_IDLE)
     self.Sighted = false
     self.Sprinted = false
-    self:SetShouldHoldType()
+    self:HoldTypeHandler()
     local s = self.ShootWhileSprint
 
     if not s and self:GetNextPrimaryFire() <= ct then
@@ -112,14 +113,4 @@ function SWEP:InSprint()
     if owner:Crouching() then return false end
 
     return true
-end
-
-function SWEP:SetShouldHoldType()
-    if self:GetState() == ChaosBase.STATE_SIGHTS then
-        self:SetHoldType(self.HoldtypeSights)
-    elseif self:GetState() == ChaosBase.STATE_SPRINT then
-        self:SetHoldType(self.HoldtypeHolstered)
-    else
-        self:SetHoldType(self.HoldtypeActive)
-    end
 end

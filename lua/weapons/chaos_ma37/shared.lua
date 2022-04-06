@@ -38,6 +38,13 @@ SWEP.IronSightsAng      = Vector(0,0,0)
 SWEP.SafetyPos          = Vector(0,0,-2)
 SWEP.SafetyAng          = Vector(-10, -15, 25)
 
+--HoldType Handling.
+SWEP.HoldtypeHolstered = "passive"
+SWEP.HoldtypeActive = "shotgun"
+SWEP.HoldtypeSights = "smg"
+SWEP.HoldtypeSprintShoot = "shotgun"
+SWEP.HoldtypeNPC = nil
+
 SWEP.IronSightsEnable   = true
 
 SWEP.Bullet = {
@@ -95,7 +102,7 @@ SWEP.ViewModelOffsets = {
     AimKickMultiplier = 0.15
 }
 
-SWEP.AllowSprintShoot		= false
+SWEP.AllowSprintShoot		= true
 
 --Primary Fire
 SWEP.Primary.ClipSize		= 32			-- Size of a clip
@@ -121,9 +128,11 @@ SWEP.Animations = {
     },
     ["reload"] = {
         Source = "reload",
+        TPAnim = ACT_HL2MP_GESTURE_RELOAD_SMG1
     },
     ["fire"] = {
         Source = {"fire_rand1","fire_rand2","fire_rand3"},
+        TPAnim = ACT_HL2MP_GESTURE_RANGE_ATTACK_AR2
     },
     ["idle_walk"] = {
         Source = "walk",

@@ -123,3 +123,28 @@ function SWEP:ChaosEmitSound(fsound, level, pitch, vol, chan, useWorld)
         end
     end
 end
+
+--[[
+Function Name:  HoldTypeHandling
+Purpose:  Utility
+]]--
+
+function SWEP:HoldTypeHandler()
+    if self:GetSafety() then
+        self:SetHoldType(self.HoldtypeHolstered)
+        return
+    end
+
+    if self:GetIsAiming() then
+        self:SetHoldType(self.HoldtypeSights)
+    elseif self:GetIsSprinting() then
+        if self.AllowSprintShoot then
+            self:SetHoldType(self.HoldtypeSprintShoot or self.HoldtypeActive)
+        else
+            self:SetHoldType(self.HoldtypeHolstered)
+        end
+    else
+        self:SetHoldType(self.HoldtypeActive)
+    end
+
+end

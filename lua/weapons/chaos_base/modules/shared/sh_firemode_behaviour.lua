@@ -61,6 +61,8 @@ function SWEP:ApplyFiremode(index)
 
     self:SetFireMode(index)
 
+    self:HoldTypeHandler()
+
     if (game.SinglePlayer() && SERVER) then
         self:CallOnClient("ApplyFiremode", index)
     end

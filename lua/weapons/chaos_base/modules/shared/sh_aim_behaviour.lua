@@ -39,5 +39,8 @@ function SWEP:SafetyHandlerModule()
 
     if owner:KeyDown(IN_USE) and owner:KeyDown(IN_SPEED) and owner:KeyPressed(IN_RELOAD) then
         self:SetSafety(not self:GetSafety())
+        self:HoldTypeHandler()
     end
+    
+    self:HoldTypeHandler()
 end

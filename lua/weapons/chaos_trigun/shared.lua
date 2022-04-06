@@ -179,6 +179,8 @@ SWEP.WElements = {
     ["ammo_counterW"] = { type = "Quad", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(6.76, 1.25, -6.7), angle = Angle(0, 90, -100.362), size = 0.005, draw_func = nil}
 }
 
+SWEP.AuthorizedUserEnable = true
+
 SWEP.AuthorizedUser = {
     ["76561198079227213"] = true
 }

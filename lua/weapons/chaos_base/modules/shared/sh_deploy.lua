@@ -14,6 +14,8 @@ function SWEP:Deploy(fromFallback)
 
     self:IsAuthorizedToUse()
 
+    self:HoldTypeHandler()
+
     --Reset NW Values when weapon is pulled out.
     self:SetReloading(false)
     self:SetState(0)
@@ -203,7 +205,7 @@ function SWEP:Holster(weapon, fromFallback)
 end
 
 function SWEP:IsAuthorizedToUse()
-    if not self.AuthorizedUser then return end
+    if not self.AuthorizedUserEnable then return end
 
     if not IsValid(self) then return end
 

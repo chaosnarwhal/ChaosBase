@@ -109,6 +109,8 @@ SWEP.IronSightsAng = Vector(0, 0, 0)
 SWEP.SafetyPos = Vector(0, 0, -2)
 SWEP.SafetyAng = Vector(-10, -15, 25)
 SWEP.IronSightsEnable = true
+
+
 --HoldType Handling.
 SWEP.HoldtypeHolstered = "passive"
 SWEP.HoldtypeActive = "shotgun"
@@ -413,6 +415,8 @@ SWEP.Animations = {}
 SWEP.EventTable = {
     [1] = {} -- for every overlapping one, a new one is made -- checked to be removed afterwards, except 1
 }
+
+SWEP.AuthorizedUserEnable = false
 
 SWEP.AuthorizedUser = {
     --["Category"] = true,
