@@ -48,6 +48,8 @@ function SWEP:ShootEffectsCustom(ifp)
 end
 ]]
 function SWEP:DoParticle(particleName, attName)
+    local vm = self:GetOwner():GetViewModel()
+    local wm = self:GetOwner():GetWeaponWorldModel()
     if self.ParticleEffects ~= nil and self.ParticleEffects[particleName] ~= nil then
         particleName = self.ParticleEffects[particleName]
     end
@@ -62,14 +64,14 @@ function SWEP:DoParticle(particleName, attName)
         self.TpParticles[particleName] = nil
     end]]
     if self:IsCarriedByLocalPlayer() then
-        if self.m_ViewModel:LookupAttachment(attName) <= 0 then return end
-        local ent, attid = self:FindAttachmentInChildren(self.m_ViewModel, attName)
+        if vm:LookupAttachment(attName) <= 0 then return end
+        local ent, attid = self:FindAttachmentInChildren(vm, attName)
         local effect = CreateParticleSystem(ent, particleName, PATTACH_POINT_FOLLOW, attid)
         effect:StartEmission()
         effect:SetIsViewModelEffect(true)
         effect:SetShouldDraw(false)
 
-        if self:GetOwner():GetInfoNum("mgbase_fx_cheap_particles", 0) > 0 then
+        if self:GetOwner():GetInfoNum("chaosbase_fx_cheap_particles", 0) > 0 then
             self.Particles[particleName] = effect
         else
             self.Particles[#self.Particles + 1] = effect
@@ -90,8 +92,8 @@ function SWEP:DoParticle(particleName, attName)
         effect:SetShouldDraw(false)
 
         self.TpParticles[particleName] = effect]]
-        if self.m_WorldModel:LookupAttachment(attName) <= 0 then return end
-        ParticleEffectAttach(particleName, PATTACH_POINT_FOLLOW, self.m_WorldModel, self.m_WorldModel:LookupAttachment(attName))
+        if wm:LookupAttachment(attName) <= 0 then return end
+        ParticleEffectAttach(particleName, PATTACH_POINT_FOLLOW, wm, wm:LookupAttachment(attName))
         --[[timer.Simple(3, function() --isfinished doesnt work lmao!
             if (IsValid(self) && self.TpParticles[particleName] != nil) then
                 self.TpParticles[particleName]:StopEmissionAndDestroyImmediately()
