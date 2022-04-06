@@ -117,6 +117,37 @@ SWEP.Animations = {
     },
     ["reload"] = {
         Source = "reload",
+        SoundTable = {
+            {
+                 s = "MW19_357.Reload_Start", -- sound; can be string or table
+                 t = 0.066, -- time at which to play relative to Animations.Time
+            },
+            {
+                 s = "MW19_357.Open", -- sound; can be string or table
+                 t = 0.36, -- time at which to play relative to Animations.Time
+            },
+            {
+                 s = "MW19_357.Ejectorrod", -- sound; can be string or table
+                 t = 0.63, -- time at which to play relative to Animations.Time
+            },
+            {
+                 s = "MW19_357.Shelleject", -- sound; can be string or table
+                 t = 0.73, -- time at which to play relative to Animations.Time
+            },
+            {
+                 s = "MW19_357.Speedloader", -- sound; can be string or table
+                 t = 1.96, -- time at which to play relative to Animations.Time
+            },
+            {
+                 s = "MW19_357.Close", -- sound; can be string or table
+                 t = 2.56, -- time at which to play relative to Animations.Time
+            },
+            {
+                 s = "MW19_357.Reload_End", -- sound; can be string or table
+                 t = 2.7, -- time at which to play relative to Animations.Time
+            },
+
+         },
     },
     ["fire"] = {
         Source = {"fire","fire2"},

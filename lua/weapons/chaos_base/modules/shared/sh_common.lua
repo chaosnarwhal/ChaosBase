@@ -1,10 +1,4 @@
 AddCSLuaFile()
-ChaosBase = ChaosBase or {}
-ChaosBase.STATE_IDLE = 0
-ChaosBase.STATE_SIGHTS = 1
-ChaosBase.STATE_SPRINT = 2
-ChaosBase.STATE_DISABLE = 3
-ChaosBase.STATE_WALK = 4
 
 function SWEP:TableRandom(table)
     return table[math.random(#table)]
@@ -92,8 +86,7 @@ Syntax: self:IsFirstPerson().
 Returns:   Is the owner in first person.
 Notes:  Broken in singplayer because gary.
 Purpose:  Utility
-]]
---
+]]--
 function SWEP:IsFirstPerson()
     if not IsValid(self) or not IsValid(self:GetOwner()) then return false end
     if self:GetOwner():IsNPC() then return false end
@@ -106,4 +99,27 @@ end
 
 function ChaosBase.Cubic(t)
     return -2 * t * t * t + 3 * t * t
+end
+
+
+--[[
+Function Name:  Sound Handling
+Purpose:  Utility
+]]--
+function SWEP:TableRandom(table)
+    return table[math.random(#table)]
+end
+
+function SWEP:ChaosEmitSound(fsound, level, pitch, vol, chan, useWorld)
+    fsound = fsound
+
+    if istable(fsound) then fsound = self:TableRandom(fsound) end
+
+    if fsound and fsound != "" then
+        if useWorld then
+            sound.Play(fsound, self:GetOwner():GetShootPos(), level, pitch, vol)
+        else
+            self:EmitSound(fsound, level, pitch, vol, chan or CHAN_AUTO)
+        end
+    end
 end

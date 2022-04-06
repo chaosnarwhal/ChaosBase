@@ -243,7 +243,7 @@ function SWEP:PlayEvent(v)
         if v.s_km then
             self:StopSound(v.s)
         end
-        self:MyEmitSound(v.s, v.l, v.p, v.v, v.c or CHAN_AUTO)
+        self:ChaosEmitSound(v.s, v.l, v.p, v.v, v.c or CHAN_AUTO)
     end
 
     if v.bg then
