@@ -1,25 +1,4 @@
 AddCSLuaFile()
-
-function SWEP:TableRandom(table)
-    return table[math.random(#table)]
-end
-
-function SWEP:ChaosEmitSound(fsound, level, pitch, vol, chan, useWorld)
-    fsound = fsound or ""
-
-    if istable(fsound) then
-        fsound = self:TableRandom(fsound)
-    end
-
-    if fsound and fsound ~= "" then
-        if useWorld then
-            sound.Play(fsound, self:GetOwner():GetShootPos(), level, pitch, vol)
-        else
-            self:EmitSound(fsound, level, pitch, vol, chan or CHAN_AUTO)
-        end
-    end
-end
-
 --[[
 Function Name:  GetMuzzlePos
 Syntax: self:GetMuzzlePos( hacky workaround that doesn't work anyways ).
