@@ -35,7 +35,7 @@ local ViewmodelPanel = {
 }
 
 local BindsPanel = {
-    { type = "h", text = "#arccw.bindhelp" },
+    { type = "h", text = "ChaosBase Binds" },
     { type = "b", text = "Safety", var = "chaosbase_altsafety" },
     { type = "b", text = "Alternate Binds", var = "chaosbase_altbindsonly" },
     { type = "c", text = "Only use alternate binds?" },

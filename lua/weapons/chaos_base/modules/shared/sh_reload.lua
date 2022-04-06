@@ -6,9 +6,24 @@ function SWEP:CanReload()
 
      if self:Ammo1() <= 0 then return false end
 
+     if self:Clip1() >= self.Primary.ClipSize then return false end
+
      if self:GetOwner():KeyDown(IN_USE) then return false end
 
      return true
+
+end
+
+function SWEP:CanInspect()
+    --if CurTime() < self:GetNextPrimaryFire() then return false end
+
+    --if self:GetIsReloading() then return false end
+
+    --if self:GetOwner():KeyDown(IN_USE) then return false end
+
+   -- if self.IronSightsProgressUnpredicted > 0 then return false end
+
+    return true
 
 end
 
@@ -26,6 +41,16 @@ function SWEP:GetReloadTime()
 end
 
 function SWEP:Reload()
+
+    if self:Ammo1() <= 0 || self:Clip1() >= self.Primary.ClipSize then
+        if (CurTime() > self:GetNextInspectTime()) && self:CanInspect() then
+            self:PlayAnimationEZ("inspect", 1, false)
+            self:SetNextInspectTime(CurTime() + self:GetAnimKeyTime("inspect"))
+        end
+
+        return
+    end
+
     if !self:CanReload() then return end
 
     self.LastClip1 = self:Clip1()
@@ -82,6 +107,7 @@ function SWEP:Reload()
 
         if not self.Animations[anim] then print("Invalid animation /"..anim.."/") return end
 
+        self:SetIsReloading(true)
         self:PlayAnimation(anim, mult, true, 0, false, nil, true)
 
         local reloadtime = self:GetAnimKeyTime(anim, true) * mult
@@ -95,7 +121,9 @@ function SWEP:Reload()
         self:SetMagUpIn(CurTime() + reloadtime)
 
     end
+
 end
+
 
 function SWEP:ReloadTimed()
     -- yeah my function names are COOL and QUIRKY and you can't say a DAMN thing about it.
@@ -103,6 +131,7 @@ function SWEP:ReloadTimed()
     self:SetMagUpCount(0)
     self:SetLastLoad(self:Clip1())
     self:SetNthReload(self:GetNthReload() + 1)
+    self:SetIsReloading(false)
 end
 
 function SWEP:RestoreAmmo(count)

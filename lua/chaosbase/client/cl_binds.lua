@@ -1,4 +1,3 @@
-
 ChaosBase.KEY_FIREMODE        = "+use"
 ChaosBase.KEY_FIREMODE_ALT    = "chaosbase_firemode"
 ChaosBase.KEY_ZOOMIN          = "invnext"
@@ -48,7 +47,6 @@ local function ChaosBase_TranslateBindToEffect(bind)
     end
 end
 
-
 local function ChaosBase_PlayerBindPress(ply, bind, pressed)
 	if not (ply:IsValid() and pressed) then return end
 
@@ -61,6 +59,18 @@ local function ChaosBase_PlayerBindPress(ply, bind, pressed)
 	local alt
 
     bind, alt = ChaosBase_TranslateBindToEffect(bind)
+
+    if wep:GetIsAiming() == true then
+        if bind == "zoomin" then
+            wep:Scroll(-1)
+            block = true
+        elseif bind == "zoomout" then
+            wep:Scroll(1)
+            block = true
+        end
+    end
+
+    if block then return true end
 
 end
 

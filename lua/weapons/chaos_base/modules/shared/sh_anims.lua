@@ -102,12 +102,11 @@ function SWEP:PlayAnimation(key, mult, pred, startfrom, tt, skipholster, ignorer
         end
     end
 
-    --[[
     if not (game.SinglePlayer() and CLIENT) then
     	self.EventTable = {}
     	self:PlaySoundTable(anim.SoundTable or {}, 1 / mult, startfrom)
     end
-    ]]
+
     if seq then
         vm:SendViewModelMatchingSequence(seq)
         local dur = vm:SequenceDuration()
@@ -183,6 +182,81 @@ function SWEP:GetAnimKeyTime(key, min)
 
     return t
 end
+
+function SWEP:PlaySoundTable(soundtable, mult, start)
+    --if CLIENT and game.SinglePlayer() then return end
+
+    local owner = self:GetOwner()
+
+    start = start or 0
+    mult  = 1 / (mult or 1)
+
+    for _, v in pairs(soundtable) do
+        if table.IsEmpty(v) then continue end
+
+        local ttime
+        if v.t then
+            ttime = (v.t * mult) - start
+        else
+            continue
+        end
+        if ttime < 0 then continue end
+        if !(IsValid(self) and IsValid(owner)) then continue end
+
+        local jhon = CurTime() + ttime
+
+        --[[if game.SinglePlayer() then
+            if SERVER then
+                net.Start("arccw_networksound")
+                v.ntttime = ttime
+                net.WriteTable(v)
+                net.WriteEntity(self)
+                net.Send(owner)
+            end
+        end]]
+
+        -- i may go fucking insane
+        if !self.EventTable[1] then self.EventTable[1] = {} end
+
+        for i, de in ipairs(self.EventTable) do
+            if de[jhon] then
+                if !self.EventTable[i + 1] then
+                    --[[print(CurTime(), "Occupier at " .. i .. ", creating " .. i+1)]]
+                    self.EventTable[i + 1] = {}
+                    continue
+                end
+            else
+                self.EventTable[i][jhon] = v
+                --print(CurTime(), "Clean at " .. i)
+            end
+        end
+    end
+end
+
+function SWEP:PlayEvent(v)
+    if !v or !istable(v) then error("no event to play") end
+    if v.e and IsFirstTimePredicted() then
+        DoShell(self, v)
+    end
+
+    if v.s then
+        if v.s_km then
+            self:StopSound(v.s)
+        end
+        self:MyEmitSound(v.s, v.l, v.p, v.v, v.c or CHAN_AUTO)
+    end
+
+    if v.bg then
+        self:SetBodygroupTr(v.ind or 0, v.bg)
+    end
+
+    if v.pp then
+        local vm = self:GetOwner():GetViewModel()
+
+        vm:SetPoseParameter(pp, ppv)
+    end
+end
+
 
 if CLIENT then
     net.Receive("chaosbase_networktpanim", function()

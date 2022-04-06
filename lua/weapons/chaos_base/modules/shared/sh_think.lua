@@ -28,6 +28,17 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
         self.CurTimePredictionAdvance = ct - UnPredictedCurTime()
     end
 
+    for i, v in ipairs(self.EventTable) do
+        for ed, bz in pairs(v) do
+            if ed <= CurTime() then
+                self:PlayEvent(bz)
+                self.EventTable[i][ed] = nil
+                --print(CurTime(), "Event completed at " .. i, ed)
+                if table.IsEmpty(v) and i != 1 then self.EventTable[i] = nil --[[print(CurTime(), "No more events at " .. i .. ", killing")]] end
+            end
+        end
+    end
+
     --SprintBehaviour
     self:SprintBehaviour()
 

@@ -76,7 +76,10 @@ SWEP.Scoped = true  --Draw a scope overlay?
 SWEP.ScopeOverlayThreshold = 0.875
 
 SWEP.Scope = {
-    Magnification = 0,
+    --Magnification = 0.75,
+    ScopeMagnification = 0.75,
+    ScopeMagnificationMax = 0.75,
+    ScopeMagnificationMin = 0.2,
     ScopeTexture = "chaosnarwhal/halo/HUD/scope_rifle.png",
     Q2Mat = nil,
     Q3Mat = nil,
@@ -84,16 +87,17 @@ SWEP.Scope = {
     ScopeColor = Color(0,0,0,255),
     ScopeBGColor = Color(0,0,0,200),
     ScopeYOffset = -1,
-    ScopeScale = 1,
+    ScopeScale = 0.65,
     ScopeWidth = 1,
     ScopeHeight = 1,
     SwitchToSound = "", -- sound that plays when switching to this sight
     SwitchFromSound = "",
-    ScrollFunc = ChaosBase.SCROLL_NONE,
+    ScrollFunc = ChaosBase.SCROLL_ZOOM,
     CrosshairInSights = false,
 }
+
 SWEP.Zoom = {
-    FovMultiplier = 0.85,
+    FovMultiplier = 1,
     ViewModelFovMultiplier = 0.9,
     Blur = {
         EyeFocusDistance = 7
@@ -146,15 +150,17 @@ SWEP.Firemodes = {
     },
 }
 
-function SWEP:DrawCustom2DScopeElements()
+function SWEP:ChaosDrawCustom2DScopeElements()
     local w = ScrW()
     local h = ScrH()
     
     local ratio = w/h
+
+    local scopetable = self.Scope
     
-    local ss = 4 * self.Secondary.ScopeScale
-    local sw = self.Secondary.ScopeWidth
-    local sh = self.Secondary.ScopeHeight
+    local ss = 4 * scopetable.ScopeScale
+    local sw = scopetable.ScopeWidth
+    local sh = scopetable.ScopeHeight
     
     local wi = w / 10 * ss
     local hi = h / 10 * ss

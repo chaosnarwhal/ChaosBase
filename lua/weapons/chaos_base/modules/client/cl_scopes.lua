@@ -86,25 +86,32 @@ function SWEP:DrawHUDBackground()
     end
 end
 
-local w, h = ScrW(), ScrH()
+function SWEP:Scroll(var)
+	local Scope = self.Scope
 
-function SWEP:DrawScopeOverlay()
-    local ScopeTable = self.IronSightStruct
-    local ScopeTexture = ScopeTable.ScopeTexture
+	if Scope.ScrollFunc == ChaosBase.SCROLL_ZOOM then
+		if !Scope.ScopeMagnificationMin then return end
+		if !Scope.ScopeMagnificationMax then return end
 
-    if ScopeTexture then
-        local dimension = h
+		local OriginalMagnification = Scope.ScopeMagnification
 
-        local quad = {
-            texture = ScopeTexture,
-            color = Color(255, 255, 255, 255),
-            x = w / 2 - dimension / 2,
-            y = (h - dimension) / 2,
-            w = dimension,
-            h = dimension,
-        }
+		local minus = var < 0
 
-        draw.TexturedQuad(quad)
+		var = math.abs(Scope.ScopeMagnificationMax - Scope.ScopeMagnificationMin)
+
+		var = var / (Scope.ZoomLevels or 5)
+
+		if minus then
+			var = var * -1
+		end
+
+		Scope.ScopeMagnification = Scope.ScopeMagnification - var
+
+		Scope.ScopeMagnification = math.Clamp(Scope.ScopeMagnification, Scope.ScopeMagnificationMin, Scope.ScopeMagnificationMax)
+
+		--if old != Scope.ScopeMagnification then
+            --self:MyEmitSound(Scope.ZoomSound or "", 75, math.Rand(95, 105), 1, CHAN_ITEM)
+       --end
     end
 end
 --[[

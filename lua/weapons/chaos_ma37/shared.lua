@@ -72,24 +72,21 @@ SWEP.Cone = {
 
 SWEP.IronSightTime = 0.1
 
-SWEP.IronSightStruct = {
-    Pos = Vector(0, 0, 0),
-    Ang = Angle(0, 0, 0),
-    Magnification = 1,
-    BlackBox = false,
-    ScopeTexture = nil,
+SWEP.Scope = {
+    --Magnification = 0.75,
+    ScopeMagnification = 0.75,
+    ScopeMagnificationMax = 0.75,
+    ScopeMagnificationMin = 0.55,
+    ScopeColor = Color(0,0,0,255),
+    ScopeBGColor = Color(0,0,0,200),
+    ScopeYOffset = -1,
+    ScopeScale = 0.65,
+    ScopeWidth = 1,
+    ScopeHeight = 1,
     SwitchToSound = "", -- sound that plays when switching to this sight
     SwitchFromSound = "",
-    ScrollFunc = ChaosBase.SCROLL_NONE,
+    ScrollFunc = ChaosBase.SCROLL_ZOOM,
     CrosshairInSights = false,
-}
-
-SWEP.Zoom = {
-    FovMultiplier = 0.85,
-    ViewModelFovMultiplier = 0.9,
-    Blur = {
-        EyeFocusDistance = 7
-    }
 }
 
 SWEP.ViewModelOffsets = {

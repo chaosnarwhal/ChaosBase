@@ -16,11 +16,7 @@ function SWEP:BulletCallback(attacker, tr, dmgInfo)
 end
 
 function SWEP:ShootBullets(hitpos)
-    Damage = Damage or 1
-    NumBullets = NumBullets or 1
-    TracerCount = TracerCount or 0
-    TracerName = TracerName or ""
-    HullSize = HullSize or 0
+    hitpos = hitpos or nil
     if (CLIENT and not game.SinglePlayer()) and not IsFirstTimePredicted() then return end
     self.lastHitEntity = NULL
     local spread = Vector(self:CalculateCone(), -self:CalculateCone()) * 0.1
@@ -43,6 +39,7 @@ function SWEP:ShootBullets(hitpos)
         Spread = spread,
         Num = SERVER and 1 or self.Bullet.NumBullets,
         Damage = self.Bullet.Damage,
+        HullSize = self.Bullet.HullSize,
         --Force = (self.Bullet.Damage[1] * self.Bullet.PhysicsMultiplier) * 0.01,
         Distance = self:MetersToHU(self.Bullet.Range),
         Tracer = self.Bullet.Tracer and 1 or 0,

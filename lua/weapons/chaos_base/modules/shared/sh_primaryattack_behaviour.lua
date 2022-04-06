@@ -40,7 +40,14 @@ function SWEP:CanPrimaryAttack()
     end
 
     --Sprinting ? (Check for Sprint Attack Value)
-    if self:GetNWState() == ChaosBase.STATE_SPRINT and not self.ShootWhileSprint then return end
+    if (self:GetIsSprinting() == true) then
+        if self.AllowSprintShoot then
+            return true
+        else
+            return false
+        end
+    end
+    
     --Passed all the checks! Shoot that thang.
 
     return true

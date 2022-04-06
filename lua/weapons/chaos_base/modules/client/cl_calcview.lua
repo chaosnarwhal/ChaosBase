@@ -89,7 +89,7 @@ function SWEP:CalcView(ply, pos, ang, fov)
 
     self.Camera.LerpReloadFov = self:SafeLerp(4 * FrameTime(), self.Camera.LerpReloadFov, diff)
 
-    local fovMultiplier = self:SafeLerp(self.Camera.Fov, 1, self.Zoom.FovMultiplier + self.Camera.LerpReloadFov)
+    local fovMultiplier = self:SafeLerp(self.Camera.Fov, 1, self.Scope.ScopeMagnification or self.Scope.Magnification)
 
     fov = (fov * fovMultiplier) + (self.Camera.Shake * 1.5)
 
