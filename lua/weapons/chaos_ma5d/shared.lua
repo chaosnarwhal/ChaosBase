@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 SWEP.Base 					= "chaos_base"
 
-SWEP.PrintName				= "MA37 TEST GUN." -- 'Nice' Weapon name (Shown on HUD)
+SWEP.PrintName				= "MA5D" -- 'Nice' Weapon name (Shown on HUD)
 SWEP.Author					= "ChaosNarwhal"
 SWEP.Contact				= ""
 SWEP.Purpose				= "Testing"
@@ -15,17 +15,15 @@ SWEP.AdminOnly				= false
 SWEP.ViewModelFOV			= 65
 SWEP.ViewModelFlip			= false
 
-SWEP.ViewModel              = "models/chaosnarwhal/halo/weapons/unsc/ma37/v_unsc_ma37_v2.mdl"
-SWEP.WorldModel				= "models/chaosnarwhal/halo/weapons/unsc/ma37/w_unsc_ma37.mdl"
-SWEP.RenderGroup            = RENDERGROUP_TRANSLUCENT
-SWEP.RenderMode             = RENDERMODE_ENVIROMENTAL
+SWEP.ViewModel              = "models/chaosnarwhal/halo/weapons/unsc/ma5d/v_unsc_ma5d.mdl"
+SWEP.WorldModel				= "models/chaosnarwhal/halo/weapons/unsc/ma5d/w_unsc_ma5d.mdl"
 SWEP.UseHands				= true
 SWEP.HoldType 				= "ar2"
 SWEP.MuzzleAttachment       = "muzzle"       -- Should be "1" for CSS models or "muzzle" for hl2 models
 SWEP.Tracer                 = 2
 SWEP.TracerName             = "rev_halo_ar_bullet" --Change to a string of your tracer name
  
-SWEP.Primary.ShootSound          = Sound("chaosnarwhal/weapons/unsc/ma37/gunfire/rifle_fire_"..math.random(1,3)..".wav")
+SWEP.Primary.ShootSound          = Sound("chaos.ma5d_fire")
 SWEP.Primary.DistantShootSound   = Sound("drc.ma5c_fire_dist")
 SWEP.Primary.RPM          	     = 550
 
@@ -94,10 +92,10 @@ SWEP.Bullet = {
 
 SWEP.Recoil = {
     Vertical = {0.5, 1}, --random value between the 2
-    Horizontal = {-0.3, 0.3}, --random value between the 2
+    Horizontal = {-0.5, 0.5}, --random value between the 2
     Shake = 1.1, --camera shake
-    AdsMultiplier = 0.2, --multiply the values by this amount while aiming
-    Seed = 10922 --give this a random number until you like the current recoil pattern
+    AdsMultiplier = 0.5, --multiply the values by this amount while aiming
+    Seed = 517822 --give this a random number until you like the current recoil pattern
 }
 
 SWEP.Cone = {
@@ -107,7 +105,7 @@ SWEP.Cone = {
     AdsMultiplier = 0.0001, --multiply the increase value by this amount while aiming
     Max = 1, --the cone size will not go beyond this size
     Decrease = 0.8, -- amount (in seconds) for the cone to completely reset (from max)
-    Seed = 9523 --just give this a random number
+    Seed = 2153 --just give this a random number
 }
 
 SWEP.IronSightTime = 0.1
@@ -164,12 +162,15 @@ SWEP.Animations = {
         TPAnim = ACT_HL2MP_GESTURE_RELOAD_SMG1
     },
     ["fire"] = {
-        Source = {"fire_rand1","fire_rand2","fire_rand3"},
+        Source = {"fire_rand1","fire_rand2"},
         TPAnim = ACT_HL2MP_GESTURE_RANGE_ATTACK_AR2
     },
     ["idle_walk"] = {
         Source = "walk",
     },
+    ["inspect"] = {
+        Source = {"pose1","pose2"}
+    }
 }
 
 SWEP.Firemodes = {
@@ -193,31 +194,36 @@ SWEP.Firemodes = {
 
 
 SWEP.VElements = {
-	["ammo_counterV"] = { type = "Quad", bone = "b_gun", rel = "", pos = Vector(5.393, 0, 7.596), angle = Angle(180, 90, -116), size = 0.005, draw_func = nil}
+    ["ammo_counterV"] = { type = "Quad", bone = "b_gun", rel = "", pos = Vector(4.693, 0, 6.383), angle = Angle(180, 90, -116.362), size = 0.012, draw_func = nil}
 }
 
 SWEP.WElements = {
-    ["ammo_counterW"] = { type = "Quad", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(6.76, 1.25, -6.7), angle = Angle(0, 90, -100.362), size = 0.005, draw_func = nil}
+    ["ammo_counterW"] = { type = "Quad", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(5.58, 0.64, -5.9), angle = Angle(0, 90, -105), size = 0.012, draw_func = nil}
 }
 
---Draw the ammo counter
+
 function SWEP:ChaosCustomInitialize()
+    local ply = self:GetOwner()
+    
     if CLIENT then
         self.VElements["ammo_counterV"].draw_func = function( weapon )
             if self:Clip1() < 10 then
-                draw.SimpleTextOutlined("0".. self:Clip1() .."", "reach_ammocounter", 0, 12.5, Color(37,141,170,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(16, 60, 80))
+                draw.SimpleTextOutlined("0".. self:Clip1() .."", "343_ammocounter", 0, 12.5, Color(37,141,170,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM, 1, Color(16, 60, 80))
             else
-                draw.SimpleTextOutlined(self:Clip1(), "reach_ammocounter", 0, 12.5, Color(37,141,170,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(16, 60, 80))
+                draw.SimpleTextOutlined(self:Clip1(), "343_ammocounter", 0, 12.5, Color(37,141,170,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM, 1, Color(16, 60, 80))
             end
         end
-    
+        
         self.WElements["ammo_counterW"].draw_func = function( weapon )
             if self:Clip1() < 10 then
-                draw.SimpleTextOutlined("0".. self:Clip1() .."", "reach_ammocounter", 0, 12.5, Color(37,141,170,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM, 1, Color(16, 60, 80))
+                draw.SimpleTextOutlined("0".. self:Clip1() .."", "343_ammocounter", 0, 12.5, Color(37,141,170,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM, 1, Color(16, 60, 80))
             else
-                draw.SimpleTextOutlined(self:Clip1(), "reach_ammocounter", 0, 12.5, Color(37,141,170,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM, 1, Color(16, 60, 80))
+                draw.SimpleTextOutlined(self:Clip1(), "343_ammocounter", 0, 12.5, Color(37,141,170,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM, 1, Color(16, 60, 80))
             end
         end
+    end
+    
+    if ply:EntIndex() == 0 then
     end
 end
 

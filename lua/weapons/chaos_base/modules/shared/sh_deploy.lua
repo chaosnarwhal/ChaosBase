@@ -30,6 +30,7 @@ function SWEP:Deploy(fromFallback)
     self:SetIsPumping(false)
     self.OwnerViewModel = nil
     self:SetBurstRounds(0)
+    self:SetSafety(false)
 
     if not self:GetOwner():InVehicle() then
         local prd = false
@@ -87,6 +88,8 @@ function SWEP:Initialize()
     if game.SinglePlayer() and self:GetOwner():IsValid() and SERVER then
         self:CallOnClient("Initialize")
     end
+
+    self:ChaosCustomInitialize()
 
     self:SetState(0)
     self:SetClip2(0)
@@ -178,6 +181,10 @@ function SWEP:Initialize()
             LerpCrouch = Vector(0, 0, 0)
         }
     end
+end
+
+function SWEP:ChaosCustomInitialize()
+
 end
 
 --[[ 

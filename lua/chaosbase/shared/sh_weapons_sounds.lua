@@ -236,3 +236,60 @@ sound.Add( {
 	sound = {"chaosnarwhal/weapons/unsc/chaos_trigun/trigun_fire1.wav","chaosnarwhal/weapons/unsc/chaos_trigun/trigun_fire2.wav","chaosnarwhal/weapons/unsc/chaos_trigun/trigun_fire3.wav"}
 } )
 
+--MA5D
+
+sound.Add( {
+	name = "chaos.ma5d_fire",
+	channel = CHAN_AUTO,
+	volume = 0.4,
+	level = 80,
+	pitch = { 99, 101 },
+	sound = { "chaosnarwhal/weapons/unsc/ma5d/fire0.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/fire1.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/fire2.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/fire3.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/fire4.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/fire5.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/fire6.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/fire7.wav" }
+} )
+
+sound.Add( {
+	name = "chaos.ma5d_melee0",
+	channel = CHAN_AUTO,
+	volume = 0.69,
+	level = 60,
+	pitch = { 95, 105 },
+	sound = { "chaosnarwhal/weapons/unsc/ma5d/melee0.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/melee1.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/melee2.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/melee3.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/melee4.wav" }
+} )
+
+sound.Add( {
+	name = "chaos.ma5d_reload",
+	channel = CHAN_AUTO,
+	volume = 0.89,
+	level = 58,
+	pitch = { 100, 100 },
+	sound = { "chaosnarwhal/weapons/unsc/ma5d/reload0.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/reload1.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/reload2.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/reload3.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/reload4.wav" }
+} )
+
+sound.Add( {
+	name = "chaos.ma5d_ready",
+	channel = CHAN_AUTO,
+	volume = 0.99,
+	level = 40,
+	pitch = { 97.5, 102.5 },
+	sound = { "chaosnarwhal/weapons/unsc/ma5d/ready0.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/ready1.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/ready2.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/ready4.wav",
+	"chaosnarwhal/weapons/unsc/ma5d/ready5.wav" }
+} )
+

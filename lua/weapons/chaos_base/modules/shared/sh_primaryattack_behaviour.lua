@@ -48,6 +48,8 @@ function SWEP:CanPrimaryAttack()
             return false
         end
     end
+
+    if self:GetSafety() then return false end
     
     --Passed all the checks! Shoot that thang.
 
@@ -85,7 +87,6 @@ Purpose: Main SWEP function.
 ]]
 --
 function SWEP:PrimaryAttack()
-    self:SetSafety(false)
     if not self:CanPrimaryAttack() then return end
 
     local delay = 60 / self.Primary.RPM
@@ -105,12 +106,13 @@ function SWEP:PrimaryAttack()
         end
     end
 
+    self:SetIsFiring(true)
+
     --AddingSpray
     self:SetClip1(self:Clip1() - 1)
     self:SetSprayRounds(self:GetSprayRounds() + 1)
 
     self:SetNextPrimaryFire(curatt + delay) 
-
 
     self:SetBurstRounds(self:GetBurstRounds() + 1)
     if self:GetBurstRounds() >= self.Primary.BurstRounds and self.Primary.BurstRounds > 1 then
@@ -138,6 +140,12 @@ function SWEP:PrimaryAttack()
     if CLIENT and IsFirstTimePredicted() then
         self.Camera.Shake = self.Recoil.Shake --* Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier)
     end
+
+    timer.Simple(1, function()
+        if not self:IsValid() then return end
+        self:SetIsFiring(false)
+    end)
+
 end
 
 --[[ 

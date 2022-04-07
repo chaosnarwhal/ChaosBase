@@ -1,6 +1,5 @@
 local sp = game.SinglePlayer()
 
-
 --[[
 Hook: PlayerPostThink
 Function: Weapon Logic

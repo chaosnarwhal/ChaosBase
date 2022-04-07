@@ -24,3 +24,25 @@ matproxy.Add({
         mat:SetTexture("$envmap", self.envMapCount <= 0 and "chaosnarwhal/halo/shared/envmap_fallback" or "env_cubemap")
     end
 })
+
+matproxy.Add( {
+    name = "chaos_Compass",
+    init = function( self, mat, values )
+        self.ResultTo = values.resultvar
+        self.SnapDegree = mat:GetFloat("$compassSnap")
+    end,
+
+    bind = function( self, mat, ent )
+        if ( !IsValid( ent )) then return end
+        local owner = ent:GetOwner()
+        if ( !IsValid( owner ) or !owner:IsPlayer() ) then return end
+        local ang = owner:EyeAngles()
+        
+        if self.SnapDegree == nil then self.SnapDegree = 0.01 end
+        local antistupidity = math.Clamp(self.SnapDegree, 0.01, 360)
+        
+        local angmath = ang:SnapTo("y", antistupidity)
+
+        mat:SetVector( self.ResultTo, Vector(-angmath.y, 0, 0) )
+    end
+} )

@@ -179,26 +179,6 @@ function SWEP:DrawWorldModel()
 
 		local ply = self:GetOwner()
 
-		if IsValid( ply ) and self.Offset and self.Offset.Pos and self.Offset.Ang then
-			local handBone = ply:LookupBone( "ValveBiped.Bip01_R_Hand" )
-			if handBone then
-				local pos, ang = ply:GetBonePosition( handBone )
-				pos = pos + ang:Forward() * self.Offset.Pos.Forward + ang:Right() * self.Offset.Pos.Right + ang:Up() * self.Offset.Pos.Up
-				ang:RotateAroundAxis( ang:Up(), self.Offset.Ang.Up)
-				ang:RotateAroundAxis( ang:Right(), self.Offset.Ang.Right )
-				ang:RotateAroundAxis( ang:Forward(),  self.Offset.Ang.Forward )
-				self:SetRenderOrigin( pos )
-				self:SetRenderAngles( ang )
-				self:SetModelScale( self.Offset.Scale or 0, 0 )
-				self:DrawModel()
-			end
-		else
-			self:SetRenderOrigin( nil )
-			self:SetRenderAngles( nil )
-				self:SetModelScale( 1, 0 )
-			self:DrawModel()
-		end
-	end
 	
 	if (!self.WElements) then return end
 	
@@ -268,6 +248,7 @@ function SWEP:DrawWorldModel()
 			
 			render.SetColorModulation(v.color.r/255, v.color.g/255, v.color.b/255)
 			render.SetBlend(v.color.a/255)
+			self:WorldModelOffsetUpdate(self)
 			model:DrawModel()
 			render.SetBlend(1)
 			render.SetColorModulation(1, 1, 1)
@@ -293,6 +274,7 @@ function SWEP:DrawWorldModel()
 				v.draw_func( self )
 			cam.End3D2D()
 		end
+	end
 	end
 end
 
@@ -475,5 +457,54 @@ function SWEP:ResetBonePositions(vm)
 		vm:ManipulateBoneScale( i, Vector(1, 1, 1) )
 		vm:ManipulateBoneAngles( i, Angle(0, 0, 0) )
 		vm:ManipulateBonePosition( i, vector_origin )
+	end
+end
+
+
+
+function SWEP:WorldModelOffsetUpdate(ply)
+	if not IsValid(ply) then
+		self:SetRenderOrigin(nil)
+		self:SetRenderAngles(nil)
+
+		local WorldModelOffset = self.WorldModelOffset
+
+		if WorldModelOffset and WorldModelOffset.Scale then
+			self:SetModelScale(WorldModelOffset.Scale, 0)
+		end
+
+		return
+	end
+
+	local WorldModelOffset = self.WorldModelOffset
+
+		-- THIS IS DANGEROUS
+	if WorldModelOffset and WorldModelOffset.Pos and WorldModelOffset.Ang then
+		-- TO DO ONLY CLIENTSIDE
+		-- since this will break hitboxes!
+		local handBone = ply:LookupBone("ValveBiped.Bip01_R_Hand")
+
+		if handBone then
+			--local pos, ang = ply:GetBonePosition(handBone)
+			local pos, ang
+			local mat = ply:GetBoneMatrix(handBone)
+
+			if mat then
+				pos, ang = mat:GetTranslation(), mat:GetAngles()
+			else
+				pos, ang = ply:GetBonePosition(handBone)
+			end
+
+			local opos, oang, oscale = WorldModelOffset.Pos, WorldModelOffset.Ang, WorldModelOffset.Scale
+
+			pos = pos + ang:Forward() * opos.Forward + ang:Right() * opos.Right + ang:Up() * opos.Up
+			ang:RotateAroundAxis(ang:Up(), oang.Up)
+			ang:RotateAroundAxis(ang:Right(), oang.Right)
+			ang:RotateAroundAxis(ang:Forward(), oang.Forward)
+			self:SetRenderOrigin(pos)
+			self:SetRenderAngles(ang)
+			self:SetModelScale(oscale or 1, 0)
+			--end
+		end
 	end
 end

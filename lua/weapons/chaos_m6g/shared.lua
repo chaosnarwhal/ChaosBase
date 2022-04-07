@@ -28,14 +28,14 @@ SWEP.Primary.DistantShootSound   = Sound("drc.ma5c_fire_dist")
 SWEP.Primary.RPM          	     = 550
 
 --HoldType Handling.
-SWEP.HoldtypeHolstered = "passive"
+SWEP.HoldtypeHolstered = "slam"
 SWEP.HoldtypeActive = "revolver"
 SWEP.HoldtypeSights = "revolver"
 SWEP.HoldtypeSprintShoot = "shotgun"
 SWEP.HoldtypeNPC = nil
 
 SWEP.Bullet = {
-    Damage = 250, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range
+    Damage = 125, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range
     HullSize = 2,
     DropOffStartRange = 60, --in meters, damage will start dropping off after this range
     EffectiveRange = 65, --in meters, damage scales within this distance

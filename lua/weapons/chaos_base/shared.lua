@@ -25,17 +25,17 @@ SWEP.CLSIDE_MODULES = {
     "modules/client/cl_viewmodel_render.lua"
 }
 
-
-
 --START GUN CODE.
 SWEP.Gun = "chaos_base"
 SWEP.Base = "weapon_base"
+
 --Some Defaults for later.
 SWEP.ChaosBase = true
 SWEP.BurstCount = 0
 SWEP.AnimQueue = {}
 SWEP.FiremodeIndex = 1
 SWEP.UnReady = true
+
 --Flavor Text and The name/category of the weapon.
 SWEP.PrintName = "Revival Weapons Base" -- 'Nice' Weapon name (Shown on HUD)
 SWEP.Author = ""
@@ -97,19 +97,16 @@ SWEP.Zoom = {
 }
 
 -- The viewmodel positional offset, constantly.
--- Subtract this from any other modifications to viewmodel position.
--- AKA VMPos (SWEP Construction Kit naming, VMPos is always checked for presence and it always override ViewModelPosition if present)
 SWEP.ViewModelPosition = Vector(0, 0, 0)
--- AKA VMAng (SWEP Construction Kit naming)
--- The viewmodel angular offset, constantly.
--- Subtract this from any other modifications to viewmodel angle.
 SWEP.ViewModelAngle = Vector(0, 0, 0)
+
 SWEP.IronSightsPos = Vector(0, 0, 0)
 SWEP.IronSightsAng = Vector(0, 0, 0)
+
 SWEP.SafetyPos = Vector(0, 0, -2)
 SWEP.SafetyAng = Vector(-10, -15, 25)
-SWEP.IronSightsEnable = true
 
+SWEP.IronSightsEnable = true
 
 --HoldType Handling.
 SWEP.HoldtypeHolstered = "passive"
@@ -156,32 +153,16 @@ SWEP.Primary.ClipSize = 0 -- This is the size of a clip
 SWEP.Primary.DefaultClip = 0 -- This is the number of bullets the gun gives you, counting a clip as defined directly above.
 SWEP.Primary.Automatic = true -- Automatic/Semi Auto
 SWEP.Primary.Ammo = "none" -- What kind of ammo
-SWEP.Primary.AmmoPerShot = 1
-SWEP.Primary.Range = -1 -- The distance the bullet can travel in source units.  Set to -1 to autodetect based on damage/rpm.
-SWEP.Primary.RangeFalloff = -1 -- The percentage of the range the bullet damage starts to fall off at.  Set to 0.8, for example, to start falling off after 80% of the range.
 SWEP.DrawTime = 1
 SWEP.Primary.BurstRounds = 1
 SWEP.Primary.BurstDelay = 1
 SWEP.Firemodes = {}
---Tracer Defaults
-SWEP.TracerNum = 1 -- tracer every X
-SWEP.TracerFinalMag = 0 -- the last X bullets in a magazine are all tracers
-SWEP.Tracer = "rev_halo_ar_bullet" -- override tracer (hitscan) effect
-SWEP.TracerCol = Color(255, 255, 255)
-SWEP.HullSize = 0 -- HullSize used by FireBullets
---Shooting Entites "aka Rockets"
-SWEP.ShootEntity = nil -- entity to fire, if any
-SWEP.MuzzleVelocity = 400 -- projectile muzzle velocity in m/s
 --Shotgun Defaults
 SWEP.IsShotgun = false -- weapon receives shotgun ammo types
 SWEP.ShotgunReload = false -- reloads like shotgun instead of magazines
 SWEP.ManualAction = false -- pump/bolt action
-SWEP.ShotgunSpreadPattern = nil
+
 SWEP.ReloadTime = 1
---Swep Damage Defaults
-SWEP.Damage = 26
-SWEP.DamageType = DMG_BULLET
-SWEP.DamageTypeHandled = false -- set to true to have the base not do anything with damage types
 
 -- this includes: igniting if type has DMG_BURN; adding DMG_AIRBOAT when hitting helicopter; adding DMG_BULLET to DMG_BUCKSHOT
 SWEP.Bullet = {
@@ -213,6 +194,7 @@ SWEP.BodyDamageMults = nil
 --SWEP.Primary.KickDown         = 0 -- This is the maximum downwards recoil (skeet)
 --SWEP.Primary.KickHorizontal       = 0 -- This is the maximum sideways recoil (no real term)
 --SWEP.Primary.StaticRecoilFactor = 0 --Amount of recoil to directly apply to EyeAngles.  Enter what fraction or percentage (in decimal form) you want.  This is also affected by a convar that defaults to 0.5.
+
 SWEP.Recoil = {
     Vertical = {1, 3.5}, --random value between the 2
     Horizontal = {-2, 2}, --random value between the 2
@@ -238,20 +220,12 @@ SWEP.Melee2Range = 16
 SWEP.Melee2Time = 0.5
 SWEP.Melee2Gesture = nil
 SWEP.Melee2AttackTime = 0.2
---Ironsight handling.
-SWEP.Secondary.IronSightsEnabled = true
--- Controls Field of View when scoping in.
--- Default FoV of Garry's Mod is 75, most of players prefer 90
--- Lesser FoV value means stronger "zoom"
--- Good value to begin experimenting with is 70
--- AKA Secondary.IronFOV
+
 SWEP.Secondary.OwnerFOV = 70
 -- AKA IronViewModelFOV
 SWEP.Secondary.ViewModelFOV = 65 -- Defaults to 65. Target viewmodel FOV when aiming down the sights.
 -- Time needed to enter / leave the ironsight in seconds
 SWEP.IronSightTime = 0.1
-SWEP.KeepBaseIrons = false -- do not override iron sights when scope installed
-SWEP.BaseIronsFirst = false -- If a sight keeps base irons, irons comes first
 
 -- If Jamming is enabled, a heat meter will gradually build up until it reaches HeatCapacity.
 -- Once that happens, the gun will overheat, playing an animation. If HeatLockout is true, it cannot be fired until heat is 0 again.
@@ -263,16 +237,7 @@ SWEP.HeatDelayTime = 0.5
 SWEP.HeatFix = false -- when the "fix" animation is played, all heat is restored.
 SWEP.HeatOverflow = nil -- if true, heat is allowed to exceed capacity (this only applies when the default overheat handling is overridden)
 -- When using custom sprint animations, set this to the same as ActivePos and ActiveAng
-SWEP.SprintPos = nil
-SWEP.SprintAng = nil
-SWEP.HoldtypeHolstered = "passive"
-SWEP.HoldtypeActive = "shotgun"
-SWEP.HoldtypeSights = "smg"
-SWEP.HoldtypeCustomize = "slam"
-SWEP.HoldtypeSprintShoot = nil
-SWEP.HoldtypeNPC = nil
---Sprint Attack?
-SWEP.ShootWhileSprint = false
+
 --SCK KIT integration.
 SWEP.VElements = {}
 SWEP.WElements = {}
@@ -325,6 +290,7 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Bool", 9, "IsPumping")
     self:NetworkVar("Bool", 11, "Safety")
     self:NetworkVar("Bool", 12, "ToggleSafety")
+    self:NetworkVar("Bool", 13, "IsFiring")
 
     self:NetworkVar("Float", 0, "Heat")
     self:NetworkVar("Float", 1, "ReloadingREAL")

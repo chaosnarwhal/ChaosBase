@@ -15,22 +15,22 @@ SWEP.AdminOnly				= false
 SWEP.ViewModelFOV			= 65
 SWEP.ViewModelFlip			= false
 
-SWEP.ViewModel          = "models/chaosnarwhal/halo/weapons/unsc/m45/v_unsc_m45.mdl"
-SWEP.WorldModel         = "models/vuthakral/halo/weapons/w_m45.mdl"
+SWEP.ViewModel              = "models/vuthakral/halo/weapons/c_hum_m45.mdl"
+SWEP.WorldModel             = "models/vuthakral/halo/weapons/w_m45.mdl"
 SWEP.UseHands				= true
 SWEP.HoldType 				= "ar2"
 SWEP.MuzzleAttachment       = "muzzle"       -- Should be "1" for CSS models or "muzzle" for hl2 models
 SWEP.Tracer                 = 2
 SWEP.TracerName             = "rev_halo_ar_bullet" --Change to a string of your tracer name
 
-SWEP.Primary.ShootSound          = Sound("chaosnarwhal/weapons/unsc/m45/gunfire/fire"..math.random(0,2)..".wav")
+SWEP.Primary.ShootSound          = Sound("drc.m90_fire")
 SWEP.Primary.DistantShootSound   = Sound("drc.ma5c_fire_dist")
 SWEP.Primary.RPM                 = 60
 
 SWEP.ShotgunReload = true 
 
 SWEP.Bullet = { 
-    Damage = 300, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range
+    Damage = 75, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range
     DropOffStartRange = 20, --in meters, damage will start dropping off after this range
     EffectiveRange = 65, --in meters, damage scales within this distance
     Range = 180, --in meters, after this distance the bullet stops existing
@@ -99,7 +99,7 @@ SWEP.Primary.DefaultClip    = 6        -- Default number of bullets in a clip
 SWEP.Primary.Automatic		= false		-- Automatic/Semi Auto
 SWEP.Primary.Ammo			= "Pistol"
 
-SWEP.AnimatedSprint = true
+SWEP.AnimatedSprint = false
 
 SWEP.Animations = {
     ["idle"] = {

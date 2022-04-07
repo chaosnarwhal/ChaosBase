@@ -49,7 +49,7 @@ SWEP.HoldtypeSprintShoot = "shotgun"
 SWEP.HoldtypeNPC = nil
 
 SWEP.Bullet = {
-    Damage = 150, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range
+    Damage = 175, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range
     DropOffStartRange = 20, --in meters, damage will start dropping off after this range
     EffectiveRange = 65, --in meters, damage scales within this distance
     Range = 180, --in meters, after this distance the bullet stops existing
@@ -80,7 +80,7 @@ SWEP.Cone = {
 SWEP.IronSightTime = 0.05
 --Scopes
 SWEP.Scoped = true  --Draw a scope overlay?
-SWEP.ScopeOverlayThreshold = 0.875
+SWEP.ScopeOverlayThreshold = 0.6
 
 SWEP.Scope = {
     --Magnification = 0.75,
@@ -175,14 +175,14 @@ function SWEP:ChaosDrawCustom2DScopeElements()
     local hi = h / 10 * ss
     
     surface.SetDrawColor(Color(0, 0, 0, 255))
-    surface.SetMaterial(Material("chaosnarwhal/halo/HUD/scope_elements/br_e1"))
+    surface.SetMaterial(Material("models/vuthakral/halo/HUD/scope_elements/br_e1"))
     surface.DrawTexturedRectUV( wi * 1.4, h/2 * 1.1, hi * sw, hi / 2, 0, 0, 1, 1 )
     
-    surface.SetMaterial(Material("chaosnarwhal/halo/HUD/scope_elements/br_e2"))
+    surface.SetMaterial(Material("models/vuthakral/halo/HUD/scope_elements/br_e2"))
     surface.DrawTexturedRectUV( w/2 - hi / 2 * 1.65, h/2 - (hi / 2 * 0.2), hi * sw, hi / 2 * 0.4, 0, 0, 1, 1 )
     surface.DrawTexturedRectUV( w/2 - hi / 6, h/2 - (hi / 2 * 0.2), hi * sw, hi / 2 * 0.4, 1, 0, 0, 1 )
     
-    surface.SetMaterial(Material("chaosnarwhal/halo/HUD/scope_elements/br_e3"))
+    surface.SetMaterial(Material("models/vuthakral/halo/HUD/scope_elements/br_e3"))
     surface.DrawTexturedRectUV( w/2 - hi / 16, hi * 1.775, wi / 14, hi, 0, 1, 1, 0 )
     surface.DrawTexturedRectUV( w/2 - hi / 17, hi * 1.1, wi / 14, hi, 1, 0, 0, 1 )
 end

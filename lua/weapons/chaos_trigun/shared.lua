@@ -17,8 +17,6 @@ SWEP.ViewModelFlip			= false
 
 SWEP.ViewModel              = "models/chaosnarwhal/halo/weapons/unsc/chaos_trigun/v_chaos_trigun.mdl"
 SWEP.WorldModel				= "models/chaosnarwhal/halo/weapons/unsc/chaos_trigun/w_chaos_trigun.mdl"
-SWEP.RenderGroup            = RENDERGROUP_TRANSLUCENT
-SWEP.RenderMode             = RENDERMODE_ENVIROMENTAL
 SWEP.UseHands				= true
 SWEP.HoldType 				= "ar2"
 SWEP.MuzzleAttachment       = "muzzle"       -- Should be "1" for CSS models or "muzzle" for hl2 models
@@ -28,6 +26,17 @@ SWEP.TracerName             = "rev_halo_ar_bullet" --Change to a string of your 
 SWEP.Primary.ShootSound          = Sound("chaos.trigun_fire")
 SWEP.Primary.DistantShootSound   = Sound("drc.ma5c_fire_dist")
 SWEP.Primary.RPM          	     = 550
+
+--SWEP.Offset = {
+    --Pos = Vector(1,1,1),
+    --Ang = Vector(1,1,1)
+--}
+
+SWEP.WorldModelOffset = {
+    Pos = Vector(0,0,0),
+    Ang = Vector(0,0,0),
+    Scale = 1,
+}
 
 SWEP.ViewModelPosition  = Vector(0, 0, 0)
 SWEP.ViewModelAngle     = Vector(0, 0, 0)
@@ -41,10 +50,10 @@ SWEP.SafetyAng          = Vector(-10, -15, 25)
 SWEP.IronSightsEnable   = true
 
 --HoldType Handling.
-SWEP.HoldtypeHolstered = "passive"
+SWEP.HoldtypeHolstered = "slam"
 SWEP.HoldtypeActive = "revolver"
 SWEP.HoldtypeSights = "revolver"
-SWEP.HoldtypeSprintShoot = "shotgun"
+SWEP.HoldtypeSprintShoot = "revolver"
 SWEP.HoldtypeNPC = nil
 
 SWEP.HighTierAllow = true
@@ -122,7 +131,7 @@ SWEP.Primary.DefaultClip	= 8		-- Default number of bullets in a clip
 SWEP.Primary.Automatic		= false		-- Automatic/Semi Auto
 SWEP.Primary.Ammo			= "Pistol"
 
-SWEP.ReloadTime = 1
+SWEP.ReloadTime = 0.75
 
 SWEP.Animations = {
     ["idle"] = {
@@ -174,11 +183,11 @@ SWEP.Animations = {
         TPAnim = ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL
     },
     ["holster"] = {
-        Source = "holster"
+        Source = "holster",
     },
     ["inspect"] = {
-        Source = "inspect"
-    }
+        Source = "inspect",
+    },
 }
 
 SWEP.Firemodes = {
@@ -203,7 +212,8 @@ SWEP.WElements = {
 SWEP.AuthorizedUserEnable = true
 
 SWEP.AuthorizedUser = {
-    ["76561198079227213"] = true
+    ["76561198079227213"] = true,
+    ["76561198078899231"] = true
 }
 
 DEFINE_BASECLASS(SWEP.Base) -- If you have multiple overriden functions, place this line only over the first one

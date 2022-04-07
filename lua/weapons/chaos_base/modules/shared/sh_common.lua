@@ -109,6 +109,7 @@ Purpose:  Utility
 ]]--
 
 function SWEP:HoldTypeHandler()
+    local a,b,SprintShoot = self:IsHighTier()
     if self:GetSafety() then
         self:SetHoldType(self.HoldtypeHolstered)
         return
@@ -117,12 +118,14 @@ function SWEP:HoldTypeHandler()
     if self:GetIsAiming() then
         if self.Augmented then
             self:SetHoldType(self.HoldtypeActive)
-        else
+        elseif not a then
             self:SetHoldType(self.HoldtypeSights)
         end
     elseif self:GetIsSprinting() then
-        if self.AllowSprintShoot then
-            self:SetHoldType(self.HoldtypeSprintShoot or self.HoldtypeActive)
+        if SprintShoot and not self:GetIsFiring() then
+            self:SetHoldType(self.HoldtypeHolstered)
+        elseif self:GetIsFiring() then
+            self:SetHoldType(self.HoldtypeActive)
         else
             self:SetHoldType(self.HoldtypeHolstered)
         end
