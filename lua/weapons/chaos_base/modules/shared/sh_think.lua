@@ -32,7 +32,7 @@ end
 function SWEP:ChaosThink2(is_working_out_prediction_errors)
     local ct = CurTime()
     local owner = self:GetOwner()
-
+    --Hi Tasteful
     if not is_working_out_prediction_errors and CLIENT then
         self.CurTimePredictionAdvance = ct - UnPredictedCurTime()
     end
