@@ -15,6 +15,12 @@ function SWEP:BulletCallback(attacker, tr, dmgInfo)
     end
 end
 
+function SWEP:ShootProjectile(isent, data)
+    if isent then
+        self:FireRocket(data.ent, data.vel, data.ang, true)
+    end
+end
+
 function SWEP:ShootBullets(hitpos)
     hitpos = hitpos or nil
     if (CLIENT and not game.SinglePlayer()) and not IsFirstTimePredicted() then return end
@@ -33,19 +39,19 @@ function SWEP:ShootBullets(hitpos)
     end
 
     self:FireBullets({
-        Attacker = self:GetOwner(),
-        Src = self:GetOwner():EyePos(),
-        Dir = dir,
-        Spread = spread,
-        Num = SERVER and 1 or self.Bullet.NumBullets,
-        Damage = self.Bullet.Damage,
-        HullSize = self.Bullet.HullSize,
-        --Force = (self.Bullet.Damage[1] * self.Bullet.PhysicsMultiplier) * 0.01,
-        Distance = self:MetersToHU(self.Bullet.Range),
-        Tracer = self.Bullet.Tracer and 1 or 0,
-        TracerName = self.Bullet.TracerName,
-        Callback = function(attacker, tr, dmgInfo)
-            self:BulletCallback(attacker, tr, dmgInfo, bFromServer)
-        end
+            Attacker = self:GetOwner(),
+            Src = self:GetOwner():EyePos(),
+            Dir = dir,
+            Spread = spread,
+            Num = SERVER and 1 or self.Bullet.NumBullets,
+            Damage = self.Bullet.Damage,
+            HullSize = self.Bullet.HullSize,
+            --Force = (self.Bullet.Damage[1] * self.Bullet.PhysicsMultiplier) * 0.01,
+            Distance = self:MetersToHU(self.Bullet.Range),
+            Tracer = self.Bullet.Tracer and 1 or 0,
+            TracerName = self.Bullet.TracerName,
+            Callback = function(attacker, tr, dmgInfo)
+                self:BulletCallback(attacker, tr, dmgInfo, bFromServer)
+            end
     })
 end
