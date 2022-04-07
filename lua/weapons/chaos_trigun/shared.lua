@@ -40,6 +40,13 @@ SWEP.SafetyAng          = Vector(-10, -15, 25)
 
 SWEP.IronSightsEnable   = true
 
+--HoldType Handling.
+SWEP.HoldtypeHolstered = "passive"
+SWEP.HoldtypeActive = "revolver"
+SWEP.HoldtypeSights = "revolver"
+SWEP.HoldtypeSprintShoot = "shotgun"
+SWEP.HoldtypeNPC = nil
+
 SWEP.HighTierAllow = true
 
 SWEP.HighTier = {
@@ -129,6 +136,7 @@ SWEP.Animations = {
     },
     ["reload"] = {
         Source = "reload",
+        TPAnim = ACT_HL2MP_GESTURE_RELOAD_PISTOL,
         SoundTable = {
             {
                  s = "MW19_357.Reload_Start", -- sound; can be string or table
@@ -163,6 +171,7 @@ SWEP.Animations = {
     },
     ["fire"] = {
         Source = {"fire","fire2"},
+        TPAnim = ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL
     },
     ["holster"] = {
         Source = "holster"

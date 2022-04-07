@@ -8,18 +8,20 @@ function SWEP:ChaosPlayerThink(plyv, is_working_out_prediction_errors)
 end
 
 function SWEP:ChaosPlayerThinkCL(plyv)
-    --IronSight Pred Handling.
+    local speed = 1 / self.IronSightTime
     local ft = FrameTime()
 
+    --Aim Behaviour Handles to pass through values to CL/Server
+    --IronSight Pred Handling.
     local is = self:GetIsAiming()
     local ist = is and 1 or 0
-    local speed = 5
     self.IronSightsProgressUnpredicted = math.Approach(self.IronSightsProgressUnpredicted or 0, ist, (ist - (self.IronSightsProgressUnpredicted or 0)) * ft * speed * 1.2)
+    
     
     --Safety Pred handling.
     local issafety = self:GetSafety()
     local issafetyt = issafety and 1 or 0
-    self.SafetyProgressUnpredicted = math.Approach(self.SafetyProgressUnpredicted or 0, issafetyt, (issafetyt - (self.SafetyProgressUnpredicted or 0)) * ft * speed * 1.2)
+    self.SafetyProgressUnpredicted = math.Approach(self.SafetyProgressUnpredicted or 0, issafetyt, (issafetyt - (self.SafetyProgressUnpredicted or 0)) * ft * 5)
 
     --Sprint Anim Handling
     local issprinting = self:InSprint()
@@ -46,14 +48,13 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
         end
     end
 
+    if not sp and SERVER then
+        self:SafetyHandlerModule()
+        self:AimBehaviourModule()
+    end
+
     --SprintBehaviour
     self:SprintBehaviour()
-
-    --Aim Behaviour Handles to pass through values to CL/Server
-    if not sp or SERVER then
-        self:AimBehaviourModule()
-        self:SafetyHandlerModule()
-    end
 
     --Idle Anim timer
     if self:GetNextIdle() ~= 0 and self:GetNextIdle() <= CurTime() then
@@ -70,10 +71,15 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
     --Shotgun Handling Timer.
     local sg = self:GetShotgunReloading()
 
+    if (self.Primary.BurstRounds > 1 && self:GetBurstRounds() < self.Primary.BurstRounds && self:GetBurstRounds() > 0) then
+        self:PrimaryAttack()
+    end
+
     if (sg == 2 or sg == 4) and owner:KeyPressed(IN_ATTACK) then
         self:SetShotgunReloading(sg + 1)
     elseif (sg >= 2) and self:GetReloadingREAL() <= CurTime() then
         self:ReloadInsert((sg >= 4) and true or false)
+        self:SetNextIdle(0)
     end
 
     --CalcSpray

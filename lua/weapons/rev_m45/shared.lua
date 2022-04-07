@@ -27,10 +27,10 @@ SWEP.Primary.ShootSound          = Sound("chaosnarwhal/weapons/unsc/m45/gunfire/
 SWEP.Primary.DistantShootSound   = Sound("drc.ma5c_fire_dist")
 SWEP.Primary.RPM                 = 60
 
-SWEP.ShotgunReload = true
+SWEP.ShotgunReload = true 
 
-SWEP.Bullet = {
-    Damage = 120, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range
+SWEP.Bullet = { 
+    Damage = 300, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range
     DropOffStartRange = 20, --in meters, damage will start dropping off after this range
     EffectiveRange = 65, --in meters, damage scales within this distance
     Range = 180, --in meters, after this distance the bullet stops existing
@@ -59,15 +59,20 @@ SWEP.Cone = {
     Seed = 9523 --just give this a random number
 }
 
-SWEP.IronSightStruct = {
-    Pos = Vector(-8.5, 0, 0),
-    Ang = Angle(0, 0, 0),
-    Magnification = 1,
-    BlackBox = false,
-    ScopeTexture = nil,
+SWEP.Scope = {
+    --Magnification = 0.75,
+    ScopeMagnification = 0.75,
+    ScopeMagnificationMax = 0.75,
+    ScopeMagnificationMin = 0.55,
+    ScopeColor = Color(0,0,0,255),
+    ScopeBGColor = Color(0,0,0,200),
+    ScopeYOffset = -1,
+    ScopeScale = 0.65,
+    ScopeWidth = 1,
+    ScopeHeight = 1,
     SwitchToSound = "", -- sound that plays when switching to this sight
     SwitchFromSound = "",
-    ScrollFunc = ChaosBase.SCROLL_NONE,
+    ScrollFunc = ChaosBase.SCROLL_ZOOM,
     CrosshairInSights = false,
 }
 
@@ -94,6 +99,8 @@ SWEP.Primary.DefaultClip    = 6        -- Default number of bullets in a clip
 SWEP.Primary.Automatic		= false		-- Automatic/Semi Auto
 SWEP.Primary.Ammo			= "Pistol"
 
+SWEP.AnimatedSprint = true
+
 SWEP.Animations = {
     ["idle"] = {
         Source = "idle",
@@ -101,25 +108,27 @@ SWEP.Animations = {
     ["idle_sprint"] = {
         Source = "sprint",
     },
-    ["idle_walk"] = {
-        Source = "walk",
-    },
     ["draw"] = {
         Source = "draw",
     },
     ["fire"] = {
         Source = {"fire1","fire2","fire3"},
+        TPAnim = ACT_HL2MP_GESTURE_RANGE_ATTACK_SHOTGUN
     },
     ["sgreload_start"] = {
         Source = "reload_enter",
     },
     ["sgreload_insert"] = {
         Source = "reload_loop",
+        TPAnim = ACT_HL2MP_GESTURE_RELOAD_SHOTGUN
     },
     ["sgreload_finish"] = {
         Source = "reload_exit",
     },
     ["sgreload_finish_empty"] = {
         Source = "reload_exit",
+    },
+    ["idle_walk"] = {
+        Source = "walk",
     },
 }

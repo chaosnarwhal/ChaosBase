@@ -87,6 +87,7 @@ Purpose: Main SWEP function.
 function SWEP:PrimaryAttack()
     self:SetSafety(false)
     if not self:CanPrimaryAttack() then return end
+
     local delay = 60 / self.Primary.RPM
     local curtime = CurTime()
     local curatt = self:GetNextPrimaryFire()
@@ -107,9 +108,11 @@ function SWEP:PrimaryAttack()
     --AddingSpray
     self:SetClip1(self:Clip1() - 1)
     self:SetSprayRounds(self:GetSprayRounds() + 1)
-    self:SetNextPrimaryFire(curatt + delay)
-    self:SetBurstRounds(self:GetBurstRounds() + 1)
 
+    self:SetNextPrimaryFire(curatt + delay) 
+
+
+    self:SetBurstRounds(self:GetBurstRounds() + 1)
     if self:GetBurstRounds() >= self.Primary.BurstRounds and self.Primary.BurstRounds > 1 then
         self:SetNextPrimaryFire(CurTime() + self.Primary.BurstDelay)
         self:SetBurstRounds(0)
@@ -215,13 +218,44 @@ function SWEP:CalculateRecoil()
 
     if Allowed then
         return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier) * RecoilReduce
+    elseif not Allowed then
+        return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier)
     end
 
-    return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier)
 end
 
 function SWEP:CalculateCone()
     math.randomseed(self.Cone.Seed + self:Clip1() + self:Ammo1())
 
     return math.Clamp(math.Rand(-self:GetCone(), self:GetCone()) * 1000, -self:GetCone(), self:GetCone())
+end
+
+function SWEP:Projectiles()
+    if (CLIENT) then
+        return
+    end
+
+    local proj = ents.Create(self.Projectile.Class)
+
+    local angles = self:GetOwner():EyeAngles() + self:GetOwner():GetViewPunchAngles()
+
+    local src = LerpVector(self:GetAimDelta(), self:GetOwner():EyePos() + angles:Up() * -3 + angles:Right() * 3, self:GetOwner():EyePos())
+    local dir = self:GetOwner():GetEyeTraceNoCursor().HitPos - src 
+    
+    math.randomseed(self:Clip1() + self:Ammo1() + CurTime() + self.Cone.Seed)
+    local spreadRight = math.random(-self:GetCone(), self:GetCone())
+
+    math.randomseed(-self:Clip1() * 0.5 + self:Ammo1() * 2 - CurTime() + self.Cone.Seed)
+    local spreadUp = math.random(-self:GetCone(), self:GetCone())
+
+    local spread = LerpVector(self:GetAimDelta(), Vector(spreadRight, spreadUp), Vector(0, 0))
+    angles:RotateAroundAxis(angles:Right(), spread.x)
+    angles:RotateAroundAxis(angles:Up(), spread.y)
+
+    proj.Weapon = self
+
+    proj:SetPos(src)
+    proj:SetAngles(angles)
+    proj:SetOwner(self:GetOwner())
+    proj:Spawn()
 end

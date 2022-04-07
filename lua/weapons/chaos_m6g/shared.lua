@@ -27,6 +27,13 @@ SWEP.Primary.ShootSound          = Sound("chaosnarwhal/weapons/unsc/m6h2/gunfire
 SWEP.Primary.DistantShootSound   = Sound("drc.ma5c_fire_dist")
 SWEP.Primary.RPM          	     = 550
 
+--HoldType Handling.
+SWEP.HoldtypeHolstered = "passive"
+SWEP.HoldtypeActive = "revolver"
+SWEP.HoldtypeSights = "revolver"
+SWEP.HoldtypeSprintShoot = "shotgun"
+SWEP.HoldtypeNPC = nil
+
 SWEP.Bullet = {
     Damage = 250, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range
     HullSize = 2,
@@ -59,15 +66,20 @@ SWEP.Cone = {
 
 SWEP.SightTime = 0.1
 
-SWEP.IronSightStruct = {
-    Pos = Vector(0, 0, 0),
-    Ang = Angle(0, 0, 0),
-    Magnification = 1,
-    BlackBox = false,
-    ScopeTexture = nil,
+SWEP.Scope = {
+    --Magnification = 0.75,
+    ScopeMagnification = 0.75,
+    ScopeMagnificationMax = 0.75,
+    ScopeMagnificationMin = 0.55,
+    ScopeColor = Color(0,0,0,255),
+    ScopeBGColor = Color(0,0,0,200),
+    ScopeYOffset = -1,
+    ScopeScale = 0.65,
+    ScopeWidth = 1,
+    ScopeHeight = 1,
     SwitchToSound = "", -- sound that plays when switching to this sight
     SwitchFromSound = "",
-    ScrollFunc = ChaosBase.SCROLL_NONE,
+    ScrollFunc = ChaosBase.SCROLL_ZOOM,
     CrosshairInSights = false,
 }
 
@@ -98,7 +110,7 @@ SWEP.AllowSprintShoot		= false
 --Primary Fire
 SWEP.Primary.ClipSize		= 12			-- Size of a clip
 SWEP.Primary.DefaultClip	= 12		-- Default number of bullets in a clip
-SWEP.Primary.Automatic		= true		-- Automatic/Semi Auto
+SWEP.Primary.Automatic		= false		-- Automatic/Semi Auto
 SWEP.Primary.Ammo			= "Pistol"
 
 SWEP.Animations = {
@@ -119,9 +131,11 @@ SWEP.Animations = {
     },
     ["reload"] = {
         Source = "reload",
+        TPAnim = ACT_HL2MP_GESTURE_RELOAD_PISTOL
     },
     ["fire"] = {
         Source = {"fire"},
+        TPAnim = ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL
     },
     ["fire_empty"] = {
     	Source = {"fire_last"}

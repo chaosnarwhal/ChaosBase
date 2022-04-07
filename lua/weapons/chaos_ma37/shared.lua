@@ -64,6 +64,11 @@ SWEP.HighTier = {
     --["Freelancer"] = "ODST"
 }
 
+--Custom Muzzle Flashes to Code in.
+SWEP.ParticleEffects = {
+    ["MuzzleFlash"] = "AC_muzzle_pistol",
+}
+
 SWEP.Bullet = {
     Damage = 200, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range
     HullSize = 3,

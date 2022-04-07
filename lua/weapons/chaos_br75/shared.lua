@@ -41,6 +41,13 @@ SWEP.IronSightsAng      = Vector(0,0,0)
 SWEP.SafetyPos          = Vector(0,0,-2)
 SWEP.SafetyAng          = Vector(-10, -15, 25)
 
+--HoldType Handling.
+SWEP.HoldtypeHolstered = "passive"
+SWEP.HoldtypeActive = "ar2"
+SWEP.HoldtypeSights = "ar2"
+SWEP.HoldtypeSprintShoot = "shotgun"
+SWEP.HoldtypeNPC = nil
+
 SWEP.Bullet = {
     Damage = 150, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range
     DropOffStartRange = 20, --in meters, damage will start dropping off after this range
@@ -135,9 +142,11 @@ SWEP.Animations = {
     },
     ["reload"] = {
         Source = "reload",
+        TPAnim = ACT_HL2MP_GESTURE_RELOAD_SMG1
     },
     ["fire"] = {
         Source = "fire",
+        TPAnim = ACT_HL2MP_GESTURE_RANGE_ATTACK_AR2
     },
 }
 

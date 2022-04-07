@@ -49,7 +49,7 @@ end
 ]]
 function SWEP:DoParticle(particleName, attName)
     local vm = self:GetOwner():GetViewModel()
-    local wm = self:GetOwner():GetWeaponWorldModel()
+    local wm = self:GetWeaponWorldModel()
     if self.ParticleEffects ~= nil and self.ParticleEffects[particleName] ~= nil then
         particleName = self.ParticleEffects[particleName]
     end

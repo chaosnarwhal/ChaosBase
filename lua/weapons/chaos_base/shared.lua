@@ -195,6 +195,8 @@ SWEP.Bullet = {
     PhysicsMultiplier = 1, --damage is multiplied by this amount when pushing objects 
 }
 
+SWEP.Projectile = nil
+
 --Custom Body Part Damage
 SWEP.BodyDamageMults = nil
 
@@ -322,6 +324,7 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Bool", 8, "IsHolstering")
     self:NetworkVar("Bool", 9, "IsPumping")
     self:NetworkVar("Bool", 11, "Safety")
+    self:NetworkVar("Bool", 12, "ToggleSafety")
 
     self:NetworkVar("Float", 0, "Heat")
     self:NetworkVar("Float", 1, "ReloadingREAL")
