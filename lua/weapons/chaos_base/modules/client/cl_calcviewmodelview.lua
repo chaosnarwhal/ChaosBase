@@ -17,6 +17,9 @@ local chaosbase_vmoffset_x = GetConVar("chaosbase_vmoffset_x")
 local chaosbase_vmoffset_y = GetConVar("chaosbase_vmoffset_y")
 local chaosbase_vmoffset_z = GetConVar("chaosbase_vmoffset_z")
 local chaosbase_flip_cv = GetConVar("chaosbase_vmflip")
+local cv_fov = GetConVar("fov_desired")
+local fovmod_add = GetConVar("chaosbase_vm_offset_fov")
+local fovmod_mult = GetConVar("chaosbase_vm_multiplier_fov")
 SWEP.OldPos = Vector(0, 0, 0)
 SWEP.OldAng = Angle(0, 0, 0)
 SWEP.CrouchVector = Vector(-1, -1, -1)
@@ -81,9 +84,25 @@ function SWEP:CalculateViewModelOffset(delta)
     local IronSightsPosition = self.IronSightsPos
     local IronSightsAngle = self.IronSightsAng
 
-    if AimDelta > 0.005 then
+    if AimDelta > 0.002 then
         self:SafeLerpVector(AimDelta, target_pos, IronSightsPosition)
         self:SafeLerpVector(AimDelta, target_ang, IronSightsAngle)
+    end
+
+    --Safety Offset
+    local SafetyDelta = self.SafetyProgressUnpredicted
+    local SafetyPos = self.SafetyPos
+    local SafetyAng = self.SafetyAng
+
+    if SafetyDelta > 0.005 then
+        self:SafeLerpVector(SafetyDelta, target_pos, SafetyPos)
+        self:SafeLerpVector(SafetyDelta, target_ang, SafetyAng)
+    end
+
+    if self.SprintProgressUnpredicted > 0.005 and self.SafetyProgressUnpredicted < 1 and !self:GetIsReloading() then
+        if self.AnimatedSprint then return end
+        self:SafeLerpVector(self.SprintProgressUnpredicted, target_pos, SafetyPos)
+        self:SafeLerpVector(self.SprintProgressUnpredicted, target_ang, SafetyAng)
     end
 
     if additivePos then
@@ -91,25 +110,11 @@ function SWEP:CalculateViewModelOffset(delta)
         target_ang:Add(self.ViewModelAngle)
     end
 
-    --Safety Offset
-    local SafetyPos = self.SafetyPos
-    local SafetyAng = self.SafetyAng
-    
-    if self.SafetyProgressUnpredicted > 0.005 then
-        self:SafeLerpVector(self.SafetyProgressUnpredicted, target_pos, SafetyPos)
-        self:SafeLerpVector(self.SafetyProgressUnpredicted, target_ang, SafetyAng)
-    end
-
-    if self.SprintProgressUnpredicted > 0.005 and self.SafetyProgressUnpredicted < 0.99 then
-        if self.AnimatedSprint then return end
-        self:SafeLerpVector(self.SprintProgressUnpredicted, target_pos, SafetyPos)
-        self:SafeLerpVector(self.SprintProgressUnpredicted, target_ang, SafetyAng)
-    end
-
     target_pos.x = target_pos.x + chaosbase_vmoffset_x:GetFloat() * (1 - AimDelta)
     target_pos.y = target_pos.y + chaosbase_vmoffset_y:GetFloat() * (1 - AimDelta)
     target_pos.z = target_pos.z + chaosbase_vmoffset_z:GetFloat() * (1 - AimDelta)
     self.pos_cached, self.ang_cached = target_pos, Angle(target_ang.x, target_ang.y, target_ang.z)
+
 end
 
 --[[ 
@@ -139,9 +144,12 @@ function SWEP:CalculateViewModelFlip()
     if self.ViewModelFLip ~= shouldflip then
         self.ViewModelFlip = shouldflip
     end
-
     self.ViewModelFOV_OG = self.ViewModelFOV
-    --self.ViewModelFOV = Lerp(self.CLIronSightsProgress, self.ViewModelFOV_OG, self.Secondary.ViewModelFOV) * fovmod_mult:GetFloat() + fovmod_add:GetFloat() + iron_add + self.CLIronSightsProgress
+
+    local cam_fov = 90
+    local iron_add = cam_fov * (1 - 90 / cam_fov) * math.max(1 - self.Secondary.OwnerFOV / 90, 0)
+
+    self.ViewModelFOV = Lerp(self.IronSightsProgressUnpredicted, self.ViewModelFOV_OG, self.Secondary.ViewModelFOV) * fovmod_mult:GetFloat() + fovmod_add:GetFloat() + iron_add + self.IronSightsProgressUnpredicted
 end
 
 --[[ 
@@ -188,18 +196,18 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
 
     --jump
     local jumpAngles = Angle(vars.Jump.Lerp, 0, 0)
-    jumpAngles:Mul(self:SafeLerp(vars.LerpAimDelta, 1, 0.1))
+    jumpAngles:Mul(self:SafeLerp(vars.LerpAimDelta, 0.2, 0.05))
     EyeAng:Add(jumpAngles)
     --end jump
 
     --sway
     local swayAngles = Angle(vars.Sway.Y.Lerp, vars.Sway.X.Lerp, 0)
-    swayAngles:Mul(self:SafeLerp(vars.LerpAimDelta, 1, 0.1))
+    swayAngles:Mul(self:SafeLerp(vars.LerpAimDelta, 0.1, 0.05))
     EyeAng:Add(swayAngles)
     --end sway
 
     --fake recoil
-    EyeAng:Add(recoilAng)
+    EyeAng:Add(recoilAng*0.2)
     --end fake recoil
 
     local forward = EyeAng:Forward()
@@ -256,7 +264,7 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
     CalcVMViewHookBypass = false
     vm:SetPos(EyePos)
     vm:SetAngles(EyeAng)
-    -- self.ViewModelFOV = self:SafeLerp(self.Camera.Fov, self.m_OriginalViewModelFOV, self.m_OriginalViewModelFOV * self.Zoom.ViewModelFovMultiplier)
+    --self.ViewModelFOV = self:SafeLerp(self.Camera.Fov, self.m_OriginalViewModelFOV, self.m_OriginalViewModelFOV * self.Zoom.ViewModelFovMultiplier)
 end
 
 --[[ 
