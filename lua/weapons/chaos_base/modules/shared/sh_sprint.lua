@@ -50,7 +50,7 @@ end
 
 function SWEP:ExitSprint()
     if self:GetState() == ChaosBase.STATE_IDLE then return end
-    local delta = self:GetNWSprintDelta()
+    local delta = self.SprintProgressUnpredicted
     local ct = CurTime()
     self:SetState(ChaosBase.STATE_IDLE)
     self.Sighted = false

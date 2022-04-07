@@ -31,10 +31,6 @@ function SWEP:FiremodeBehaviourModule()
             end
         end
     end
-
-    if (CLIENT && game.SinglePlayer()) then
-        return
-    end
     
     if (self.Primary.BurstRounds > 1 && self:GetBurstRounds() < self.Primary.BurstRounds && self:GetBurstRounds() > 0) then
         self:PrimaryAttack()

@@ -25,14 +25,11 @@ function SWEP:Deploy(fromFallback)
     self:SetMagUpIn(0)
     self:SetShotgunReloading(0)
     self:SetNextHolsterTime(0)
+    self:SetIsReloading(false)
     self:SetNextWeapon(NULL)
     self:SetIsPumping(false)
     self.OwnerViewModel = nil
     self:SetBurstRounds(0)
-
-    if self:GetOwner():KeyDown(IN_ATTACK2) and self.SightWhileDraw then
-        self:SetIronSights(true)
-    end
 
     if not self:GetOwner():InVehicle() then
         local prd = false
