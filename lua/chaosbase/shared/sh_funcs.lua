@@ -56,6 +56,19 @@ if CLIENT then
 	end)
 
 	--PreDrawViewModel
+
+	hook.Add("PreDrawViewModel", "DrawThatViewModelThang", function(vm)
+		local ply = LocalPlayer()
+		if not IsValid(ply) then return end
+
+		local weapon = ply:GetActiveWeapon()	
+
+		if IsValid(weapon) and weapon.ChaosBase then
+    		weapon:CalculateViewModelOffset(delta)
+    		weapon:CalculateViewModelFlip()
+		end
+
+	end)
 	
 end
 
