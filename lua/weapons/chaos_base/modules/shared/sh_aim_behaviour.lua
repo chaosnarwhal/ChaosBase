@@ -9,11 +9,8 @@ function SWEP:CanAim()
 end
 
 function SWEP:AimBehaviourModule()
-    if CLIENT and game.SinglePlayer() then return end
-    if not IsFirstTimePredicted() then return end
-    local speed = 1 / self.IronSightTime
-    local ft = FrameTime()
     local owner = self:GetOwner()
+    local speed = 1 / self.IronSightTime
 
     if owner:GetInfoNum("chaosbase_toggleads", 0) >= 1 then
         if owner:KeyPressed(IN_ATTACK2) then
@@ -25,23 +22,40 @@ function SWEP:AimBehaviourModule()
 
     if self:CanAim() and self:GetToggleAim() then
         self:SetIsAiming(true)
-        self:SetAimDelta(math.min(self:GetAimDelta() + speed * ft, 1))
+        self:SetAimDelta(math.min(self:GetAimDelta() + speed * FrameTime(), 1))
     else
         self:SetIsAiming(false)
-        self:SetAimDelta(math.max(self:GetAimDelta() - speed * ft, 0))
+        self:SetAimDelta(math.max(self:GetAimDelta() - speed * FrameTime(), 0))
     end
+
 end
 
 function SWEP:SafetyHandlerModule()
-    if CLIENT and game.SinglePlayer() then return end
-    if not IsFirstTimePredicted() then return end
     if self:GetIsSprinting() then return end
     local owner = self:GetOwner()
+    local togglesafety = true
 
     if owner:KeyDown(IN_USE) and owner:KeyDown(IN_SPEED) and owner:KeyPressed(IN_RELOAD) then
         self:SetSafety(not self:GetSafety())
-        self:HoldTypeHandler()
     end
 
     self:HoldTypeHandler()
+end
+
+SWEP.LastTranslateFOV = 0
+function SWEP:TranslateFOV(fov)
+    self.ApproachFOV = self.ApproachFOV or fov
+    self.CurrentFOV = self.CurrentFOV or fov
+
+    if self.LastTranslateFOV == UnPredictedCurTime() then return self.CurrentFOV end
+    local timed = UnPredictedCurTime() - self.LastTranslateFOV
+    self.LastTranslateFOV = UnPredictedCurTime()
+
+    local app_vm = self.ViewModelFOV + self:GetOwner():GetInfoNum("chaosbase_vm_offset_fov", 0) + 10
+
+    self.ApproachFOV = fov
+
+    self.CurrentFOV = math.Approach(self.CurrentFOV, self.ApproachFOV, timed * 10 * (self.CurrentFOV - self.ApproachFOV))
+
+    return self.CurrentFOV
 end
