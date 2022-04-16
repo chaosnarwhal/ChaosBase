@@ -44,9 +44,43 @@ SWEP.SafetyAng          = Vector(-10, -15, 25)
 --HoldType Handling.
 SWEP.HoldtypeHolstered = "passive"
 SWEP.HoldtypeActive = "ar2"
-SWEP.HoldtypeSights = "ar2"
-SWEP.HoldtypeSprintShoot = "shotgun"
+SWEP.HoldtypeSights = "rpg"
+SWEP.HoldtypeSprintShoot = "ar2"
 SWEP.HoldtypeNPC = nil
+
+SWEP.IronSightsEnable   = true
+
+SWEP.HighTierAllow = true
+
+SWEP.HighTier = {
+    ["Xerxes"] = {
+        Type = "SPARTAN",
+        RecoilReduce = 0.1,
+        SprintShoot = true
+    },
+    ["Nexus"] = {
+        Type = "SPARTAN",
+        RecoilReduce = 0.1,
+        SprintShoot = true
+    },
+    ["Warden"] = {
+        Type = "SPARTAN",
+        RecoilReduce = 0.1,
+        SprintShoot = true
+    },
+    ["Bullfrogs"] = {
+        Type = "ODST",
+        RecoilReduce = 1,
+        SprintShoot = true
+
+    }
+    --["Freelancer"] = "ODST"
+}
+
+--Custom Muzzle Flashes to Code in.
+SWEP.ParticleEffects = {
+    ["MuzzleFlash"] = "AC_muzzle_pistol",
+}
 
 SWEP.Bullet = {
     Damage = 175, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range
@@ -103,35 +137,19 @@ SWEP.Scope = {
     CrosshairInSights = false,
 }
 
-SWEP.Zoom = {
-    FovMultiplier = 1,
-    ViewModelFovMultiplier = 0.9,
-    Blur = {
-        EyeFocusDistance = 7
-    }
-}
-
 SWEP.ViewModelOffsets = {
-    Aim = {
-        Angles = Angle(0, 0, 0),
-        Pos = Vector(0, 0, 0)
-    },
-    Idle = {
-        Angles = Angle(0, 0, 0),
-        Pos = Vector(0, 0, 0)
-    },
     RecoilMultiplier = 1.15,
     KickMultiplier = 2,
     AimKickMultiplier = 0.15
 }
 
-SWEP.AllowSprintShoot		= false
-
 --Primary Fire
-SWEP.Primary.ClipSize		= 32			-- Size of a clip
-SWEP.Primary.DefaultClip	= 32		-- Default number of bullets in a clip
+SWEP.Primary.ClipSize		= 36			-- Size of a clip
+SWEP.Primary.DefaultClip	= 36		-- Default number of bullets in a clip
 SWEP.Primary.Automatic		= true		-- Automatic/Semi Auto
 SWEP.Primary.Ammo			= "Pistol"
+
+SWEP.AnimatedSprint = false
 
 SWEP.Animations = {
     ["idle"] = {
@@ -175,14 +193,14 @@ function SWEP:ChaosDrawCustom2DScopeElements()
     local hi = h / 10 * ss
     
     surface.SetDrawColor(Color(0, 0, 0, 255))
-    surface.SetMaterial(Material("models/vuthakral/halo/HUD/scope_elements/br_e1"))
+    surface.SetMaterial(Material("chaosnarwhal/halo/HUD/scope_elements/br_e1"))
     surface.DrawTexturedRectUV( wi * 1.4, h/2 * 1.1, hi * sw, hi / 2, 0, 0, 1, 1 )
     
-    surface.SetMaterial(Material("models/vuthakral/halo/HUD/scope_elements/br_e2"))
+    surface.SetMaterial(Material("chaosnarwhal/halo/HUD/scope_elements/br_e2"))
     surface.DrawTexturedRectUV( w/2 - hi / 2 * 1.65, h/2 - (hi / 2 * 0.2), hi * sw, hi / 2 * 0.4, 0, 0, 1, 1 )
     surface.DrawTexturedRectUV( w/2 - hi / 6, h/2 - (hi / 2 * 0.2), hi * sw, hi / 2 * 0.4, 1, 0, 0, 1 )
     
-    surface.SetMaterial(Material("models/vuthakral/halo/HUD/scope_elements/br_e3"))
+    surface.SetMaterial(Material("chaosnarwhal/halo/HUD/scope_elements/br_e3"))
     surface.DrawTexturedRectUV( w/2 - hi / 16, hi * 1.775, wi / 14, hi, 0, 1, 1, 0 )
     surface.DrawTexturedRectUV( w/2 - hi / 17, hi * 1.1, wi / 14, hi, 1, 0, 0, 1 )
 end

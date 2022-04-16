@@ -28,7 +28,7 @@ SWEP.Primary.DistantShootSound   = Sound("drc.ma5c_fire_dist")
 SWEP.Primary.RPM          	     = 550
 
 --HoldType Handling.
-SWEP.HoldtypeHolstered = "slam"
+SWEP.HoldtypeHolstered = "pistol"
 SWEP.HoldtypeActive = "revolver"
 SWEP.HoldtypeSights = "revolver"
 SWEP.HoldtypeSprintShoot = "shotgun"

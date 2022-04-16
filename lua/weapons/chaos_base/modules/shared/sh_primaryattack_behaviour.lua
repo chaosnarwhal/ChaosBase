@@ -9,7 +9,9 @@ Purpose: Main SWEP function.
 function SWEP:CanPrimaryAttack()
     local owner = self:GetOwner()
     if self:Clip1() <= 0 then return false end
+
     if CurTime() < self:GetNextPrimaryFire() then return false end
+    
     if CurTime() < self:GetNextFiremodeTime() then return false end
     --Reloading?
     if self:GetReloading() then return end
@@ -89,14 +91,18 @@ Purpose: Main SWEP function.
 function SWEP:PrimaryAttack()
     if not self:CanPrimaryAttack() then return end
 
+    local a,b,c = self:IsHighTier()
+
     local delay = 60 / self.Primary.RPM
     local curtime = CurTime()
     local curatt = self:GetNextPrimaryFire()
     local diff = curtime - curatt
-
+    
     if diff > engine.TickInterval() or diff < 0 then
         curatt = curtime
     end
+
+    self:SetNextPrimaryFire(curatt + delay) 
 
     if self.ShotgunReload then
         if self:GetShotgunReloading() then
@@ -106,17 +112,18 @@ function SWEP:PrimaryAttack()
         end
     end
 
-    self:SetIsFiring(true)
+    if a and c then
+        self:SetIsFiring(true)
+    end
 
     --AddingSpray
     self:SetClip1(self:Clip1() - 1)
     self:SetSprayRounds(self:GetSprayRounds() + 1)
 
-    self:SetNextPrimaryFire(curatt + delay) 
-
     self:SetBurstRounds(self:GetBurstRounds() + 1)
     if self:GetBurstRounds() >= self.Primary.BurstRounds and self.Primary.BurstRounds > 1 then
         self:SetNextPrimaryFire(CurTime() + self.Primary.BurstDelay)
+        self:SetIsFiring(false)
         self:SetBurstRounds(0)
     end
 
@@ -141,10 +148,12 @@ function SWEP:PrimaryAttack()
         self.Camera.Shake = self.Recoil.Shake --* Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier)
     end
 
-    timer.Simple(1, function()
-        if not self:IsValid() then return end
-        self:SetIsFiring(false)
-    end)
+    if c then
+        timer.Simple(2, function()
+            if not self:IsValid() then return end
+            self:SetIsFiring(false)
+        end)
+    end
 
 end
 
@@ -224,10 +233,12 @@ function SWEP:CalculateRecoil()
 
     local Allowed,RecoilReduce,SprintShoot = self:IsHighTier()
 
+    local RecoilReducer = self.Recoil.RecoilReducer or 1
+
     if Allowed then
         return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier) * RecoilReduce
     elseif not Allowed then
-        return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier)
+        return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier) * RecoilReducer
     end
 
 end

@@ -27,17 +27,6 @@ SWEP.Primary.ShootSound          = Sound("chaos.trigun_fire")
 SWEP.Primary.DistantShootSound   = Sound("drc.ma5c_fire_dist")
 SWEP.Primary.RPM          	     = 550
 
---SWEP.Offset = {
-    --Pos = Vector(1,1,1),
-    --Ang = Vector(1,1,1)
---}
-
-SWEP.WorldModelOffset = {
-    Pos = Vector(0,0,0),
-    Ang = Vector(0,0,0),
-    Scale = 1,
-}
-
 SWEP.ViewModelPosition  = Vector(0, 0, 0)
 SWEP.ViewModelAngle     = Vector(0, 0, 0)
 
@@ -212,8 +201,7 @@ SWEP.WElements = {
 SWEP.AuthorizedUserEnable = true
 
 SWEP.AuthorizedUser = {
-    ["76561198079227213"] = true,
-    ["76561198078899231"] = true
+    ["76561198079227213"] = true
 }
 
 DEFINE_BASECLASS(SWEP.Base) -- If you have multiple overriden functions, place this line only over the first one
@@ -221,6 +209,7 @@ DEFINE_BASECLASS(SWEP.Base) -- If you have multiple overriden functions, place t
 --Draw the ammo counter
 
 function SWEP:DrawHUD()
+    if not self:IsFirstPerson() then return end
     self:Crosshair()
 end
 

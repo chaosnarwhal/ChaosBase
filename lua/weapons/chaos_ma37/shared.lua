@@ -17,8 +17,6 @@ SWEP.ViewModelFlip			= false
 
 SWEP.ViewModel              = "models/chaosnarwhal/halo/weapons/unsc/ma37/v_unsc_ma37_v2.mdl"
 SWEP.WorldModel				= "models/chaosnarwhal/halo/weapons/unsc/ma37/w_unsc_ma37.mdl"
-SWEP.RenderGroup            = RENDERGROUP_TRANSLUCENT
-SWEP.RenderMode             = RENDERMODE_ENVIROMENTAL
 SWEP.UseHands				= true
 SWEP.HoldType 				= "ar2"
 SWEP.MuzzleAttachment       = "muzzle"       -- Should be "1" for CSS models or "muzzle" for hl2 models
@@ -223,6 +221,7 @@ end
 
 
 function SWEP:DrawHUD()
+    if not self:IsFirstPerson() then return end
     self:Crosshair()
 end
 

@@ -179,6 +179,26 @@ function SWEP:DrawWorldModel()
 
 		local ply = self:GetOwner()
 
+		if IsValid( ply ) and self.Offset and self.Offset.Pos and self.Offset.Ang then
+			local handBone = ply:LookupBone( "ValveBiped.Bip01_R_Hand" or "b_r_hand")
+			if handBone then
+				local pos, ang = ply:GetBonePosition( handBone )
+				pos = pos + ang:Forward() * self.Offset.Pos.Forward + ang:Right() * self.Offset.Pos.Right + ang:Up() * self.Offset.Pos.Up
+				ang:RotateAroundAxis( ang:Up(), self.Offset.Ang.Up)
+				ang:RotateAroundAxis( ang:Right(), self.Offset.Ang.Right )
+				ang:RotateAroundAxis( ang:Forward(),  self.Offset.Ang.Forward )
+				self:SetRenderOrigin( pos )
+				self:SetRenderAngles( ang )
+				self:SetModelScale( self.Offset.Scale or 0, 0 )
+				self:DrawModel()
+			end
+		else
+			self:SetRenderOrigin( nil )
+			self:SetRenderAngles( nil )
+				self:SetModelScale( 1, 0 )
+			self:DrawModel()
+		end
+	end
 	
 	if (!self.WElements) then return end
 	
@@ -248,7 +268,6 @@ function SWEP:DrawWorldModel()
 			
 			render.SetColorModulation(v.color.r/255, v.color.g/255, v.color.b/255)
 			render.SetBlend(v.color.a/255)
-			self:WorldModelOffsetUpdate(self)
 			model:DrawModel()
 			render.SetBlend(1)
 			render.SetColorModulation(1, 1, 1)
@@ -274,7 +293,6 @@ function SWEP:DrawWorldModel()
 				v.draw_func( self )
 			cam.End3D2D()
 		end
-	end
 	end
 end
 
@@ -475,6 +493,7 @@ function SWEP:WorldModelOffsetUpdate(ply)
 
 		return
 	end
+
 
 	local WorldModelOffset = self.WorldModelOffset
 

@@ -31,6 +31,7 @@ function SWEP:Deploy(fromFallback)
     self.OwnerViewModel = nil
     self:SetBurstRounds(0)
     self:SetSafety(false)
+    self:SetIsFiring(false)
 
     if not self:GetOwner():InVehicle() then
         local prd = false
@@ -104,6 +105,9 @@ function SWEP:Initialize()
     self:SetIsHolstering(false)
     self:SetNextHolsterTime(0)
     self:SetBreathingDelta(1)
+
+    self:SetIsFiring(false)
+
     local og = weapons.Get(self:GetClass())
     self.RegularClipSize = og.Primary.ClipSize
     self.OldPrintName = self.PrintName

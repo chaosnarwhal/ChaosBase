@@ -90,14 +90,45 @@ SWEP.ViewModelOffsets = {
     AimKickMultiplier = 0.15
 }
 
-
-SWEP.AllowSprintShoot		= false
-
 --Primary Fire
 SWEP.Primary.ClipSize		= 6			-- Size of a clip
 SWEP.Primary.DefaultClip    = 6        -- Default number of bullets in a clip
 SWEP.Primary.Automatic		= false		-- Automatic/Semi Auto
 SWEP.Primary.Ammo			= "Pistol"
+
+--HoldType Handling.
+SWEP.HoldtypeHolstered = "passive"
+SWEP.HoldtypeActive = "shotgun"
+SWEP.HoldtypeSights = "shotgun"
+SWEP.HoldtypeSprintShoot = "shotgun"
+SWEP.HoldtypeNPC = nil
+
+SWEP.HighTierAllow = true
+
+SWEP.HighTier = {
+    ["Xerxes"] = {
+        Type = "SPARTAN",
+        RecoilReduce = 0.1,
+        SprintShoot = true
+    },
+    ["Nexus"] = {
+        Type = "SPARTAN",
+        RecoilReduce = 0.1,
+        SprintShoot = true
+    },
+    ["Warden"] = {
+        Type = "SPARTAN",
+        RecoilReduce = 0.1,
+        SprintShoot = true
+    },
+    ["Bullfrogs"] = {
+        Type = "ODST",
+        RecoilReduce = 1,
+        SprintShoot = true
+
+    }
+    --["Freelancer"] = "ODST"
+}
 
 SWEP.AnimatedSprint = false
 
@@ -120,10 +151,10 @@ SWEP.Animations = {
     },
     ["sgreload_insert"] = {
         Source = "reload_loop",
-        TPAnim = ACT_HL2MP_GESTURE_RELOAD_SHOTGUN
     },
     ["sgreload_finish"] = {
         Source = "reload_exit",
+        TPAnim = ACT_HL2MP_GESTURE_RELOAD_SHOTGUN
     },
     ["sgreload_finish_empty"] = {
         Source = "reload_exit",

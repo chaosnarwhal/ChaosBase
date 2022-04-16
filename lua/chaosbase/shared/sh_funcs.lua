@@ -78,3 +78,22 @@ net.Receive("chaosbase_firemode", function(len, ply)
 
     wpn:ChangeFiremode()
 end)
+
+ChaosBase.FrameTime = (function(ft)
+    local a = Angle(0.015)
+
+    if ft == a[1] then
+        return 0.015
+    end
+
+    --for r = 10, 100 do
+    for r = math.floor(1 / ft), math.ceil(1 / ft) do
+        a[1] = 1 / r
+
+        if ft == a[1] then
+            return 1 / r
+        end
+    end
+
+    return ft
+end)(engine.TickInterval())

@@ -27,6 +27,7 @@ function SWEP:ChaosPlayerThinkCL(plyv)
     local issprinting = self:InSprint()
     local issprintingt = issprinting and 1 or 0
     self.SprintProgressUnpredicted = math.Approach(self.SprintProgressUnpredicted or 0, issprintingt, (issprintingt - (self.SprintProgressUnpredicted or 0)) * ft * speed * 1)
+
 end
 
 function SWEP:ChaosThink2(is_working_out_prediction_errors)
@@ -56,6 +57,10 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
     --SprintBehaviour
     self:SprintBehaviour()
 
+    if (self.Primary.BurstRounds > 1 && self:GetBurstRounds() < self.Primary.BurstRounds && self:GetBurstRounds() > 0) then
+        self:PrimaryAttack()
+    end
+
     --Idle Anim timer
     if self:GetNextIdle() ~= 0 and self:GetNextIdle() <= CurTime() then
         self:SetNextIdle(0)
@@ -70,10 +75,6 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
 
     --Shotgun Handling Timer.
     local sg = self:GetShotgunReloading()
-
-    if (self.Primary.BurstRounds > 1 && self:GetBurstRounds() < self.Primary.BurstRounds && self:GetBurstRounds() > 0) then
-        self:PrimaryAttack()
-    end
 
     if (sg == 2 or sg == 4) and owner:KeyPressed(IN_ATTACK) then
         self:SetShotgunReloading(sg + 1)
