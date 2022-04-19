@@ -120,9 +120,11 @@ function SWEP:PrimaryAttack()
     self:SetClip1(self:Clip1() - 1)
     self:SetSprayRounds(self:GetSprayRounds() + 1)
 
+    local BurstDelay = 60 / self.Primary.BurstDelay
+    
     self:SetBurstRounds(self:GetBurstRounds() + 1)
     if self:GetBurstRounds() >= self.Primary.BurstRounds and self.Primary.BurstRounds > 1 then
-        self:SetNextPrimaryFire(CurTime() + self.Primary.BurstDelay)
+        self:SetNextPrimaryFire(CurTime() + BurstDelay)
         self:SetIsFiring(false)
         self:SetBurstRounds(0)
     end

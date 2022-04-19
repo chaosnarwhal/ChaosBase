@@ -29,7 +29,7 @@ SWEP.Primary.RPM          	     = 900
 
 --Burst Handlig
 SWEP.Primary.BurstRounds         = 3
-SWEP.Primary.BurstDelay          = 0.25
+SWEP.Primary.BurstDelay          = 660
 SWEP.OnlyBurstFire                = false -- No auto, only burst/single?
 
 SWEP.ViewModelPosition  = Vector(0, -4, 0)

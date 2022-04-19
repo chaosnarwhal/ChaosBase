@@ -64,6 +64,11 @@ SWEP.HighTier = {
         RecoilReduce = 0.1,
         SprintShoot = true
     },
+    ["ONI Spartan"] = {
+        Type = "SPARTAN",
+        RecoilReduce = 0.1,
+        SprintShoot = true
+    },
     ["Bullfrogs"] = {
         Type = "ODST",
         RecoilReduce = 1,
