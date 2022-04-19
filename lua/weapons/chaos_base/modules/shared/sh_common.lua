@@ -9,6 +9,17 @@ Purpose:  Utility
 --
 local fp
 
+ChaosBase.LimbCompensation = {
+    [1] = {
+        [HITGROUP_HEAD]     = 1 / 2,
+        [HITGROUP_LEFTARM]  = 1 / 0.25,
+        [HITGROUP_RIGHTARM] = 1 / 0.25,
+        [HITGROUP_LEFTLEG]  = 1 / 0.25,
+        [HITGROUP_RIGHTLEG] = 1 / 0.25,
+        [HITGROUP_GEAR]     = 1 / 0.25,
+    },
+}
+
 function SWEP:GetMuzzleAttachment()
     local vmod = self.OwnerViewModel
     local att = math.max(1, self.MuzzleAttachmentRaw or (sp and vmod or self):LookupAttachment(self.MuzzleAttachment))

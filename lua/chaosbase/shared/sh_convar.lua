@@ -1,0 +1,1 @@
+CreateConVar("chaosbase_bodydamagemult_cancel", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED, "", 0, 1)

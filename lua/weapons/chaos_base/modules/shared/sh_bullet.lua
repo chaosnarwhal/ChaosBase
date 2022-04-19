@@ -5,6 +5,20 @@ function SWEP:BulletCallback(attacker, tr, dmgInfo)
         if not game.SinglePlayer() and not IsFirstTimePredicted() then return end
         if not self:IsCarriedByLocalPlayer() then return end
 
+        --Custom Hitgroup Damage Setting
+        local dmgtable = self.BodyDamageMults
+        local hitpos, hitnormal = tr.HitPos, tr.HitNormal
+        local trent = tr.Entity
+
+        if dmgtable then
+            local hg = tr.HitGroup
+            local gam = ChaosBase.LimbCompensation[engine.ActiveGamemode()] or ChaosBase.LimbCompensation[1]
+            if dmgtable[hg] then
+                dmg:ScaleDamage(dmgtable[hg])
+                if GetConVar("chaosbase_bodydamagemult_cancel"):GetBool() and gam[hg] then dmg:ScaleDamage(gam[hg]) end
+            end
+        end
+
         --only do one call on initial impact, for the rest server will take care of it
         if self.lastHitEntity == NULL then
             net.Start("chaosbase_clienthitreg", true)
