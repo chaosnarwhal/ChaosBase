@@ -21,13 +21,11 @@ SWEP.Weight                 = 30            -- This controls how "good" the weap
 --View Model and World Model Handling.
 SWEP.ViewModelFOV			= 65
 SWEP.ViewModelFlip			= false
-SWEP.ViewModel              = "models/chaosnarwhal/halo/weapons/unsc/ma37/v_unsc_ma37_v2.mdl"
-SWEP.WorldModel				= "models/chaosnarwhal/halo/weapons/unsc/ma37/w_unsc_ma37.mdl"
+SWEP.ViewModel              = "youe viewmodel here"
+SWEP.WorldModel				= "your world model here"
 SWEP.UseHands				= true
 SWEP.HoldType 				= "ar2"
 SWEP.MuzzleAttachment       = "muzzle"       -- Should be "1" for CSS models or "muzzle" for hl2 models
-SWEP.Tracer                 = 2
-SWEP.TracerName             = "rev_halo_ar_bullet" --Change to a string of your tracer name
  
 -- The viewmodel positional offset, constantly.
 -- Subtract this from any other modifications to viewmodel position.
