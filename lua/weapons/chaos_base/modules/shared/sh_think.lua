@@ -9,6 +9,7 @@ end
 
 function SWEP:ChaosPlayerThinkCL(plyv)
     local speed = 1 / self.IronSightTime
+    local sprintspeed = 1 / self.SprintTime
     local ft = FrameTime()
 
     --Aim Behaviour Handles to pass through values to CL/Server
@@ -24,9 +25,9 @@ function SWEP:ChaosPlayerThinkCL(plyv)
     self.SafetyProgressUnpredicted = math.Approach(self.SafetyProgressUnpredicted or 0, issafetyt, (issafetyt - (self.SafetyProgressUnpredicted or 0)) * ft * 5)
 
     --Sprint Anim Handling
-    local issprinting = self:InSprint()
+    local issprinting = self:InSprint() and !self:GetIsReloading()
     local issprintingt = issprinting and 1 or 0
-    self.SprintProgressUnpredicted = math.Approach(self.SprintProgressUnpredicted or 0, issprintingt, (issprintingt - (self.SprintProgressUnpredicted or 0)) * ft * speed * 1)
+    self.SprintProgressUnpredicted = math.Approach(self.SprintProgressUnpredicted or 0, issprintingt, (issprintingt - (self.SprintProgressUnpredicted or 0)) * ft * sprintspeed * 1.2)
 
 end
 
@@ -65,6 +66,10 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
     if self:GetNextIdle() ~= 0 and self:GetNextIdle() <= CurTime() then
         self:SetNextIdle(0)
         self:PlayIdleAnimation(true)
+    end
+
+    if self:GetIsAiming() then
+        self:SetNextIdle(0)
     end
 
     --Reloading Timer

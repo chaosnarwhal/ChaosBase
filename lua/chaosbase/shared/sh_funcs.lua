@@ -38,6 +38,11 @@ Used For: Enables and disables screen clicker
 ]]
 --
 if CLIENT then
+	local st_old, host_ts, cheats, vec, ang
+	host_ts = GetConVar("host_timescale")
+	cheats = GetConVar("sv_cheats")
+	vec = Vector()
+	ang = Angle()
 
 	local IsGameUIVisible = gui and gui.IsGameUIVisible
 
@@ -60,7 +65,17 @@ if CLIENT then
 		local ply = LocalPlayer()
 		if not IsValid(ply) then return end
 
-		local weapon = ply:GetActiveWeapon()	
+		local weapon = ply:GetActiveWeapon()
+
+		local st = SysTime()
+		st_old = st_old or st
+
+		local delta = st - st_old
+		st_old = st
+
+		if sp and IsGameUIVisible and IsGameUIVisible() then return end
+
+		delta = delta * game.GetTimeScale() * (cheats:GetBool() and host_ts:GetFloat() or 1)	
 
 		if IsValid(weapon) and weapon.ChaosBase then
     		weapon:CalculateViewModelOffset(delta)
@@ -97,3 +112,12 @@ ChaosBase.FrameTime = (function(ft)
 
     return ft
 end)(engine.TickInterval())
+
+-- Works around the 10 bodygroup limit on ENTITY:SetBodyGroups()
+function ChaosBase.SetBodyGroups(mdl, bodygroups)
+    mdl:SetBodyGroups(bodygroups)
+    local len = string.len(bodygroups or "")
+    for i = 10, len - 1 do
+        mdl:SetBodygroup(i, tonumber(string.sub(bodygroups, i + 1, i + 2)))
+    end
+end

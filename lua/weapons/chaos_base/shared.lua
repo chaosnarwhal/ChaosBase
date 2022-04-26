@@ -16,6 +16,7 @@ SWEP.SH_MODULES = {
     "modules/shared/sh_think.lua"
 }
 SWEP.CLSIDE_MODULES = {
+    "modules/client/cl_bob.lua",
     "modules/client/cl_calcview.lua",
     "modules/client/cl_calcviewmodelview.lua",
     "modules/client/cl_effects.lua",
@@ -106,6 +107,9 @@ SWEP.IronSightsAng = Vector(0, 0, 0)
 SWEP.SafetyPos = Vector(0, 0, -2)
 SWEP.SafetyAng = Vector(-10, -15, 25)
 
+SWEP.RunPos = Vector(0, 0, -2)
+SWEP.RunAng = Vector(-10, -15, 25)
+
 SWEP.IronSightsEnable = true
 
 --HoldType Handling.
@@ -116,7 +120,18 @@ SWEP.HoldtypeCustomize = "slam"
 SWEP.HoldtypeSprintShoot = nil
 SWEP.HoldtypeNPC = nil
 
+SWEP.SprintBobMult = 1.1 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this > 1 probably for sprinting.
+SWEP.IronBobMult = 0.0 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this < 1 for sighting, 0 to outright disable.
+SWEP.IronBobMultWalk = 0.2 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this < 1 for sighting, 0 to outright disable.
+SWEP.WalkBobMult = 1 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You may want to disable it when using animated walk.
+SWEP.SprintViewBobMult = 2
+SWEP.BreathScale = 0.2
+
+SWEP.ViewModelFlip = 0
+
 SWEP.AnimatedSprint = false
+SWEP.SprintStyle = nil
+SWEP.SprintTime = 0.15
 
 SWEP.HighTierAllow = false
 
@@ -156,11 +171,6 @@ SWEP.Primary.Ammo = "none" -- What kind of ammo
 SWEP.DrawTime = 1
 SWEP.Primary.BurstRounds = 1
 SWEP.Primary.BurstDelay = 1
-SWEP.Firemodes = {}
---Shotgun Defaults
-SWEP.IsShotgun = false -- weapon receives shotgun ammo types
-SWEP.ShotgunReload = false -- reloads like shotgun instead of magazines
-SWEP.ManualAction = false -- pump/bolt action
 
 SWEP.ReloadTime = 1
 
@@ -189,11 +199,6 @@ SWEP.BodyDamageMults = nil
 --     [HITGROUP_LEFTARM] = 0.9,
 --     [HITGROUP_RIGHTARM] = 0.9,
 -- }
---Recoil Defaults.
---SWEP.Primary.KickUp               = 0 -- This is the maximum upwards recoil (rise)
---SWEP.Primary.KickDown         = 0 -- This is the maximum downwards recoil (skeet)
---SWEP.Primary.KickHorizontal       = 0 -- This is the maximum sideways recoil (no real term)
---SWEP.Primary.StaticRecoilFactor = 0 --Amount of recoil to directly apply to EyeAngles.  Enter what fraction or percentage (in decimal form) you want.  This is also affected by a convar that defaults to 0.5.
 
 SWEP.Recoil = {
     Vertical = {1, 3.5}, --random value between the 2
@@ -241,6 +246,13 @@ SWEP.HeatOverflow = nil -- if true, heat is allowed to exceed capacity (this onl
 --SCK KIT integration.
 SWEP.VElements = {}
 SWEP.WElements = {}
+
+SWEP.DefaultBodygroups = "00000000"
+SWEP.DefaultWMBodygroups = "00000000"
+SWEP.DefaultSkin = 0
+SWEP.DefaultWMSkin = 0
+
+SWEP.Bodygroups = {}
 
 SWEP.ViewModelOffsets = {
     Aim = {

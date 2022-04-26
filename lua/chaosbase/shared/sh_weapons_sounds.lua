@@ -293,3 +293,76 @@ sound.Add( {
 	"chaosnarwhal/weapons/unsc/ma5d/ready5.wav" }
 } )
 
+sound.Add( {
+	name = "chaos.m20_draw",
+	channel = CHAN_ITEM,
+	volume = 1.0,
+	level = SNDLVL_55dB,
+	sound = {
+		"chaosnarwhal/weapons/unsc/m20/draw_1.wav",
+		"chaosnarwhal/weapons/unsc/m20/draw_2.wav"
+		
+	},
+})
+
+sound.Add( {
+	name = "chaos.m20.magout",
+	channel = CHAN_ITEM,
+	volume = 1.0,
+	level = SNDLVL_55dB,
+	sound = {
+		"chaosnarwhal/weapons/unsc/m20/mag_out_1.wav",
+		"chaosnarwhal/weapons/unsc/m20/mag_out_2.wav",
+		"chaosnarwhal/weapons/unsc/m20/mag_out_3.wav"
+	
+	},
+})
+
+sound.Add( {
+	name = "chaos.m20.magin",
+	channel = CHAN_ITEM,
+	volume = 1.0,
+	level = SNDLVL_55dB,
+	sound = {
+		"chaosnarwhal/weapons/unsc/m20/mag_out_1.wav",
+		"chaosnarwhal/weapons/unsc/m20/mag_out_2.wav",
+		"chaosnarwhal/weapons/unsc/m20/mag_out_3.wav"
+	
+	},
+})
+
+sound.Add( {
+	name = "chaos.m20.pull",
+	channel = CHAN_ITEM,
+	volume = 1.0,
+	level = SNDLVL_55dB,
+	sound = {
+		"chaosnarwhal/weapons/unsc/m20/pull_1.wav",
+		"chaosnarwhal/weapons/unsc/m20/pull_2.wav",
+		"chaosnarwhal/weapons/unsc/m20/pull_3.wav"
+	},
+})
+
+sound.Add( {
+	name = "chaos.m20.release",
+	channel = CHAN_ITEM,
+	volume = 1.0,
+	level = SNDLVL_55dB,
+	sound = {
+		"chaosnarwhal/weapons/unsc/m20/release_1.wav",
+		"chaosnarwhal/weapons/unsc/m20/release_2.wav",
+		"chaosnarwhal/weapons/unsc/m20/release_3.wav"
+	},
+})
+
+sound.Add( {
+	name = "chaos.m20_fire",
+	channel = CHAN_ITEM,
+	volume = 1.0,
+	level = SNDLVL_55dB,
+	sound = {
+		"chaosnarwhal/weapons/unsc/m20/fire_1.wav",
+		"chaosnarwhal/weapons/unsc/m20/fire_2.wav"
+	},
+})
+

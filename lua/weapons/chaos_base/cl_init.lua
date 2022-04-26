@@ -4,6 +4,9 @@ AddCSLuaFile()
 
 include('shared.lua')
 
+SWEP.SwayScale			= 0					-- The scale of the viewmodel sway
+SWEP.BobScale			= 0					-- The scale of the viewmodel bob
+
 --[[ Include these modules, because they're clientside.]]--
 
 if CLIENT then

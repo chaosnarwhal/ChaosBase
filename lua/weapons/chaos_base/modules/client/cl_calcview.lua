@@ -94,6 +94,7 @@ function SWEP:CalcView(ply, pos, ang, fov)
     fov = (fov * fovMultiplier) + (self.Camera.Shake * 1.5)
 
     --VIEWMODEL
+
     self:CalcViewModel(self:GetOwner():GetViewModel(), pos, ang)
 
     self._fov = fov

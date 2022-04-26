@@ -199,6 +199,7 @@ Notes: Code when ran to allow swapping of weapon and to what weapon?.
 Purpose: SWEP Main function.
 ]]--
 function SWEP:Holster(weapon, fromFallback)
+    if not IsValid(self:GetOwner()) then return end
     if not self:GetIsHolstering() and fromFallback then
         self:SetIsHolstering(true)
         self:SetIsReloading(false)

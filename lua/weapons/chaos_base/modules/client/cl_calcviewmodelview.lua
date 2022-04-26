@@ -4,6 +4,15 @@ local Angle = Angle
 local math = math
 local LerpVector = LerpVector
 
+local TAU = math.pi * 2
+local rateScaleFac = 2
+local walkIntensitySmooth, breathIntensitySmooth = 0, 0
+local walkRate = 160 / 60 * TAU / 1.085 / 2 * rateScaleFac
+local walkVec = Vector()
+local ownerVelocity, ownerVelocityMod = Vector(), Vector()
+local zVelocity, zVelocitySmooth = 0,0
+local xVelocity, xVelocitySmooth, rightVec = 0, 0, Vector()
+local flatVec = Vector(1,1,0)
 
 --[[ 
 Function Name:  GetViewModelPosition
@@ -26,18 +35,24 @@ SWEP.CrouchVector = Vector(-1, -1, -1)
 
 function SWEP:GetViewModelPosition(opos, oang, ...)
     if not self.pos_cached then return opos, oang end
-    if CalcVMViewHookBypass == true then return opos, oang end
+
     local npos, nang = opos * 1, oang * 1
+
     nang:RotateAroundAxis(nang:Right(), self.ang_cached.p)
     nang:RotateAroundAxis(nang:Up(), self.ang_cached.r)
     nang:RotateAroundAxis(nang:Forward(), self.ang_cached.y)
     npos:Add(nang:Right() * self.pos_cached.x)
     npos:Add(nang:Forward() * self.pos_cached.y)
     npos:Add(nang:Up() * self.pos_cached.z)
+
+    npos, nang = self:SprintBob(npos, nang, Lerp(self.SprintProgressUnpredicted, 0, self.SprintBobMult))
+
     if not pos or not ang then return npos, nang end
     local ofpos, ofang = WorldToLocal(npos, nang, opos, oang)
+
     self.OldPos = npos
     self.OldAng = nang
+
     local AimDelta = self.IronSightsProgressUnpredicted
 
     if AimDelta > 0.005 then
@@ -54,8 +69,8 @@ function SWEP:GetViewModelPosition(opos, oang, ...)
         _oang:RotateAroundAxis(_oang:Up(), -ang.y)
         right, up, fwd = _oang:Right(), _oang:Up(), _oang:Forward()
         _opos = _opos - pos.x * fwd + pos.y * right - pos.z * up
-        self.OldPos = LerpVector(sg, npos, _opos)
-        self.OldAng = LerpVector(sg, nang, _oang)
+        self.OldPos = LerpVector(AimDelta, npos, _opos)
+        self.OldAng = LerpVector(AimDelta, nang, _oang)
     end
 
     return self.OldPos, self.OldAng
@@ -101,10 +116,16 @@ function SWEP:CalculateViewModelOffset(delta)
         self:SafeLerpVector(SafetyDelta, target_ang, SafetyAng)
     end
 
-    if self.SprintProgressUnpredicted > 0.005 and self.SafetyProgressUnpredicted < 1 and !self:GetIsReloading() and not SprintShoot then
+    --Sprint Offset
+    local SprintDelta = self.SprintProgressUnpredicted
+    local SprintPos = self.RunPos
+    local SprintAng = self.RunAng
+
+
+    if SprintDelta > 0.005 and self.SafetyProgressUnpredicted < 1 and !self:GetIsReloading() and not SprintShoot then
         if self.AnimatedSprint then return end
-        self:SafeLerpVector(self.SprintProgressUnpredicted, target_pos, SafetyPos)
-        self:SafeLerpVector(self.SprintProgressUnpredicted, target_ang, SafetyAng)
+        self:SafeLerpVector(self.SprintProgressUnpredicted, target_pos, SprintPos)
+        self:SafeLerpVector(self.SprintProgressUnpredicted, target_ang, SprintAng)
     end
 
     if additivePos then
@@ -115,7 +136,19 @@ function SWEP:CalculateViewModelOffset(delta)
     target_pos.x = target_pos.x + chaosbase_vmoffset_x:GetFloat() * (1 - AimDelta)
     target_pos.y = target_pos.y + chaosbase_vmoffset_y:GetFloat() * (1 - AimDelta)
     target_pos.z = target_pos.z + chaosbase_vmoffset_z:GetFloat() * (1 - AimDelta)
-    self.pos_cached, self.ang_cached = target_pos, Angle(target_ang.x, target_ang.y, target_ang.z)
+
+    local intensityWalk = math.min(self:GetOwner():GetVelocity():Length2D() / self:GetOwner():GetWalkSpeed(), 1) * Lerp(AimDelta, self.WalkBobMult, self.WalkBobMult_Iron or self.WalkBobMult)
+    local intensityBreath = Lerp(AimDelta, self.BreathScale, self.IronBobMultWalk * intensityWalk)
+    intensityWalk = (1 - AimDelta) * intensityWalk
+    local intensityRun = Lerp(self.SprintProgressUnpredicted, 0, self.SprintBobMult)
+    local velocity = math.max(self:GetOwner():GetVelocity():Length2D() - self:GetOwner():GetVelocity().z * 0.5, 0)
+    local rate = math.min(math.max(0.15, math.sqrt(velocity / self:GetOwner():GetRunSpeed()) * 1.75), self:GetIsSprinting() and 5 or 3)
+
+    self.pos_cached, self.ang_cached = self:WalkBob(
+        target_pos,
+        Angle(target_ang.x, target_ang.y, target_ang.z),
+        math.max(intensityBreath - intensityWalk - intensityRun, 0),
+        math.max(intensityWalk - intensityRun, 0), rate, delta)
 
 end
 
@@ -162,11 +195,12 @@ Purpose:  Utility function / Animation
 ]]
 --
 function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
+    local ironprogress = self.IronSightsProgressUnpredicted
     local owner = self:GetOwner()
     local vm = owner:GetViewModel()
     if not IsValid(owner) then return end
     local vars = self.ViewModelVars
-    vars.LerpAimDelta = self:SafeLerp(10 * FrameTime(), vars.LerpAimDelta, self:GetAimDelta())
+    vars.LerpAimDelta = self:SafeLerp(10 * FrameTime(), vars.LerpAimDelta, ironprogress)
     --jump
     self:CalcViewModelJump()
 
@@ -183,7 +217,7 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
     --idle and aim offsets
     local aimPos, aimAng = self:GetAvailableAimOffsets()
     aimAng = aimAng * 1
-    aimAng:Mul(self:SafeLerp(self:GetAimDelta(), 0, 1))
+    aimAng:Mul(self:SafeLerp(ironprogress, 0, 1))
     local idleAng = self.ViewModelOffsets.Idle.Angles * self:SafeLerp(self:GetAimDelta(), 1, 0)
     self:SafeLerpAngle(50 * FrameTime(), vars.LerpAimAngles, aimAng)
     EyeAng:Add(vars.LerpAimAngles)
@@ -192,7 +226,7 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
 
     --viewpunch
     local vpAngles = self:GetOwner():GetViewPunchAngles()
-    vpAngles:Mul(self:SafeLerp(self:GetAimDelta(), 0.2, 0.01))
+    vpAngles:Mul(self:SafeLerp(ironprogress, 0.2, 0.01))
     EyeAng:Add(vpAngles)
     --end viewpunch
 
@@ -217,10 +251,10 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
     local up = EyeAng:Up()
     --recoil
 
-    local intensity = (math.Clamp(self:GetOwner():GetViewPunchAngles().p / 90, -1, 1) * 20) * self:SafeLerp(self:GetAimDelta(), 0.3 * self.ViewModelOffsets.RecoilMultiplier, 0.01 * self.ViewModelOffsets.RecoilMultiplier)
+    local intensity = (math.Clamp(self:GetOwner():GetViewPunchAngles().p / 90, -1, 1) * 20) * self:SafeLerp(ironprogress, 0.3 * self.ViewModelOffsets.RecoilMultiplier, 0.01 * self.ViewModelOffsets.RecoilMultiplier)
     self:VectorAddAndMul(EyePos, up, intensity * 0.3)
     self:VectorAddAndMul(EyePos, forward, intensity)
-    self:VectorAddAndMul(EyePos, forward, -self.Camera.Shake * self:SafeLerp(self:GetAimDelta(), 0.7, 1.3) * self:SafeLerp(self:GetAimDelta(), self.ViewModelOffsets.KickMultiplier or 1, self.ViewModelOffsets.AimKickMultiplier or 1))
+    self:VectorAddAndMul(EyePos, forward, -self.Camera.Shake * self:SafeLerp(ironprogress, 0.7, 1.3) * self:SafeLerp(ironprogress, self.ViewModelOffsets.KickMultiplier or 1, self.ViewModelOffsets.AimKickMultiplier or 1))
     --end recoil
 
     --movement
@@ -243,13 +277,13 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
     --offsets
     self:SafeLerpVector(50 * FrameTime(), vars.LerpAimPos, aimPos)
     local idleOffset = self:CalcOffset(self.ViewModelOffsets.Idle.Pos, EyeAng * 1)
-    idleOffset:Mul(self:SafeLerp(self:GetAimDelta(), 1, 0))
+    idleOffset:Mul(self:SafeLerp(ironprogress, 1, 0))
     EyePos:Add(idleOffset)
     --end offsets
 
     --crouch
     self:SafeLerpVector(10 * FrameTime(), vars.LerpCrouch, self:CalcCrouchOffset())
-    vars.LerpCrouch:Mul(1 - self:GetAimDelta())
+    vars.LerpCrouch:Mul(1 - ironprogress)
     self:VectorAddAndMul(EyePos, up, vars.LerpCrouch.z)
     self:VectorAddAndMul(EyePos, forward, vars.LerpCrouch.y)
     self:VectorAddAndMul(EyePos, right, vars.LerpCrouch.x)
@@ -320,6 +354,7 @@ Purpose:  Utility function / Animation
 ]]
 --
 function SWEP:CalcMovementSway()
+    if self:GetIsAiming() then return end
     local owner = self:GetOwner()
     local velVector = Vector(owner:GetVelocity().x, owner:GetVelocity().y, 0)
     local forward = Angle(0, owner:EyeAngles().yaw, 0):Forward():Dot(velVector) / owner:GetWalkSpeed()
@@ -345,6 +380,7 @@ Purpose:  Utility function / Animation
 ]]
 --
 function SWEP:CalcSway(angsway)
+    --if self:GetIsAiming() then return end
     --if self.DisableSway then return end
     local x = angsway.yaw
     local y = angsway.pitch
