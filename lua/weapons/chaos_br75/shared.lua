@@ -29,7 +29,7 @@ SWEP.Primary.RPM          	     = 900
 
 --Burst Handlig
 SWEP.Primary.BurstRounds         = 3
-SWEP.Primary.BurstDelay          = 660
+SWEP.Primary.BurstDelay          = 200
 SWEP.OnlyBurstFire                = false -- No auto, only burst/single?
 
 SWEP.ViewModelPosition  = Vector(0, -4, 0)
@@ -40,6 +40,9 @@ SWEP.IronSightsAng      = Vector(0,0,0)
 
 SWEP.SafetyPos          = Vector(0,0,-2)
 SWEP.SafetyAng          = Vector(-10, -15, 25)
+
+SWEP.RunPos             = Vector(15, 6, 1)
+SWEP.RunAng             = Vector(-10, 1, 50)
 
 --HoldType Handling.
 SWEP.HoldtypeHolstered = "passive"

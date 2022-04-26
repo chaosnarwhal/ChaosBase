@@ -28,7 +28,7 @@ SWEP.Primary.DistantShootSound   = Sound("drc.ma5c_fire_dist")
 SWEP.Primary.RPM          	     = 550
 
 SWEP.ViewModelPosition  = Vector(0, 0, 0)
-SWEP.ViewModelAngle     = Vector(0, 0, 0)
+SWEP.ViewModelAngle     = Vector(0, 1, 0)
 
 SWEP.IronSightsPos      = Vector(-3.8,0,-2)
 SWEP.IronSightsAng      = Vector(0,0,0)

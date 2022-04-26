@@ -80,7 +80,7 @@ SWEP.ParticleEffects = {
 
 SWEP.Bullet = {
     Damage = 65, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range
-    HullSize = 3,
+    HullSize = 1,
     DropOffStartRange = 20, --in meters, damage will start dropping off after this range
     EffectiveRange = 65, --in meters, damage scales within this distance
     Range = 180, --in meters, after this distance the bullet stops existing
