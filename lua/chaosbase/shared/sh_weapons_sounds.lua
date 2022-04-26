@@ -306,7 +306,7 @@ sound.Add( {
 })
 
 sound.Add( {
-	name = "chaos.m20.magout",
+	name = "chaos.m20_magout",
 	channel = CHAN_ITEM,
 	volume = 1.0,
 	level = SNDLVL_55dB,
@@ -319,7 +319,7 @@ sound.Add( {
 })
 
 sound.Add( {
-	name = "chaos.m20.magin",
+	name = "chaos.m20_magin",
 	channel = CHAN_ITEM,
 	volume = 1.0,
 	level = SNDLVL_55dB,
@@ -332,7 +332,7 @@ sound.Add( {
 })
 
 sound.Add( {
-	name = "chaos.m20.pull",
+	name = "chaos.m20_pull",
 	channel = CHAN_ITEM,
 	volume = 1.0,
 	level = SNDLVL_55dB,
@@ -344,7 +344,7 @@ sound.Add( {
 })
 
 sound.Add( {
-	name = "chaos.m20.release",
+	name = "chaos.m20_release",
 	channel = CHAN_ITEM,
 	volume = 1.0,
 	level = SNDLVL_55dB,

@@ -95,7 +95,7 @@ function SWEP:WalkBob(pos, ang, breathIntensity, walkIntensity, rate, ftv)
 	pos:Add(riLocal * (math.sin(self.ti * walkRate) - math.cos(self.ti * walkRate)) * flip_v * breathIntensity * 0.2 * breatheMult1)
 	pos:Add(upLocal * math.sin(self.ti * walkRate) * breathIntensity * 0.5 * breatheMult1)
 
-	pos:Add(riLocal * math.cos(self.ti * walkRate / 2) * flip_v * breathIntensity * 0.6 * breatheMult2)
+	pos:Add(riLocal * math.cos(self.ti * walkRate / 2) * flip_v * breathIntensity * 0.6 * breatheMult2 * (1 - self.IronSightsProgressUnpredicted))
 
 	--WalkAnims
 	self.WalkTI = (self.walkTI or 0) + delta * 160 / 60 * self:GetOwner():GetVelocity():Length2D() / self:GetOwner():GetWalkSpeed()
@@ -111,7 +111,7 @@ function SWEP:WalkBob(pos, ang, breathIntensity, walkIntensity, rate, ftv)
 
 	--Constant Offsets
 	pos:Add(riLocal * walkVec.x * flip_v)
-	pos:Add(fwLocal * walkVec.y)
+	pos:Add(fwLocal * walkVec.y )
 	pos:Add(upLocal * walkVec.z)
 
 	--Jumping
@@ -129,7 +129,7 @@ function SWEP:WalkBob(pos, ang, breathIntensity, walkIntensity, rate, ftv)
 		xVelocityClamped = (math.sqrt((math.abs(xVelocityClamped) - 200) / 50) * 50 + 200) * sign
 	end
 
-	ang:RotateAroundAxis(ang:Up(), xVelocityClamped * 0.04)
+	ang:RotateAroundAxis(ang:Up(), xVelocityClamped * 0.04 * (1 - self.IronSightsProgressUnpredicted) * (1 - self.SprintProgressUnpredicted))
 
 	return pos, ang
 

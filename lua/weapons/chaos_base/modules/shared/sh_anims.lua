@@ -129,7 +129,6 @@ Purpose: SWEP Animation.
 --
 function SWEP:PlayIdleAnimation(pred)
     local ianim = self:SelectAnimation("idle")
-    if self:GetIsAiming() then return end
 
     if (self:Clip1() == 0 or self:GetNeedCycle()) and self.Animations.idle_empty then
         ianim = ianim or "idle_empty"
@@ -255,6 +254,10 @@ function SWEP:PlayEvent(v)
         local vm = self:GetOwner():GetViewModel()
 
         vm:SetPoseParameter(pp, ppv)
+    end
+
+    if v.muzzleflash then
+        self:DoParticle("MuzzleFlash", "muzzle")
     end
 end
 

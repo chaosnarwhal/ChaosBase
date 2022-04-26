@@ -109,9 +109,9 @@ function SWEP:Scroll(var)
 
 		Scope.ScopeMagnification = math.Clamp(Scope.ScopeMagnification, Scope.ScopeMagnificationMin, Scope.ScopeMagnificationMax)
 
-		--if old != Scope.ScopeMagnification then
-            --self:MyEmitSound(Scope.ZoomSound or "", 75, math.Rand(95, 105), 1, CHAN_ITEM)
-       --end
+		if old != Scope.ScopeMagnification then
+            self:EmitSound(Scope.ZoomSound or "", 75, math.Rand(95, 105), 1, CHAN_ITEM)
+       end
     end
 end
 --[[

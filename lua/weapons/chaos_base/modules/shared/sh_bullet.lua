@@ -1,9 +1,17 @@
 AddCSLuaFile()
 
 function SWEP:BulletCallback(attacker, tr, dmgInfo)
-    if CLIENT then
         if not game.SinglePlayer() and not IsFirstTimePredicted() then return end
-        if not self:IsCarriedByLocalPlayer() then return end
+        if not IsValid(self:GetOwner()) then return end
+
+        local dist = tr.HitPos:Distance(self:GetOwner():GetShootPos())
+        local effectiveRange = self:MetersToHU(self.Bullet.EffectiveRange)
+        local dropoffStart = self.Bullet.DropOffStartRange && self:MetersToHU(self.Bullet.DropOffStartRange) || 0
+
+        local damage = Lerp(math.Clamp((dist - dropoffStart) / effectiveRange, 0, 1), self.Bullet.Damage[1], self.Bullet.Damage[2])
+        --damage = math.max(damage / self.Bullet.NumBullets, 1)
+
+        dmgInfo:SetDamage(damage + 1)
 
         --Custom Hitgroup Damage Setting
         local dmgtable = self.BodyDamageMults
@@ -14,11 +22,12 @@ function SWEP:BulletCallback(attacker, tr, dmgInfo)
             local hg = tr.HitGroup
             local gam = ChaosBase.LimbCompensation[engine.ActiveGamemode()] or ChaosBase.LimbCompensation[1]
             if dmgtable[hg] then
-                dmg:ScaleDamage(dmgtable[hg])
-                if GetConVar("chaosbase_bodydamagemult_cancel"):GetBool() and gam[hg] then dmg:ScaleDamage(gam[hg]) end
+                dmgInfo:ScaleDamage(dmgtable[hg])
+                if GetConVar("chaosbase_bodydamagemult_cancel"):GetBool() and gam[hg] then dmgInfo:ScaleDamage(gam[hg]) end
             end
         end
 
+    if CLIENT then
         --only do one call on initial impact, for the rest server will take care of it
         if self.lastHitEntity == NULL then
             net.Start("chaosbase_clienthitreg", true)
@@ -57,8 +66,8 @@ function SWEP:ShootBullets(hitpos)
             Src = self:GetOwner():EyePos(),
             Dir = dir,
             Spread = spread,
-            Num = SERVER and 1 or self.Bullet.NumBullets,
-            Damage = self.Bullet.Damage,
+            Num = SERVER && 1 || self.Bullet.NumBullets,
+            Damage = 0,
             HullSize = self.Bullet.HullSize,
             --Force = (self.Bullet.Damage[1] * self.Bullet.PhysicsMultiplier) * 0.01,
             Distance = self:MetersToHU(self.Bullet.Range),

@@ -62,14 +62,14 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
         self:PrimaryAttack()
     end
 
+    if self:GetIsAiming() then
+        self:SetNextIdle(0)
+    end
+    
     --Idle Anim timer
     if self:GetNextIdle() ~= 0 and self:GetNextIdle() <= CurTime() then
         self:SetNextIdle(0)
         self:PlayIdleAnimation(true)
-    end
-
-    if self:GetIsAiming() then
-        self:SetNextIdle(0)
     end
 
     --Reloading Timer

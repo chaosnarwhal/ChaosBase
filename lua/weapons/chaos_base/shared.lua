@@ -23,7 +23,7 @@ SWEP.CLSIDE_MODULES = {
     "modules/client/cl_hud.lua",
     "modules/client/cl_sck.lua",
     "modules/client/cl_scopes.lua",
-    "modules/client/cl_viewmodel_render.lua"
+    "modules/client/cl_viewbob.lua",
 }
 
 --START GUN CODE.
@@ -123,9 +123,11 @@ SWEP.HoldtypeNPC = nil
 SWEP.SprintBobMult = 1.1 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this > 1 probably for sprinting.
 SWEP.IronBobMult = 0.0 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this < 1 for sighting, 0 to outright disable.
 SWEP.IronBobMultWalk = 0.2 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this < 1 for sighting, 0 to outright disable.
-SWEP.WalkBobMult = 1 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You may want to disable it when using animated walk.
+SWEP.WalkBobMult = 3 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You may want to disable it when using animated walk.
 SWEP.SprintViewBobMult = 2
 SWEP.BreathScale = 0.2
+
+SWEP.ViewbobIntensity = 1
 
 SWEP.ViewModelFlip = 0
 
