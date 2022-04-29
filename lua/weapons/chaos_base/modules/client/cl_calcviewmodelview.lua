@@ -41,6 +41,7 @@ function SWEP:GetViewModelPosition(opos, oang, ...)
     nang:RotateAroundAxis(nang:Right(), self.ang_cached.p)
     nang:RotateAroundAxis(nang:Up(), self.ang_cached.r)
     nang:RotateAroundAxis(nang:Forward(), self.ang_cached.y)
+
     npos:Add(nang:Right() * self.pos_cached.x)
     npos:Add(nang:Forward() * self.pos_cached.y)
     npos:Add(nang:Up() * self.pos_cached.z)
@@ -137,14 +138,14 @@ function SWEP:CalculateViewModelOffset(delta)
     target_pos.y = target_pos.y + chaosbase_vmoffset_y:GetFloat() * (1 - AimDelta)
     target_pos.z = target_pos.z + chaosbase_vmoffset_z:GetFloat() * (1 - AimDelta)
 
-    local intensityWalk = math.min(self:GetOwner():GetVelocity():Length2D() / self:GetOwner():GetWalkSpeed(), 1) * Lerp(AimDelta, self.WalkBobMult, self.WalkBobMult_Iron or self.WalkBobMult)
-    local intensityBreath = Lerp(AimDelta, self.BreathScale, self.IronBobMultWalk * intensityWalk)
+    local intensityWalk = math.min(self:GetOwner():GetVelocity():Length2D() / self:GetOwner():GetWalkSpeed(), 1) * self:SafeLerp(AimDelta, self.WalkBobMult, self.WalkBobMult_Iron or self.WalkBobMult) * 0.5
+    local intensityBreath = self:SafeLerp(AimDelta, self.BreathScale, intensityWalk)
     intensityWalk = (1 - AimDelta) * intensityWalk
-    local intensityRun = Lerp(self.SprintProgressUnpredicted, 0, self.SprintBobMult)
+    local intensityRun = self:SafeLerp(self.SprintProgressUnpredicted, 0, self.SprintBobMult)
     local velocity = math.max(self:GetOwner():GetVelocity():Length2D() - self:GetOwner():GetVelocity().z * 0.5, 0)
     local rate = math.min(math.max(0.15, math.sqrt(velocity / self:GetOwner():GetRunSpeed()) * 1.75), self:GetIsSprinting() and 5 or 3)
 
-    self.pos_cached, self.ang_cached = self:WalkBob(
+    self.pos_cached, self.ang_cached = self:ChaosWalkBob(
         target_pos,
         Angle(target_ang.x, target_ang.y, target_ang.z),
         math.max(intensityBreath - intensityWalk - intensityRun, 0),

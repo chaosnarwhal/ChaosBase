@@ -45,7 +45,7 @@ local function l_Lerp(t, a, b)
 	return a + (b - a) * t
 end
 
-function SWEP:WalkBob(pos, ang, breathIntensity, walkIntensity, rate, ftv)
+function SWEP:ChaosWalkBob(pos, ang, breathIntensity, walkIntensity, rate, ftv)
 	if not IsValid(self:GetOwner()) then return end
 	rate = math.min(rate or 0.5, rate_clamp)
 	gunbob_intensity = 1
@@ -58,6 +58,7 @@ function SWEP:WalkBob(pos, ang, breathIntensity, walkIntensity, rate, ftv)
 	local riLocal = riVec
 	local fwLocal = fwVec
 	local delta = ftv
+
 	local flip_v = self.ViewModelFlip and -1 or 1
 	self.bobRateCached = rate
 	self.ti = self.ti + delta * rate
@@ -71,18 +72,18 @@ function SWEP:WalkBob(pos, ang, breathIntensity, walkIntensity, rate, ftv)
 	end
 
 	--Calcs for ViewModel Bobbing.
-	walkIntesnsitySmooth = self:SafeLerp(delta * 10 * rateScaleFac, walkIntensitySmooth, walkIntensity)
-	breathIntensitySmooth = self:SafeLerp(delta * 10 * rateScaleFac, breathIntensitySmooth, breathIntensity)
+	walkIntesnsitySmooth = l_Lerp(delta * 10 * rateScaleFac, walkIntensitySmooth, walkIntensity)
+	breathIntensitySmooth = l_Lerp(delta * 10 * rateScaleFac, breathIntensitySmooth, breathIntensity)
 	--walkVec = LerpVector(walkIntesnsitySmooth, vector_origin, self.VMOffsetWalk)
 	ownerVelocity = self:GetOwner():GetVelocity()
 	zVelocity = ownerVelocity.z
-	zVelocitySmooth = self:SafeLerp(delta * 7 * rateScaleFac, zVelocity, zVelocity)
+	zVelocitySmooth = l_Lerp(delta * 7 * rateScaleFac, zVelocity, zVelocity)
 	ownerVelocityMod = ownerVelocity * flatVec
 	ownerVelocityMod:Normalize()
 	rightVec = ea:Right() * flatVec
 	rightVec:Normalize()
 	xVelocity = ownerVelocity:Length2D() * ownerVelocityMod:Dot(rightVec)
-	xVelocitySmooth = self:SafeLerp(delta * 5 * rateScaleFac, xVelocitySmooth, xVelocity)
+	xVelocitySmooth = l_Lerp(delta * 5 * rateScaleFac, xVelocitySmooth, xVelocity)
 
 	--Mults
 	breathIntensity = breathIntensitySmooth * gunbob_intensity * 1.5
@@ -94,13 +95,12 @@ function SWEP:WalkBob(pos, ang, breathIntensity, walkIntensity, rate, ftv)
 
 	pos:Add(riLocal * (math.sin(self.ti * walkRate) - math.cos(self.ti * walkRate)) * flip_v * breathIntensity * 0.2 * breatheMult1)
 	pos:Add(upLocal * math.sin(self.ti * walkRate) * breathIntensity * 0.5 * breatheMult1)
-
 	pos:Add(riLocal * math.cos(self.ti * walkRate / 2) * flip_v * breathIntensity * 0.6 * breatheMult2 * (1 - self.IronSightsProgressUnpredicted))
 
 	--WalkAnims
 	self.WalkTI = (self.walkTI or 0) + delta * 160 / 60 * self:GetOwner():GetVelocity():Length2D() / self:GetOwner():GetWalkSpeed()
-	WalkPos.x = self:SafeLerp(delta * 5 * rateScaleFac, WalkPos.x, -math.sin(self.ti * walkRate * 0.5) * gunbob_intensity * walkIntesnsity)
-	WalkPos.y = self:SafeLerp(delta * 5 * rateScaleFac, WalkPos.y, math.sin(self.ti * walkRate) / 1.5 * gunbob_intensity * walkIntesnsity)
+	WalkPos.x = l_Lerp(delta * 5 * rateScaleFac, WalkPos.x, -math.sin(self.ti * walkRate * 0.5) * gunbob_intensity * walkIntesnsity)
+	WalkPos.y = l_Lerp(delta * 5 * rateScaleFac, WalkPos.y, math.sin(self.ti * walkRate) / 1.5 * gunbob_intensity * walkIntesnsity)
 	WalkPosLagged.x = l_Lerp(delta * 5 * rateScaleFac, WalkPosLagged.x, -math.sin((self.ti * walkRate * 0.5) + math.pi / 3) * gunbob_intensity * walkIntesnsity)
 	WalkPosLagged.y = l_Lerp(delta * 5 * rateScaleFac, WalkPosLagged.y, math.sin(self.ti * walkRate + math.pi / 3) / 1.5 * gunbob_intensity * walkIntesnsity)
 	pos:Add(WalkPos.x * 0.33 * riLocal)

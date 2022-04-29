@@ -135,10 +135,10 @@ SWEP.HoldtypeSprintShoot = nil
 SWEP.HoldtypeNPC = nil
 
 SWEP.SprintBobMult = 1.1 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this > 1 probably for sprinting.
-SWEP.IronBobMult = 0.0 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this < 1 for sighting, 0 to outright disable.
-SWEP.IronBobMultWalk = 0.2 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this < 1 for sighting, 0 to outright disable.
+SWEP.IronBobMult = 0 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this < 1 for sighting, 0 to outright disable.
+SWEP.IronBobMultWalk = 0 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this < 1 for sighting, 0 to outright disable.
 SWEP.WalkBobMult = 3 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You may want to disable it when using animated walk.
-SWEP.SprintViewBobMult = 2
+SWEP.SprintViewBobMult = 1
 SWEP.BreathScale = 0.1
 
 SWEP.ViewbobIntensity = 1

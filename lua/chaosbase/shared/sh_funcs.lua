@@ -38,14 +38,6 @@ Used For: Enables and disables screen clicker
 ]]
 --
 if CLIENT then
-	local st_old, host_ts, cheats, vec, ang
-	host_ts = GetConVar("host_timescale")
-	cheats = GetConVar("sv_cheats")
-	vec = Vector()
-	ang = Angle()
-
-	local IsGameUIVisible = gui and gui.IsGameUIVisible
-
 	hook.Add("Think", "ChaosPlayerThinkCL", function()
 		local ply = LocalPlayer()
 		if not IsValid(ply) then return end
@@ -58,10 +50,19 @@ if CLIENT then
 			end
 		end
 	end)
+	
+end
 
-	--PreDrawViewModel
+if CLIENT then
+	local st_old, host_ts, cheats, vec, ang
+	host_ts = GetConVar("host_timescale")
+	cheats = GetConVar("sv_cheats")
+	vec = Vector()
+	ang = Angle()
 
-	hook.Add("PreDrawViewModel", "DrawThatViewModelThang", function(vm, plyv, wepv)
+	local IsGameUIVisible = gui and gui.IsGameUIVisible
+	
+	hook.Add("PreDrawViewModel", "ChaosBasePreDrawViewModel", function(vm, plyv, wepv)
 		if not IsValid(wepv) or not wepv.ChaosBase then return end
 
 		local st = SysTime()
@@ -71,14 +72,11 @@ if CLIENT then
 		st_old = st
 
 		if sp and IsGameUIVisible and IsGameUIVisible() then return end
-
-		delta = delta * game.GetTimeScale() * (cheats:GetBool() and host_ts:GetFloat() or 1)
 		
     	wepv:CalculateViewModelOffset(delta)
     	wepv:CalculateViewModelFlip()
 
 	end)
-	
 end
 
 net.Receive("chaosbase_firemode", function(len, ply)

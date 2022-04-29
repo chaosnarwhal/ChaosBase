@@ -117,7 +117,7 @@ function SWEP:CalcView(ply, pos, ang, fov)
     if ply ~= LocalPlayer() then return end
     local vm = ply:GetViewModel()
 
-    local ftv = math.max(ChaosBase.FrameTime, 0.001)
+    local ftv = math.max(FrameTime(), 0.001)
     local viewbobintensity = self.ViewbobIntensity * 0.5
     local holprog = self:GetIsHolstering() and 1 or 0
     self.ViewHolProg = math.Approach(self.ViewHolProg, holprog, ftv / 5)
