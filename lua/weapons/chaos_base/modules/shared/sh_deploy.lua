@@ -18,6 +18,8 @@ function SWEP:Deploy(fromFallback)
 
     self:IsHighTier()
 
+    self:ChaosCustomDeploy()
+
     --Reset NW Values when weapon is pulled out.
     self:SetReloading(false)
     self:SetState(0)
@@ -60,6 +62,8 @@ function SWEP:Deploy(fromFallback)
     return true
 end
 
+function SWEP:ChaosCustomDeploy()
+end
 --[[ 
 Function Name: initialDefaultClip.
 Syntax: self:initialDefaultClip().

@@ -101,8 +101,8 @@ function SWEP:WalkBob(pos, ang, breathIntensity, walkIntensity, rate, ftv)
 	self.WalkTI = (self.walkTI or 0) + delta * 160 / 60 * self:GetOwner():GetVelocity():Length2D() / self:GetOwner():GetWalkSpeed()
 	WalkPos.x = self:SafeLerp(delta * 5 * rateScaleFac, WalkPos.x, -math.sin(self.ti * walkRate * 0.5) * gunbob_intensity * walkIntesnsity)
 	WalkPos.y = self:SafeLerp(delta * 5 * rateScaleFac, WalkPos.y, math.sin(self.ti * walkRate) / 1.5 * gunbob_intensity * walkIntesnsity)
-	WalkPosLagged.x = self:SafeLerp(delta * 5 * rateScaleFac, WalkPosLagged.x, -math.sin((self.ti * walkRate * 0.5) + math.pi / 3) * gunbob_intensity * walkIntesnsity)
-	WalkPosLagged.y = self:SafeLerp(delta * 5 * rateScaleFac, WalkPosLagged.y, math.sin(self.ti * walkRate + math.pi / 3) / 1.5 * gunbob_intensity * walkIntesnsity)
+	WalkPosLagged.x = l_Lerp(delta * 5 * rateScaleFac, WalkPosLagged.x, -math.sin((self.ti * walkRate * 0.5) + math.pi / 3) * gunbob_intensity * walkIntesnsity)
+	WalkPosLagged.y = l_Lerp(delta * 5 * rateScaleFac, WalkPosLagged.y, math.sin(self.ti * walkRate + math.pi / 3) / 1.5 * gunbob_intensity * walkIntesnsity)
 	pos:Add(WalkPos.x * 0.33 * riLocal)
 	pos:Add(WalkPos.y * 0.25 * upLocal)
 	ang:RotateAroundAxis(ri, -WalkPosLagged.y)
@@ -152,6 +152,10 @@ function SWEP:SprintBob(pos, ang, intensity, origPos, origAng)
 
 	intensity = intensity * gunbob_intensity * 1.5
 	gunbob_intensity = 1
+
+	local a,b,c = self:IsHighTier()
+
+	if c then intensity = intensity * 0.2 end
 
 	if intensity > 0.005 then
 		if self.SprintStyle == 1 then

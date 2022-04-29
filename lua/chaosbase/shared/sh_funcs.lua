@@ -61,11 +61,8 @@ if CLIENT then
 
 	--PreDrawViewModel
 
-	hook.Add("PreDrawViewModel", "DrawThatViewModelThang", function(vm)
-		local ply = LocalPlayer()
-		if not IsValid(ply) then return end
-
-		local weapon = ply:GetActiveWeapon()
+	hook.Add("PreDrawViewModel", "DrawThatViewModelThang", function(vm, plyv, wepv)
+		if not IsValid(wepv) or not wepv.ChaosBase then return end
 
 		local st = SysTime()
 		st_old = st_old or st
@@ -75,12 +72,10 @@ if CLIENT then
 
 		if sp and IsGameUIVisible and IsGameUIVisible() then return end
 
-		delta = delta * game.GetTimeScale() * (cheats:GetBool() and host_ts:GetFloat() or 1)	
-
-		if IsValid(weapon) and weapon.ChaosBase then
-    		weapon:CalculateViewModelOffset(delta)
-    		weapon:CalculateViewModelFlip()
-		end
+		delta = delta * game.GetTimeScale() * (cheats:GetBool() and host_ts:GetFloat() or 1)
+		
+    	wepv:CalculateViewModelOffset(delta)
+    	wepv:CalculateViewModelFlip()
 
 	end)
 	

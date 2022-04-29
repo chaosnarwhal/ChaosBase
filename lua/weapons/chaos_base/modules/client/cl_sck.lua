@@ -174,6 +174,8 @@ if CLIENT then
 	function SWEP:DrawWorldModel()
 		
 		if (self.ShowWorldModel == nil or self.ShowWorldModel) then
+			self.WorldModelOffsetUpdate(self, ply)
+
 			self:DrawModel()
 		end
 		
@@ -322,7 +324,6 @@ if CLIENT then
 	end
 	function SWEP:CreateModels( tab )
 		if (!tab) then return end
-		// Create the clientside models here because Garry says we can't do it in the render hook
 		for k, v in pairs( tab ) do
 			if (v.type == "Model" and v.model and v.model != "" and (!IsValid(v.modelEnt) or v.createdModel != v.model) and 
 					string.find(v.model, ".mdl") and file.Exists (v.model, "GAME") ) then
@@ -467,4 +468,53 @@ if CLIENT then
 		
 	end
 	
+end
+
+function SWEP:WorldModelOffsetUpdate(ply)
+	if not IsValid(ply) then
+		self:SetRenderOrigin(nil)
+		self:SetRenderAngles(nil)
+
+		local WorldModelOffset = self.WorldModelOffset
+
+		if WorldModelOffset and WorldModelOffset.Scale then
+			self:SetModelScale(WorldModelOffset.Scale, 0)
+		end
+
+		return
+	end
+
+
+	local WorldModelOffset = self.WorldModelOffset
+
+		-- THIS IS DANGEROUS
+	if WorldModelOffset and WorldModelOffset.Pos and WorldModelOffset.Ang then
+		-- TO DO ONLY CLIENTSIDE
+		-- since this will break hitboxes!
+		local handBone = ply:LookupBone("ValveBiped.Bip01_R_Hand")
+
+		if handBone then
+			--local pos, ang = ply:GetBonePosition(handBone)
+			local pos, ang
+			local mat = ply:GetBoneMatrix(handBone)
+
+			if mat then
+				pos, ang = mat:GetTranslation(), mat:GetAngles()
+			else
+				pos, ang = ply:GetBonePosition(handBone)
+			end
+
+			local opos, oang, oscale = WorldModelOffset.Pos, WorldModelOffset.Ang, WorldModelOffset.Scale
+
+			pos = pos + ang:Forward() * opos.Forward + ang:Right() * opos.Right + ang:Up() * opos.Up
+			ang:RotateAroundAxis(ang:Up(), oang.Up)
+			ang:RotateAroundAxis(ang:Right(), oang.Right)
+			ang:RotateAroundAxis(ang:Forward(), oang.Forward)
+			self:SetRenderOrigin(pos)
+			self:SetRenderAngles(ang)
+			--if WorldModelOffset.Scale and ( !self2.MyModelScale or ( WorldModelOffset and self2.MyModelScale!=WorldModelOffset.Scale ) ) then
+			self:SetModelScale(oscale or 1, 0)
+			--end
+		end
+	end
 end

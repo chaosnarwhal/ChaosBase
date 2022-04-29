@@ -23,7 +23,6 @@ SWEP.CLSIDE_MODULES = {
     "modules/client/cl_hud.lua",
     "modules/client/cl_sck.lua",
     "modules/client/cl_scopes.lua",
-    "modules/client/cl_viewbob.lua",
 }
 
 --START GUN CODE.
@@ -58,6 +57,21 @@ SWEP.VMPos_Additive = true -- Set to false for an easier time using VMPos. If tr
 SWEP.AdditiveViewModelPosition = true
 SWEP.FovMultiplier = 0
 
+SWEP.WorldModelOffset = {
+    Pos = {
+        Up = 0,
+        Right = 0,
+        Forward = 0
+    },
+
+    Ang = {
+        Up = -1,
+        Right = -2,
+        Forward = 178
+    },
+
+    Scale = 1
+}
 
 --Scopes
 SWEP.Scoped = false  --Draw a scope overlay?
@@ -125,7 +139,7 @@ SWEP.IronBobMult = 0.0 -- More is more bobbing, proportionally.  This is multipl
 SWEP.IronBobMultWalk = 0.2 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this < 1 for sighting, 0 to outright disable.
 SWEP.WalkBobMult = 3 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You may want to disable it when using animated walk.
 SWEP.SprintViewBobMult = 2
-SWEP.BreathScale = 0.2
+SWEP.BreathScale = 0.1
 
 SWEP.ViewbobIntensity = 1
 
@@ -269,6 +283,19 @@ SWEP.ViewModelOffsets = {
     KickMultiplier = 2,
     AimKickMultiplier = 0.15
 }
+
+SWEP.BlowbackEnabled        = false -- Enable Blowback?
+SWEP.BlowbackVector         = Vector(0, -1, 0) -- Vector to move bone <or root> relative to bone <or view> orientation.
+SWEP.BlowbackAngle          = nil -- Angle(0, 0, 0)
+SWEP.BlowbackCurrentRoot    = 0 -- Amount of blowback currently, for root
+SWEP.BlowbackCurrent        = 0 -- Amount of blowback currently, for bones
+SWEP.BlowbackBoneMods       = nil -- Viewmodel bone mods via SWEP Creation Kit
+SWEP.Blowback_Only_Iron     = true -- Only do blowback on ironsights
+SWEP.Blowback_SlideLock    = false -- Do we recover from blowback when empty?
+SWEP.Blowback_Shell_Enabled = true -- Shoot shells through blowback animations
+SWEP.Blowback_Shell_Effect  = "ShellEject" -- Which shell effect to use
+SWEP.BlowbackAllowAnimation = nil -- Allow playing shoot animation with blowback?
+
 
 --BASE VALUES DONT TOUCH.
 SWEP.IronSightsProgressUnpredicted = 0
