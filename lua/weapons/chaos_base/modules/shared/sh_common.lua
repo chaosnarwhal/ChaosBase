@@ -21,7 +21,7 @@ ChaosBase.LimbCompensation = {
 }
 
 function SWEP:GetMuzzleAttachment()
-    local vmod = self.OwnerViewModel
+    local vmod = self:GetOwner():GetViewModel()
     local att = math.max(1, self.MuzzleAttachmentRaw or (sp and vmod or self):LookupAttachment(self.MuzzleAttachment))
 
     return att
@@ -56,7 +56,6 @@ function SWEP:GetMuzzlePos(ignorepos)
 end
 
 function SWEP:UpdateMuzzleAttachment()
-    if not self:VMIV() then return end
     local vm = self.OwnerViewModel
     if not IsValid(vm) then return end
     self.MuzzleAttachmentRaw = nil

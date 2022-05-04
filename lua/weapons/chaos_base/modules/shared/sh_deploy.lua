@@ -127,6 +127,8 @@ function SWEP:Initialize()
             LerpBreathing = Angle(0, 0, 0)
         }
 
+        self.Particles = {}
+
         self.ViewModelVars = {
             LerpAimDelta = 0,
             LerpAimPos = Vector(0, 0, 0),

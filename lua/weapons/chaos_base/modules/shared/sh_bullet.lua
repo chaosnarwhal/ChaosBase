@@ -78,3 +78,7 @@ function SWEP:ShootBullets(hitpos)
             end
     })
 end
+
+function SWEP:MetersToHU(meters)
+    return (meters * 100) / 2.54
+end

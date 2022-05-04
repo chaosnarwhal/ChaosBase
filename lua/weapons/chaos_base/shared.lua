@@ -50,7 +50,11 @@ SWEP.ViewModel = "models/your/path/here.mdl" -- Viewmodel path
 SWEP.ViewModelFOV = 65 -- This controls how big the viewmodel looks.  Less is more.
 SWEP.ViewModelFlip = false -- Set this to true for CSS models, or false for everything else (with a righthanded viewmodel.)
 SWEP.UseHands = false -- Use gmod c_arms system.
+
 SWEP.MuzzleAttachment = "1" -- Should be "1" for CSS models or "muzzle" for hl2 models
+SWEP.MuzzleFlashEnabled = true
+SWEP.ShootEffectsCustom = true
+
 SWEP.VMPos = Vector(0, 0, 0) -- The viewmodel positional offset, constantly.  Subtract this from any other modifications to viewmodel position.
 SWEP.VMAng = Vector(0, 0, 0) -- The viewmodel angular offset, constantly.   Subtract this from any other modifications to viewmodel angle.
 SWEP.VMPos_Additive = true -- Set to false for an easier time using VMPos. If true, VMPos will act as a constant delta ON TOP OF ironsights, run, whateverelse

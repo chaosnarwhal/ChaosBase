@@ -132,6 +132,7 @@ function SWEP:PrimaryAttack()
     self:DoShootSound()
     self.lastHitEntity = NULL
 
+    --ClientSide Blood fix
     if not self.Projectile then
         if CLIENT then
             self:ShootBullets()
@@ -142,7 +143,15 @@ function SWEP:PrimaryAttack()
         self:Projectiles()
     end
 
+    --Primary Shoot animations
     self:DoPrimaryAnim()
+    
+    --MuzzleFlash
+    if self.MuzzleFlashEnabled then
+        self:ShootEffectsCustom()
+    end
+
+    --Start Punching view to Recoil and add to the Cone of spray.
     self:GetOwner():ViewPunch(self:CalculateRecoil())
     self:SetCone(math.min(self:GetCone() + self.Cone.Increase * 10 * Lerp(self:GetAimDelta(), 1, self.Cone.AdsMultiplier), self.Cone.Max))
 
@@ -150,6 +159,7 @@ function SWEP:PrimaryAttack()
         self.Camera.Shake = self.Recoil.Shake --* Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier)
     end
 
+    --HighTier code for setting shootsprint anim to cancel.
     if c then
         timer.Simple(2, function()
             if not self:IsValid() then return end
@@ -174,10 +184,6 @@ function SWEP:TakePrimaryAmmo(num)
     end
 
     self:SetClip1(self:Clip1() - num)
-end
-
-function SWEP:MetersToHU(meters)
-    return (meters * 100) / 2.54
 end
 
 function SWEP:DoShootSound(sndoverride, dsndoverride, voloverride, pitchoverride)
