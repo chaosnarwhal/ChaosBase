@@ -153,9 +153,7 @@ function SWEP:PrimaryAttack()
     self:DoPrimaryAnim()
     
     --MuzzleFlash
-    if self.MuzzleFlashEnabled then
-        self:ShootEffectsCustom()
-    end
+    self:ShootEffectsCustom()
 
     --Start Punching view to Recoil and add to the Cone of spray.
     self:GetOwner():ViewPunch(self:CalculateRecoil())

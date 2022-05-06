@@ -36,6 +36,9 @@ SWEP.AnimQueue = {}
 SWEP.FiremodeIndex = 1
 SWEP.UnReady = true
 
+SWEP.RenderGroup = RENDERGROUP_TRANSLUCENT
+SWEP.RenderMode = RENDERMODE_ENVIROMENTAL
+
 --Flavor Text and The name/category of the weapon.
 SWEP.PrintName = "Revival Weapons Base" -- 'Nice' Weapon name (Shown on HUD)
 SWEP.Author = ""
@@ -51,9 +54,10 @@ SWEP.ViewModelFOV = 65 -- This controls how big the viewmodel looks.  Less is mo
 SWEP.ViewModelFlip = false -- Set this to true for CSS models, or false for everything else (with a righthanded viewmodel.)
 SWEP.UseHands = false -- Use gmod c_arms system.
 
-SWEP.MuzzleAttachment = "1" -- Should be "1" for CSS models or "muzzle" for hl2 models
+SWEP.MuzzleAttachment = "muzzle"
 SWEP.MuzzleFlashEnabled = true
-SWEP.ShootEffectsCustom = true
+SWEP.MuzzleFlashEffect = nil
+SWEP.CustomMuzzleFlash = true
 
 SWEP.VMPos = Vector(0, 0, 0) -- The viewmodel positional offset, constantly.  Subtract this from any other modifications to viewmodel position.
 SWEP.VMAng = Vector(0, 0, 0) -- The viewmodel angular offset, constantly.   Subtract this from any other modifications to viewmodel angle.
@@ -99,13 +103,6 @@ SWEP.Scope = {
     SwitchFromSound = "",
     ScrollFunc = ChaosBase.SCROLL_NONE,
     CrosshairInSights = false,
-}
-
---Custom Muzzle Flashes to Code in.
-SWEP.ParticleEffects = {
-    ["MuzzleFlash"] = "",
-    ["MuzzleFlash_Suppressed"] = "",
-    ["Ejection"] = "",
 }
 
 --Passed to CalcView

@@ -11,23 +11,19 @@ function SWEP:MuzzleFlashCustom(spv)
     fx:SetEntity(self)
     fx:SetAttachment(att)
 
-    util.Effect((self.MuzzleFlashEffect or ""), fx)
+    print(att)
+
+    util.Effect((self.MuzzleFlashEffect or ""), fx, false, true)
 
 end
 
 function SWEP:ShootEffectsCustom(ifp)
     local owner = self:GetOwner()
 
-    if self.DoMuzzleFlash ~= nil then
-        self.MuzzleFlashEnable = self.DoMuzzleFlash
-        self.DoMuzzleFlash = nil
-    end
-
     if not self.MuzzleFlashEnabled then return end
-
     if self:IsFirstPerson() then return end
     if not owner.GetShootPos then return end
-    ifp = IsFirstTimePredicted()
+    ifp = ifp or IsFirstTimePredicted()
 
     if (SERVER and sp) or (SERVER and not sp) then
         net.Start("ChaosBase_muzzle_mp", true)
@@ -47,3 +43,4 @@ function SWEP:ShootEffectsCustom(ifp)
         self:MuzzleFlashCustom(sp)
     end
 end
+
