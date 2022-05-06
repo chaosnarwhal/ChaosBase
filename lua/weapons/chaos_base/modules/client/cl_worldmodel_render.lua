@@ -61,7 +61,7 @@ function SWEP:DrawWorldModelTranslucent(flags)
 
             if self.BlowbackBoneMods then
             	for boltname, tbl in pairs(self.BlowbackBoneMods) do
-            		local bolt = self.m_WorldModel:LookupBone("ophandle")
+            		local bolt = self.m_WorldModel:LookupBone(self.BoltWorldModelBone)
 
             		if bolt and bolt >= 0 then
             			bpos = tbl.pos * self.BlowbackCurrent

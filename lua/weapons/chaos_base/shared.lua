@@ -300,6 +300,8 @@ SWEP.Blowback_SlideLock    = false -- Do we recover from blowback when empty?
 SWEP.Blowback_Shell_Enabled = true -- Shoot shells through blowback animations
 SWEP.Blowback_Shell_Effect  = "ShellEject" -- Which shell effect to use
 SWEP.BlowbackAllowAnimation = nil -- Allow playing shoot animation with blowback?
+SWEP.BoltWorldModelBone = "nil"
+SWEP.BoltViewModelBone = "nil"
 
 
 --BASE VALUES DONT TOUCH.
