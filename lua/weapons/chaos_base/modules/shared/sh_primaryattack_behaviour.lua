@@ -155,7 +155,6 @@ function SWEP:PrimaryAttack()
     --Blowback
     if shouldBlowback then
         if IsFirstTimePredicted() then
-            print("true!")
             self:BlowbackFull(ifp)
         end
     end
