@@ -1,5 +1,11 @@
 AddCSLuaFile()
-
+--[[ 
+Function Name: DrawWorldModelTranslucent,
+Syntax: self:DrawWorldModelTranslucent(flags)
+Returns: nothing.
+Notes: Draws the Worldmodel with Translucent Flags (aka fuck you garry).
+Purpose: SWEP Rendering.
+]]--
 function SWEP:DrawWorldModelTranslucent(flags)
 	if not IsValid(self.m_WorldModel) then
 		self:RecreateClientsideModels()
@@ -22,7 +28,6 @@ function SWEP:DrawWorldModelTranslucent(flags)
 
             if HighTierTable[index] then
                 ModelScale = ply:GetNW2Float("Chaos.PlayerScale")
-                print(ModelScale)
                 if HighTierTable[index].Type == "SPARTAN" then
                     offsetVec = Vector(self.SparWorldModelOffsetPos)
                     offsetAng = Angle(self.SparWorldModelOffsetAng)
@@ -37,10 +42,7 @@ function SWEP:DrawWorldModelTranslucent(flags)
 
             local newPos, newAng = LocalToWorld(offsetVec, offsetAng, matrix:GetTranslation(), matrix:GetAngles())
 
-			local wPos = self:GetPos()
-
 			self.m_WorldModel:SetPos(newPos)
-			local wAng = self:GetAngles()
 			self.m_WorldModel:SetAngles(newAng)
 
 			self.m_WorldModel:SetupBones()
@@ -48,6 +50,26 @@ function SWEP:DrawWorldModelTranslucent(flags)
 			self:RenderModelsWorld(self.m_WorldModel, 0)
 
             self.m_WorldModel:SetModelScale(ModelScale)
+
+            --ThirdPerson Bolt Handling
+            if not self.BlowbackBoneMods then
+            	self.BlowbackBoneMods = {}
+            	self.BlowbackCurrent = 0
+            end
+
+            self.BlowbackCurrent = math.Approach(self.BlowbackCurrent, 0, self.BlowbackCurrent * FrameTime() * 30)
+
+            if self.BlowbackBoneMods then
+            	for boltname, tbl in pairs(self.BlowbackBoneMods) do
+            		local bolt = self.m_WorldModel:LookupBone("ophandle")
+
+            		if bolt and bolt >= 0 then
+            			bpos = tbl.pos * self.BlowbackCurrent
+            			self.m_WorldModel:ManipulateBonePosition(bolt,bpos)
+            		end
+            	end
+        	end
+            
         else
             self.m_WorldModel:SetPos(self:GetPos())
             self.m_WorldModel:SetAngles(self:GetAngles())
@@ -55,6 +77,14 @@ function SWEP:DrawWorldModelTranslucent(flags)
 
 end
 
+
+--[[ 
+Function Name: RenderModelsWorld
+Syntax: self:RenderModelsWorld(ent)
+Returns: nothing.
+Notes: Draws the Worldmodel with Translucent Flags (aka fuck you garry).
+Purpose: SWEP Rendering.
+]]--
 function SWEP:RenderModelsWorld(ent)
 	ent:DrawModel()
 

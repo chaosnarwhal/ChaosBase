@@ -151,6 +151,14 @@ function SWEP:PrimaryAttack()
 
     --Primary Shoot animations
     self:DoPrimaryAnim()
+    local shouldBlowback = self.BlowbackEnabled
+    --Blowback
+    if shouldBlowback then
+        if IsFirstTimePredicted() then
+            print("true!")
+            self:BlowbackFull(ifp)
+        end
+    end
     
     --MuzzleFlash
     self:ShootEffectsCustom()

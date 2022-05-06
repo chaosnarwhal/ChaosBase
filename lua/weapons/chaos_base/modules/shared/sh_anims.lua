@@ -275,3 +275,11 @@ end
 
 function SWEP:NextAnimation()
 end
+
+function SWEP:BlowbackFull()
+
+    if IsValid(self) then
+        self.BlowbackCurrent = 1
+        self.BlowbackCurrentRoot = 1
+    end
+end
