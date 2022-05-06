@@ -21,8 +21,8 @@ SWEP.CLSIDE_MODULES = {
     "modules/client/cl_calcviewmodelview.lua",
     "modules/client/cl_effects.lua",
     "modules/client/cl_hud.lua",
-    "modules/client/cl_sck.lua",
     "modules/client/cl_scopes.lua",
+    "modules/client/cl_worldmodel_render.lua"
 }
 
 --START GUN CODE.
@@ -61,6 +61,8 @@ SWEP.VMPos_Additive = true -- Set to false for an easier time using VMPos. If tr
 SWEP.AdditiveViewModelPosition = true
 SWEP.FovMultiplier = 0
 
+SWEP.ShowWorldModel = true
+
 SWEP.WorldModelOffset = {
     Pos = {
         Up = 0,
@@ -69,9 +71,9 @@ SWEP.WorldModelOffset = {
     },
 
     Ang = {
-        Up = -1,
-        Right = -2,
-        Forward = 178
+        Up = 0,
+        Right = 0,
+        Forward = 0
     },
 
     Scale = 1
@@ -179,7 +181,7 @@ SWEP.Cone = {
 SWEP.Primary.Sound = Sound("")
 SWEP.ShootVol = 125 -- volume of shoot sound
 SWEP.ShootPitch = 100 -- pitch of shoot sound
-SWEP.ShootPitchVariation = 0.05
+SWEP.ShootPitchVariation = 0.1
 --Standard weapon defaults.
 SWEP.Primary.NumShots = 1 --The number of shots the gun/bow fires.  
 SWEP.Primary.RPM = 600 -- This is in Rounds Per Minute / RPM
@@ -191,6 +193,8 @@ SWEP.Primary.Ammo = "none" -- What kind of ammo
 SWEP.DrawTime = 1
 SWEP.Primary.BurstRounds = 1
 SWEP.Primary.BurstDelay = 1
+
+SWEP.DryFireSound = Sound("Weapon_AR2.Empty2")
 
 SWEP.ReloadTime = 1
 
@@ -355,6 +359,27 @@ function SWEP:SetupDataTables()
 
     self:NetworkVar("Entity", 0, "NextWeapon")
     self:NetworkVar("Angle", 0, "BreathingAngle")
+end
+
+function SWEP:LookupBoneCached(model, name)
+    if model.cachedBones == nil then
+        model.cachedBones = {}
+    end
+
+    if model.cachedBones[name] == nil then
+        model.cachedBones[name] = model:LookupBone(name)
+    end
+
+    return model.cachedBones[name]
+
+end
+
+function SWEP:RecreateClientsideModels()
+    if not IsValid(self.m_WorldModel) then
+        self.m_WorldModel = ClientsideModel(self.WorldModel, self.RenderGroup)
+        self.m_WorldModel:SetRenderMode(self.RenderMode)
+        self.m_WorldModel.swep = self
+    end
 end
 
 function SWEP:OnRestore()

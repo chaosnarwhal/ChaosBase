@@ -244,14 +244,7 @@ sound.Add( {
 	volume = 0.4,
 	level = 80,
 	pitch = { 99, 101 },
-	sound = { "chaosnarwhal/weapons/unsc/ma5d/fire0.wav",
-	"chaosnarwhal/weapons/unsc/ma5d/fire1.wav",
-	"chaosnarwhal/weapons/unsc/ma5d/fire2.wav",
-	"chaosnarwhal/weapons/unsc/ma5d/fire3.wav",
-	"chaosnarwhal/weapons/unsc/ma5d/fire4.wav",
-	"chaosnarwhal/weapons/unsc/ma5d/fire5.wav",
-	"chaosnarwhal/weapons/unsc/ma5d/fire6.wav",
-	"chaosnarwhal/weapons/unsc/ma5d/fire7.wav" }
+	sound = "chaosnarwhal/weapons/unsc/ma5d/fire-alt.wav"
 } )
 
 sound.Add( {

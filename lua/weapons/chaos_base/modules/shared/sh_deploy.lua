@@ -110,6 +110,8 @@ function SWEP:Initialize()
     self:SetNextHolsterTime(0)
     self:SetBreathingDelta(1)
 
+    self.w_Model = self.WorldModel
+
     self:SetIsFiring(false)
 
     local og = weapons.Get(self:GetClass())
@@ -254,7 +256,7 @@ Purpose: SWEP Aux function.
 function SWEP:IsHighTier(Allowed, RecoilReduce, SprintShoot)
     if not self.HighTierAllow then return end
 
-    HighTierTable = self.HighTier
+    local HighTierTable = self.HighTier
 
     local ply = self:GetOwner()
 

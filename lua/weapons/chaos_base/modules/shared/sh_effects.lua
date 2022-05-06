@@ -29,7 +29,7 @@ function SWEP:ShootEffectsCustom(ifp)
     if not owner.GetShootPos then return end
     ifp = IsFirstTimePredicted()
 
-    if (SERVER and sp and self.ParticleMuzzleFlash) or (SERVER and not sp) then
+    if (SERVER and sp) or (SERVER and not sp) then
         net.Start("ChaosBase_muzzle_mp", true)
         net.WriteEntity(self)
 

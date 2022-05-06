@@ -26,6 +26,8 @@ SWEP.WorldModel				= "your world model here"
 SWEP.UseHands				= true
 SWEP.HoldType 				= "ar2"
 SWEP.MuzzleAttachment       = "muzzle"       -- Should be "1" for CSS models or "muzzle" for hl2 models
+
+--MUZZLEFLASHES AC_muzzle_pistol, AC_muzzle_rifle, AC_muzzle_desert, AC_muzzle_shotgun
  
 -- The viewmodel positional offset, constantly.
 -- Subtract this from any other modifications to viewmodel position.

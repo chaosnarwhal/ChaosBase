@@ -8,6 +8,12 @@ Purpose: Main SWEP function.
 --
 function SWEP:CanPrimaryAttack()
     local owner = self:GetOwner()
+
+    if owner:KeyPressed(IN_ATTACK) and self:Clip1() <= 0 and not self:GetSafety() then
+        self:ChaosEmitSound(self.DryFireSound, 0.1, self.ShootPitch, 1, CHAN_WEAPON)
+        return false
+    end
+
     if self:Clip1() <= 0 then return false end
 
     if CurTime() < self:GetNextPrimaryFire() then return false end
