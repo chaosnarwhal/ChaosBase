@@ -9,20 +9,49 @@ function SWEP:DrawWorldModelTranslucent(flags)
 	self:DrawModel()
 	render.SetBlend(1)
 
-	local pos, ang = self:GetBonePosition(0)
-	local wPos = self:GetPos()
-	self.m_WorldModel:SetPos(wPos + (pos - wPos))
+	local ply = self:GetOwner()
 
-	local wAng = self:GetAngles()
-	self.m_WorldModel:SetAngles(wAng + (ang - wAng))
+	if IsValid(ply) then
+            local offsetVec = Vector(self.WorldModelOffsetPos)
+            local offsetAng = Angle(self.WorldModelOffsetAng)
 
-	local bone = self:LookupBoneCached(self.m_WorldModel, self.WorldModelOffsets.Bone)
+            local ModelScale = self.WepScale
 
-	self:RenderParticles(self.TpParticles)
+            local HighTierTable = self.HighTier
+            local index = ply:getJobTable().category or ply:getJobTable().name
 
-	self.m_WorldModel:SetupBones()
+            if HighTierTable[index] then
+                ModelScale = ply:GetNW2Float("Chaos.PlayerScale")
+                print(ModelScale)
+                if HighTierTable[index].Type == "SPARTAN" then
+                    offsetVec = Vector(self.SparWorldModelOffsetPos)
+                    offsetAng = Angle(self.SparWorldModelOffsetAng)
+                end
+            end
 
-	self:RenderModelsWorld(self.m_WorldModel, 0)
+            local boneid = ply:LookupBone("ValveBiped.Bip01_R_Hand")
+            if not boneid then return end
+
+            local matrix = ply:GetBoneMatrix(boneid)
+            if not matrix then return end
+
+            local newPos, newAng = LocalToWorld(offsetVec, offsetAng, matrix:GetTranslation(), matrix:GetAngles())
+
+			local wPos = self:GetPos()
+
+			self.m_WorldModel:SetPos(newPos)
+			local wAng = self:GetAngles()
+			self.m_WorldModel:SetAngles(newAng)
+
+			self.m_WorldModel:SetupBones()
+
+			self:RenderModelsWorld(self.m_WorldModel, 0)
+
+            self.m_WorldModel:SetModelScale(ModelScale)
+        else
+            self.m_WorldModel:SetPos(self:GetPos())
+            self.m_WorldModel:SetAngles(self:GetAngles())
+        end
 
 end
 
