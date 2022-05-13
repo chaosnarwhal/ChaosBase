@@ -1,31 +1,58 @@
 AddCSLuaFile()
 
-function SWEP:BulletCallback(attacker, tr, dmgInfo)
-        if not game.SinglePlayer() and not IsFirstTimePredicted() then return end
-        if not IsValid(self:GetOwner()) then return end
+function SWEP:CalculateRecoil()
+    math.randomseed(self.Recoil.Seed + self:GetSprayRounds())
+    local verticalRecoil = math.min(self:GetSprayRounds(), math.min(self:GetMaxClip1() * 0.33, 20)) * 0.1 + math.Rand(self.Recoil.Vertical[1], self.Recoil.Vertical[2])
+    local horizontalRecoil = math.Rand(self.Recoil.Horizontal[1], self.Recoil.Horizontal[2])
+    local angles = Angle(-verticalRecoil, horizontalRecoil, horizontalRecoil * -0.3)
+    local Allowed, RecoilReduce = self:IsHighTier()
+    local RecoilReducer = self.Recoil.RecoilReducer or 1
 
-        local dist = tr.HitPos:Distance(self:GetOwner():GetShootPos())
-        local effectiveRange = self:MetersToHU(self.Bullet.EffectiveRange)
-        local dropoffStart = self.Bullet.DropOffStartRange && self:MetersToHU(self.Bullet.DropOffStartRange) || 0
+    if Allowed then
+        return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier) * RecoilReduce
+    elseif not Allowed then
+        return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier) * RecoilReducer
+    end
+end
 
-        local damage = Lerp(math.Clamp((dist - dropoffStart) / effectiveRange, 0, 1), self.Bullet.Damage[1], self.Bullet.Damage[2])
-        --damage = math.max(damage / self.Bullet.NumBullets, 1)
+function SWEP:CalculateCone()
+    math.randomseed(self.Cone.Seed + self:Clip1() + self:Ammo1())
 
-        dmgInfo:SetDamage(damage + 1)
+    return math.Clamp(math.Rand(-self:GetCone(), self:GetCone()) * 1000, -self:GetCone(), self:GetCone())
+end
 
-        --Custom Hitgroup Damage Setting
-        local dmgtable = self.BodyDamageMults
-        local hitpos, hitnormal = tr.HitPos, tr.HitNormal
-        local trent = tr.Entity
+function SWEP:BulletCallbackInternal(attacker, tr, dmgInfo)
+    if not game.SinglePlayer() and not IsFirstTimePredicted() then return end
+    if not IsValid(self:GetOwner()) then return end
+    local dist = tr.HitPos:Distance(self:GetOwner():GetShootPos())
+    local effectiveRange = self:MetersToHU(self.Bullet.EffectiveRange)
+    local dropoffStart = self.Bullet.DropOffStartRange and self:MetersToHU(self.Bullet.DropOffStartRange) or 0
+    local damage = Lerp(math.Clamp((dist - dropoffStart) / effectiveRange, 0, 1), self.Bullet.Damage[1], self.Bullet.Damage[2])
+    --damage = math.max(damage / self.Bullet.NumBullets, 1)
+    --Custom Hitgroup Damage Setting
+    local dmgtable = self.BodyDamageMults
+    local trent = tr.Entity
 
-        if dmgtable then
-            local hg = tr.HitGroup
-            local gam = ChaosBase.LimbCompensation[engine.ActiveGamemode()] or ChaosBase.LimbCompensation[1]
-            if dmgtable[hg] then
-                dmgInfo:ScaleDamage(dmgtable[hg])
-                if GetConVar("chaosbase_bodydamagemult_cancel"):GetBool() and gam[hg] then dmgInfo:ScaleDamage(gam[hg]) end
+    if dmgtable then
+        local hg = tr.HitGroup
+        local gam = ChaosBase.LimbCompensation[engine.ActiveGamemode()] or ChaosBase.LimbCompensation[1]
+
+        if dmgtable[hg] then
+            dmgInfo:ScaleDamage(dmgtable[hg])
+
+            if GetConVar("chaosbase_bodydamagemult_cancel"):GetBool() and gam[hg] then
+                dmgInfo:ScaleDamage(gam[hg])
             end
         end
+    end
+
+    if trent:IsPlayer() then
+        damage = damage
+    elseif trent:IsNPC() or trent:IsNextBot() then
+        damage = damage * self.Bullet.DamageToNPC
+    end
+
+    dmgInfo:SetDamage(damage + 1)
 
     if CLIENT then
         --only do one call on initial impact, for the rest server will take care of it
@@ -42,6 +69,10 @@ function SWEP:ShootProjectile(isent, data)
     if isent then
         self:FireRocket(data.ent, data.vel, data.ang, true)
     end
+end
+
+function SWEP:BulletCallback(attacker, tr, dmgInfo)
+    self:BulletCallbackInternal(attacker, tr, dmgInfo)
 end
 
 function SWEP:ShootBullets(hitpos)
@@ -62,20 +93,20 @@ function SWEP:ShootBullets(hitpos)
     end
 
     self:FireBullets({
-            Attacker = self:GetOwner(),
-            Src = self:GetOwner():EyePos(),
-            Dir = dir,
-            Spread = spread,
-            Num = SERVER && 1 || self.Bullet.NumBullets,
-            Damage = 0,
-            HullSize = self.Bullet.HullSize,
-            --Force = (self.Bullet.Damage[1] * self.Bullet.PhysicsMultiplier) * 0.01,
-            Distance = self:MetersToHU(self.Bullet.Range),
-            Tracer = self.Bullet.Tracer and 1 or 0,
-            TracerName = self.Bullet.TracerName,
-            Callback = function(attacker, tr, dmgInfo)
-                self:BulletCallback(attacker, tr, dmgInfo, bFromServer)
-            end
+        Attacker = self:GetOwner(),
+        Src = self:GetOwner():EyePos(),
+        Dir = dir,
+        Spread = spread,
+        Num = SERVER and 1 or self.Bullet.NumBullets,
+        Damage = self.Bullet.Damage[1],
+        HullSize = self.Bullet.HullSize,
+        --Force = (self.Bullet.Damage[1] * self.Bullet.PhysicsMultiplier) * 0.01,
+        Distance = self:MetersToHU(self.Bullet.Range),
+        Tracer = self.Bullet.Tracer and 1 or 0,
+        TracerName = self.Bullet.TracerName,
+        Callback = function(attacker, tr, dmgInfo)
+            self:BulletCallback(attacker, tr, dmgInfo, bFromServer)
+        end
     })
 end
 

@@ -1,6 +1,5 @@
 AddCSLuaFile()
 
-
 --Test that GIT shit
 function SWEP:CanAim()
     local owner = self:GetOwner()
@@ -27,13 +26,11 @@ function SWEP:AimBehaviourModule()
         self:SetIsAiming(false)
         self:SetAimDelta(math.max(self:GetAimDelta() - speed * FrameTime(), 0))
     end
-
 end
 
 function SWEP:SafetyHandlerModule()
     if self:GetIsSprinting() then return end
     local owner = self:GetOwner()
-    local togglesafety = true
 
     if owner:KeyDown(IN_USE) and owner:KeyDown(IN_SPEED) and owner:KeyPressed(IN_RELOAD) then
         self:SetSafety(not self:GetSafety())
@@ -43,18 +40,14 @@ function SWEP:SafetyHandlerModule()
 end
 
 SWEP.LastTranslateFOV = 0
+
 function SWEP:TranslateFOV(fov)
     self.ApproachFOV = self.ApproachFOV or fov
     self.CurrentFOV = self.CurrentFOV or fov
-
     if self.LastTranslateFOV == UnPredictedCurTime() then return self.CurrentFOV end
     local timed = UnPredictedCurTime() - self.LastTranslateFOV
     self.LastTranslateFOV = UnPredictedCurTime()
-
-    local app_vm = self.ViewModelFOV + self:GetOwner():GetInfoNum("chaosbase_vm_offset_fov", 0) + 10
-
     self.ApproachFOV = fov
-
     self.CurrentFOV = math.Approach(self.CurrentFOV, self.ApproachFOV, timed * 10 * (self.CurrentFOV - self.ApproachFOV))
 
     return self.CurrentFOV

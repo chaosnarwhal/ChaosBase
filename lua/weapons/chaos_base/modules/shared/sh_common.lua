@@ -268,7 +268,7 @@ function SWEP:DrawWorldModel()
         end
         
         if (IsValid(self.Owner)) then
-            bone_ent = self.Owner
+            bone_ent = self.c_WorldModel
         else
             // when the weapon is dropped
             bone_ent = self
@@ -343,7 +343,6 @@ function SWEP:DrawWorldModel()
                 render.DrawSprite(drawpos, v.size.x, v.size.y, v.color)
                 
             elseif (v.type == "Quad" and v.draw_func) then
-                
                 local drawpos = pos + ang:Forward() * v.pos.x + ang:Right() * v.pos.y + ang:Up() * v.pos.z
                 ang:RotateAroundAxis(ang:Up(), v.angle.y)
                 ang:RotateAroundAxis(ang:Right(), v.angle.p)

@@ -11,15 +11,10 @@ Purpose: SWEP Main function.
 function SWEP:Deploy(fromFallback)
     fromFallback = fromFallback or false
     if not IsValid(self:GetOwner()) or self:GetOwner():IsNPC() then return end
-
     self:IsAuthorizedToUse()
-
     self:HoldTypeHandler()
-
     self:IsHighTier()
-
     self:ChaosCustomDeploy()
-
     --Reset NW Values when weapon is pulled out.
     self:SetReloading(false)
     self:SetState(0)
@@ -64,6 +59,7 @@ end
 
 function SWEP:ChaosCustomDeploy()
 end
+
 --[[ 
 Function Name: initialDefaultClip.
 Syntax: self:initialDefaultClip().
@@ -95,7 +91,6 @@ function SWEP:Initialize()
     end
 
     self:ChaosCustomInitialize()
-
     self:SetState(0)
     self:SetClip2(0)
     self:SetLastLoad(self:Clip1())
@@ -109,11 +104,8 @@ function SWEP:Initialize()
     self:SetIsHolstering(false)
     self:SetNextHolsterTime(0)
     self:SetBreathingDelta(1)
-
     self.w_Model = self.WorldModel
-
     self:SetIsFiring(false)
-
     local og = weapons.Get(self:GetClass())
     self.RegularClipSize = og.Primary.ClipSize
     self.OldPrintName = self.PrintName
@@ -196,7 +188,6 @@ function SWEP:Initialize()
 end
 
 function SWEP:ChaosCustomInitialize()
-
 end
 
 --[[ 
@@ -205,9 +196,11 @@ Syntax: self:Holster(wep).
 Returns: returns if allowed to swap weapons or not.
 Notes: Code when ran to allow swapping of weapon and to what weapon?.
 Purpose: SWEP Main function.
-]]--
+]]
+--
 function SWEP:Holster(weapon, fromFallback)
     if not IsValid(self:GetOwner()) then return end
+
     if not self:GetIsHolstering() and fromFallback then
         self:SetIsHolstering(true)
         self:SetIsReloading(false)
@@ -227,12 +220,11 @@ Function Name: IsAuthorizedToUse.
 Syntax: self:IsAuthorizedToUse().
 Returns: returns if allowed to Use a Protected Weapon.
 Purpose: SWEP Aux function.
-]]--
+]]
+--
 function SWEP:IsAuthorizedToUse()
     if not self.AuthorizedUserEnable then return end
-
     if not IsValid(self) then return end
-
     local AuthorizedToUse = self.AuthorizedUser
     local ply = self:GetOwner()
 
@@ -242,9 +234,9 @@ function SWEP:IsAuthorizedToUse()
         timer.Simple(0.1, function()
             ply:StripWeapon(self:GetClass())
         end)
+
         return false
     end
-
 end
 
 --[[ 
@@ -252,23 +244,44 @@ Function Name: IsHighTier.
 Syntax: self:IsHighTier(Allowed, RecoilReduce, SprintShoot).
 Returns: Returns Some Values from a HighTier Table. Only if the player is Allowed the HighTier Values.
 Purpose: SWEP Aux function.
-]]--
+]]
+--
 function SWEP:IsHighTier(Allowed, RecoilReduce, SprintShoot)
     if not self.HighTierAllow then return end
-
     local HighTierTable = self.HighTier
-
     local ply = self:GetOwner()
-
     local index = ply:getJobTable().category or ply:getJobTable().name
 
     if HighTierTable[index] then
         Allowed = HighTierTable[index]
-        RecoilReduce = HighTierTable[index].RecoilReduce
-        SprintShoot = HighTierTable[index].SprintShoot
-        return Allowed,RecoilReduce,SprintShoot
+        return Allowed
     else
         return false
     end
+end
 
+function SWEP:IsSpartan()
+    if not self.HighTierAllow then return end
+    local HighTeirTable = self.HighTier
+    local ply = self:GetOwner()
+    local index = ply:getJobTable().category or ply:getJobTable().name
+
+    if HighTierTable[index] then
+        return HighTierTable[index]
+    else
+        return nil
+    end
+end
+
+function SWEP:CanSprintShoot()
+    if not self.HighTierAllow then return end
+    local HighTeirTable = self.HighTier
+    local ply = self:GetOwner()
+    local index = ply:getJobTable().category or ply:getJobTable().name
+
+    if HighTierTable[index] then
+        return HighTierTable[index].SprintShoot
+    else
+        return false
+    end
 end

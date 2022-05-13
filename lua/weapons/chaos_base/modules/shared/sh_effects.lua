@@ -1,19 +1,13 @@
 AddCSLuaFile()
 
-local fx, sp = nil, game.SinglePlayer()
+local sp = nil, game.SinglePlayer()
 
 function SWEP:MuzzleFlashCustom(spv)
     local att = self:GetMuzzleAttachment()
-    
-    fx = EffectData()
-    fx:SetOrigin(self:GetOwner():GetShootPos())
-    fx:SetNormal(self:GetOwner():EyeAngles():Forward())
-    fx:SetEntity(self)
-    fx:SetAttachment(att)
 
-    print(att)
-
-    util.Effect((self.MuzzleFlashEffect or ""), fx, false, true)
+    if self.MuzzleFlashParticle then
+        ParticleEffectAttach(self.MuzzleFlashParticle, PATTACH_POINT_FOLLOW, self, att)
+    end
 
 end
 
