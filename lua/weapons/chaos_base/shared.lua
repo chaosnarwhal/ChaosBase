@@ -19,7 +19,6 @@ SWEP.CLSIDE_MODULES = {
     "modules/client/cl_bob.lua",
     "modules/client/cl_calcview.lua",
     "modules/client/cl_calcviewmodelview.lua",
-    "modules/client/cl_effects.lua",
     "modules/client/cl_hud.lua",
     "modules/client/cl_scopes.lua",
     "modules/client/cl_worldmodel_render.lua"
@@ -49,7 +48,8 @@ SWEP.Category = "Revival"
 --WorldModels Defaults.
 SWEP.WorldModel = "models/your/path/here.mdl" -- WorldModel Path
 --ViewModel Defaults.
-SWEP.ViewModel = "models/your/path/here.mdl" -- Viewmodel path
+SWEP.ViewModel = "models/weapons/c_arms.mdl" -- Viewmodel path
+SWEP.VModel    = ""
 SWEP.ViewModelFOV = 65 -- This controls how big the viewmodel looks.  Less is more.
 SWEP.ViewModelFlip = false -- Set this to true for CSS models, or false for everything else (with a righthanded viewmodel.)
 SWEP.UseHands = false -- Use gmod c_arms system.
@@ -268,11 +268,6 @@ SWEP.HeatOverflow = nil -- if true, heat is allowed to exceed capacity (this onl
 SWEP.VElements = {}
 SWEP.WElements = {}
 
-SWEP.DefaultBodygroups = "00000000"
-SWEP.DefaultWMBodygroups = "00000000"
-SWEP.DefaultSkin = 0
-SWEP.DefaultWMSkin = 0
-
 SWEP.Bodygroups = {}
 
 SWEP.ViewModelOffsets = {
@@ -374,10 +369,10 @@ function SWEP:LookupBoneCached(model, name)
 end
 
 function SWEP:RecreateClientsideModels()
-    if not IsValid(self.m_WorldModel) then
-        self.m_WorldModel = ClientsideModel(self.WorldModel, self.RenderGroup)
-        self.m_WorldModel:SetRenderMode(self.RenderMode)
-        self.m_WorldModel.swep = self
+    if not IsValid(self.c_WorldModel) then
+        self.c_WorldModel = ClientsideModel(self.WorldModel, self.RenderGroup)
+        self.c_WorldModel:SetRenderMode(self.RenderMode)
+        self.c_WorldModel.swep = self
     end
 end
 

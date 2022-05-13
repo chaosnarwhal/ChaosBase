@@ -11,13 +11,12 @@ function SWEP:CanPrimaryAttack()
 
     if owner:KeyPressed(IN_ATTACK) and self:Clip1() <= 0 and not self:GetSafety() then
         self:ChaosEmitSound(self.DryFireSound, 0.1, self.ShootPitch, 1, CHAN_WEAPON)
+
         return false
     end
 
     if self:Clip1() <= 0 then return false end
-
     if CurTime() < self:GetNextPrimaryFire() then return false end
-    
     if CurTime() < self:GetNextFiremodeTime() then return false end
     --Reloading?
     if self:GetReloading() then return end
@@ -47,9 +46,10 @@ function SWEP:CanPrimaryAttack()
         return
     end
 
-    local a,b,SprintShoot = self:IsHighTier()
+    local SprintShoot = self:IsHighTier()
+
     --Sprinting ? (Check for Sprint Attack Value)
-    if (self:GetIsSprinting() == true) then
+    if self:GetIsSprinting() == true then
         if SprintShoot then
             return true
         else
@@ -58,7 +58,6 @@ function SWEP:CanPrimaryAttack()
     end
 
     if self:GetSafety() then return false end
-    
     --Passed all the checks! Shoot that thang.
 
     return true
@@ -96,19 +95,17 @@ Purpose: Main SWEP function.
 --
 function SWEP:PrimaryAttack()
     if not self:CanPrimaryAttack() then return end
-
-    local a,b,c = self:IsHighTier()
-
+    local a, c = self:IsHighTier()
     local delay = 60 / self.Primary.RPM
     local curtime = CurTime()
     local curatt = self:GetNextPrimaryFire()
     local diff = curtime - curatt
-    
+
     if diff > engine.TickInterval() or diff < 0 then
         curatt = curtime
     end
 
-    self:SetNextPrimaryFire(curatt + delay) 
+    self:SetNextPrimaryFire(curatt + delay)
 
     if self.ShotgunReload then
         if self:GetShotgunReloading() then
@@ -125,10 +122,9 @@ function SWEP:PrimaryAttack()
     --AddingSpray
     self:SetClip1(self:Clip1() - 1)
     self:SetSprayRounds(self:GetSprayRounds() + 1)
-
     local BurstDelay = 60 / self.Primary.BurstDelay
-    
     self:SetBurstRounds(self:GetBurstRounds() + 1)
+
     if self:GetBurstRounds() >= self.Primary.BurstRounds and self.Primary.BurstRounds > 1 then
         self:SetNextPrimaryFire(CurTime() + BurstDelay)
         self:SetIsFiring(false)
@@ -152,16 +148,14 @@ function SWEP:PrimaryAttack()
     --Primary Shoot animations
     self:DoPrimaryAnim()
     local shouldBlowback = self.BlowbackEnabled
+
     --Blowback
-    if shouldBlowback then
-        if IsFirstTimePredicted() then
-            self:BlowbackFull(ifp)
-        end
+    if shouldBlowback and IsFirstTimePredicted() then
+        self:BlowbackFull(ifp)
     end
-    
+
     --MuzzleFlash
     self:ShootEffectsCustom()
-
     --Start Punching view to Recoil and add to the Cone of spray.
     self:GetOwner():ViewPunch(self:CalculateRecoil())
     self:SetCone(math.min(self:GetCone() + self.Cone.Increase * 10 * Lerp(self:GetAimDelta(), 1, self.Cone.AdsMultiplier), self.Cone.Max))
@@ -177,7 +171,6 @@ function SWEP:PrimaryAttack()
             self:SetIsFiring(false)
         end)
     end
-
 end
 
 --[[ 
@@ -244,54 +237,19 @@ function SWEP:SecondaryAttack()
     return self.Melee2 and self:Bash(true)
 end
 
-function SWEP:CalculateRecoil()
-    math.randomseed(self.Recoil.Seed + self:GetSprayRounds())
-    local verticalRecoil = math.min(self:GetSprayRounds(), math.min(self:GetMaxClip1() * 0.33, 20)) * 0.1 + math.Rand(self.Recoil.Vertical[1], self.Recoil.Vertical[2])
-    local horizontalRecoil = math.Rand(self.Recoil.Horizontal[1], self.Recoil.Horizontal[2])
-    local angles = Angle(-verticalRecoil, horizontalRecoil, horizontalRecoil * -0.3)
-
-    local Allowed,RecoilReduce,SprintShoot = self:IsHighTier()
-
-    local RecoilReducer = self.Recoil.RecoilReducer or 1
-
-    if Allowed then
-        return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier) * RecoilReduce
-    elseif not Allowed then
-        return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier) * RecoilReducer
-    end
-
-end
-
-function SWEP:CalculateCone()
-    math.randomseed(self.Cone.Seed + self:Clip1() + self:Ammo1())
-
-    return math.Clamp(math.Rand(-self:GetCone(), self:GetCone()) * 1000, -self:GetCone(), self:GetCone())
-end
-
 function SWEP:Projectiles()
-    if (CLIENT) then
-        return
-    end
-
+    if CLIENT then return end
     local proj = ents.Create(self.Projectile.Class)
-
     local angles = self:GetOwner():EyeAngles() + self:GetOwner():GetViewPunchAngles()
-
     local src = LerpVector(self:GetAimDelta(), self:GetOwner():EyePos() + angles:Up() * -3 + angles:Right() * 3, self:GetOwner():EyePos())
-    local dir = self:GetOwner():GetEyeTraceNoCursor().HitPos - src 
-    
     math.randomseed(self:Clip1() + self:Ammo1() + CurTime() + self.Cone.Seed)
     local spreadRight = math.random(-self:GetCone(), self:GetCone())
-
     math.randomseed(-self:Clip1() * 0.5 + self:Ammo1() * 2 - CurTime() + self.Cone.Seed)
     local spreadUp = math.random(-self:GetCone(), self:GetCone())
-
     local spread = LerpVector(self:GetAimDelta(), Vector(spreadRight, spreadUp), Vector(0, 0))
     angles:RotateAroundAxis(angles:Right(), spread.x)
     angles:RotateAroundAxis(angles:Up(), spread.y)
-
     proj.Weapon = self
-
     proj:SetPos(src)
     proj:SetAngles(angles)
     proj:SetOwner(self:GetOwner())
