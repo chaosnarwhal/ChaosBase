@@ -10,6 +10,7 @@ SWEP.SH_MODULES = {
     "modules/shared/sh_deploy.lua",
     "modules/shared/sh_effects.lua",
     "modules/shared/sh_firemode_behaviour.lua",
+    "modules/shared/sh_heat.lua",
     "modules/shared/sh_primaryattack_behaviour.lua",
     "modules/shared/sh_reload.lua",
     "modules/shared/sh_sprint.lua",
@@ -205,6 +206,7 @@ SWEP.Bullet = {
     TracerName = nil,
     NumBullets = 1, --the amount of bullets to fire
     PhysicsMultiplier = 1, --damage is multiplied by this amount when pushing objects 
+    DamageType = DMG_BULLET
 }
 
 SWEP.Projectile = nil
@@ -255,6 +257,8 @@ SWEP.IronSightTime = 0.1
 
 -- If Jamming is enabled, a heat meter will gradually build up until it reaches HeatCapacity.
 -- Once that happens, the gun will overheat, playing an animation. If HeatLockout is true, it cannot be fired until heat is 0 again.
+SWEP.FixTime = 1
+SWEP.BatteryBased = false
 SWEP.Heat = false
 SWEP.HeatCapacity = 200 -- rounds that can be fired non-stop before the gun jams, playing the "fix" animation
 SWEP.HeatDissipation = 2 -- rounds' worth of heat lost per second
@@ -298,6 +302,14 @@ SWEP.BlowbackAllowAnimation = nil -- Allow playing shoot animation with blowback
 SWEP.BoltWorldModelBone = "nil"
 SWEP.BoltViewModelBone = "nil"
 
+SWEP.SparWepScale = 1.3
+
+SWEP.WepScale = 1
+
+SWEP.ShotgunReload = false
+
+SWEP.MuzzleFlashParticle = nil
+
 
 --BASE VALUES DONT TOUCH.
 SWEP.IronSightsProgressUnpredicted = 0
@@ -333,6 +345,7 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Bool", 9, "IsPumping")
     self:NetworkVar("Bool", 11, "Safety")
     self:NetworkVar("Bool", 12, "ToggleSafety")
+    self:NetworkVar("Bool", 13, "IsFiring")
     self:NetworkVar("Bool", 13, "IsFiring")
 
     self:NetworkVar("Float", 0, "Heat")

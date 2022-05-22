@@ -15,6 +15,9 @@ function SWEP:CanPrimaryAttack()
         return false
     end
 
+    -- Gun is locked from heat.
+    if self:GetHeatLocked() then return end
+
     if self:Clip1() <= 0 then return false end
     if CurTime() < self:GetNextPrimaryFire() then return false end
     if CurTime() < self:GetNextFiremodeTime() then return false end
@@ -28,9 +31,6 @@ function SWEP:CanPrimaryAttack()
 
         return
     end
-
-    --Overheated.
-    if self:GetHeatLocked() then return end
 
     --Bashing?
     if self:GetState() ~= ChaosBase.State_SIGHTS and owner:KeyDown(IN_USE) or self.PrimaryBash then
@@ -117,6 +117,11 @@ function SWEP:PrimaryAttack()
 
     if a and c then
         self:SetIsFiring(true)
+    end
+
+    if self.BatteryBased then
+        print(self:GetHeat())
+        self:AddHeat(self.HeatPerSecond)
     end
 
     --AddingSpray

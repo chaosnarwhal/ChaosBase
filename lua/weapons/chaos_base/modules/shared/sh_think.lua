@@ -93,7 +93,6 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
         self:SetShotgunReloading(sg + 1)
     elseif (sg >= 2) and self:GetReloadingREAL() <= CurTime() then
         self:ReloadInsert((sg >= 4) and true or false)
-        self:SetNextIdle(0)
     end
 
     --CalcSpray
@@ -104,4 +103,10 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
     --cone
     local target = Lerp(self:GetAimDelta(), self.Cone.Hip, self.Cone.Ads)
     self:SetCone(math.Approach(self:GetCone(), target, 4 * FrameTime()))
+
+    --Heat Handling
+    self:DoHeat()
+
+    --Handling Wacky Fungy Timers
+    --self:ProcessTimers()
 end

@@ -8,6 +8,7 @@ end
 
 function SWEP:EnterSprint()
     if self:GetState() == ChaosBase.STATE_SPRINT then return end
+    if self:GetHeatLocked() then return end
     self:SetState(ChaosBase.STATE_SPRINT)
     self.Sighted = false
     self.Sprinted = true
@@ -29,6 +30,7 @@ end
 function SWEP:EnterWalk()
     if self:GetState() == ChaosBase.STATE_WALK then return end
     if self:GetState() == ChaosBase.STATE_SPRINT then return end
+    if self:GetHeatLocked() then return end
     self:SetState(ChaosBase.STATE_WALK)
     local anim = self:SelectAnimation("idle")
 
@@ -39,6 +41,7 @@ end
 
 function SWEP:ExitWalk()
     if self:GetState() == ChaosBase.STATE_IDLE then return end
+    if self:GetHeatLocked() then return end
     self:SetState(ChaosBase.STATE_IDLE)
     local anim = self:SelectAnimation("idle")
 
@@ -49,6 +52,7 @@ end
 
 function SWEP:ExitSprint()
     if self:GetState() == ChaosBase.STATE_IDLE then return end
+    if self:GetHeatLocked() then return end
     local delta = self.SprintProgressUnpredicted
     local ct = CurTime()
     self:SetState(ChaosBase.STATE_IDLE)
