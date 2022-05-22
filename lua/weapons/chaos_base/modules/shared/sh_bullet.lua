@@ -5,9 +5,9 @@ function SWEP:CalculateRecoil()
     local verticalRecoil = math.min(self:GetSprayRounds(), math.min(self:GetMaxClip1() * 0.33, 20)) * 0.1 + math.Rand(self.Recoil.Vertical[1], self.Recoil.Vertical[2])
     local horizontalRecoil = math.Rand(self.Recoil.Horizontal[1], self.Recoil.Horizontal[2])
     local angles = Angle(-verticalRecoil, horizontalRecoil, horizontalRecoil * -0.3)
-    local Allowed, RecoilReduce = self:IsHighTier()
+    local Allowed = self:IsHighTier()
+    local RecoilReduce = self:RecoilReduce()
     local RecoilReducer = self.Recoil.RecoilReducer or 1
-
     if Allowed then
         return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier) * RecoilReduce
     elseif not Allowed then
@@ -33,6 +33,7 @@ function SWEP:BulletCallbackInternal(attacker, tr, dmgInfo)
     local dmgtable = self.BodyDamageMults
     local trent = tr.Entity
 
+    --[[
     if dmgtable then
         local hg = tr.HitGroup
         local gam = ChaosBase.LimbCompensation[engine.ActiveGamemode()] or ChaosBase.LimbCompensation[1]
@@ -45,14 +46,20 @@ function SWEP:BulletCallbackInternal(attacker, tr, dmgInfo)
             end
         end
     end
+    ]]
 
     if trent:IsPlayer() then
         damage = damage
     elseif trent:IsNPC() or trent:IsNextBot() then
-        damage = damage * self.Bullet.DamageToNPC
+        damage = damage * (self.Bullet.DamageToNPC or 1)
+        print(damage)
     end
 
-    dmgInfo:SetDamage(damage + 1)
+   -- dmgInfo:SetDamage(damage + 1)
+
+    local atype = self.Bullet.DamageType
+
+    dmgInfo:SetDamageType(atype)
 
     if CLIENT then
         --only do one call on initial impact, for the rest server will take care of it
@@ -90,6 +97,10 @@ function SWEP:ShootBullets(hitpos)
     if hitpos ~= nil and isvector(hitpos) then
         dir = (hitpos - self:GetOwner():EyePos()):GetNormalized()
         spread = Vector()
+    end
+
+    if self.tracerEntity then
+        self:Projectiles()
     end
 
     self:FireBullets({

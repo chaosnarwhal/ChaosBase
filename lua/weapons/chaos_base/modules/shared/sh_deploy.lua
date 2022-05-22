@@ -246,7 +246,7 @@ Returns: Returns Some Values from a HighTier Table. Only if the player is Allowe
 Purpose: SWEP Aux function.
 ]]
 --
-function SWEP:IsHighTier(Allowed, RecoilReduce, SprintShoot)
+function SWEP:IsHighTier(Allowed)
     if not self.HighTierAllow then return end
     local HighTierTable = self.HighTier
     local ply = self:GetOwner()
@@ -266,10 +266,23 @@ function SWEP:IsSpartan()
     local ply = self:GetOwner()
     local index = ply:getJobTable().category or ply:getJobTable().name
 
-    if HighTierTable[index] then
-        return HighTierTable[index]
+    if HighTierTable[index] == "SPARTAN" then
+        return true
     else
         return nil
+    end
+end
+
+function SWEP:RecoilReduce()
+    if not self.HighTierAllow then return end
+    local HighTeirTable = self.HighTier
+    local ply = self:GetOwner()
+    local index = ply:getJobTable().category or ply:getJobTable().name
+
+    if HighTeirTable[index] then
+        return HighTeirTable[index].RecoilReduce or 1
+    else
+        return 1
     end
 end
 
