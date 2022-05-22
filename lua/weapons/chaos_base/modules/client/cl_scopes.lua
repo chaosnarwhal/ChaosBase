@@ -114,6 +114,18 @@ function SWEP:Scroll(var)
        end
     end
 end
+
+function SWEP:AdjustMouseSensitivity()
+    local Scope = self.Scope
+    local ScopeScroll = Scope.ScopeMagnification
+    local ScopeSens = ScopeScroll / 1
+    if self:GetIsAiming() then
+        return ScopeSens
+    else
+        return 1
+    end
+end
+
 --[[
 --RT SCOPE CODE TO FINISH. NEED TO FORMAT ATTACHMENTS FOR SCOPED WEAPONS TO DRAW RT/CHEAP SCOPE.
 function SWEP:ShouldFlatScope()
