@@ -62,7 +62,6 @@ function SWEP:PlayAnimation(key, mult, pred, startfrom, tt, skipholster, ignorer
     local anim = self.Animations[key]
     if not anim then return end
     if not self:GetOwner() then return end
-    if not self:GetOwner().GetViewModel then return end
     local vm = self:GetOwner():GetViewModel()
     if not vm then return end
     if not IsValid(vm) then return end
@@ -91,7 +90,7 @@ function SWEP:PlayAnimation(key, mult, pred, startfrom, tt, skipholster, ignorer
         if aseq then
             self:GetOwner():AddVCDSequenceToGestureSlot(GESTURE_SLOT_ATTACK_AND_RELOAD, aseq, anim.TPAnimStartTime or 0, true)
 
-            if not game.SinglePlayer() and SERVER then
+            if SERVER then
                 net.Start("chaosbase_networktpanim")
                 net.WriteEntity(self:GetOwner())
                 net.WriteUInt(aseq, 16)
@@ -202,15 +201,6 @@ function SWEP:PlaySoundTable(soundtable, mult, start)
         if not (IsValid(self) and IsValid(owner)) then continue end
         local jhon = CurTime() + ttime
 
-        --[[if game.SinglePlayer() then
-            if SERVER then
-                net.Start("arccw_networksound")
-                v.ntttime = ttime
-                net.WriteTable(v)
-                net.WriteEntity(self)
-                net.Send(owner)
-            end
-        end]]
         -- i may go fucking insane
         if not self.EventTable[1] then
             self.EventTable[1] = {}
@@ -256,18 +246,6 @@ function SWEP:PlayEvent(v)
         local vm = self:GetOwner():GetViewModel()
         vm:SetPoseParameter(pp, ppv)
     end
-end
-
-if CLIENT then
-    net.Receive("chaosbase_networktpanim", function()
-        local ent = net.ReadEntity()
-        local aseq = net.ReadUInt(16)
-        local starttime = net.ReadFloat()
-
-        if ent ~= LocalPlayer() then
-            ent:AddVCDSequenceToGestureSlot(GESTURE_SLOT_ATTACK_AND_RELOAD, aseq, starttime, true)
-        end
-    end)
 end
 
 function SWEP:QueueAnimation()

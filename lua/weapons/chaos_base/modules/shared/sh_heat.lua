@@ -62,7 +62,6 @@ function SWEP:DoHeat()
     local mult = 1 * self.FixTime
 
     if self:GetHeat() >= startime then
-        print("Fix_Start")
         self:PlayAnimationEZ("fix_start", mult, true)
     end
 

@@ -120,7 +120,6 @@ function SWEP:PrimaryAttack()
     end
 
     if self.BatteryBased then
-        print(self:GetHeat())
         self:AddHeat(self.HeatPerSecond)
     end
 

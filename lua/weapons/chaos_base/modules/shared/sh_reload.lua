@@ -118,16 +118,16 @@ end
 function SWEP:RestoreAmmo(count)
     if self:GetOwner():IsNPC() then return end
 
-    local chamber = math.Clamp(self:Clip1(), 0, self:GetChamberSize())
+    local chamber = math.Clamp(self:Clip1(), 0, 1)
     if self:GetNeedCycle() then
         chamber = 0
     end
 
     local clip = self:GetCapacity()
-    count = count or (clip + chamber)
+    count = count or (clip)
     local reserve = self:Ammo1() or math.huge
     local load = math.Clamp(self:Clip1() + count, 0, reserve)
-    load = math.Clamp(load, 0, clip + chamber)
+    load = math.Clamp(load, 0, clip + 1)
     reserve = reserve - load
     self:GetOwner():SetAmmo(reserve, self.Primary.Ammo, true)
     self:SetClip1(load)

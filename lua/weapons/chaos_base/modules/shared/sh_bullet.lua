@@ -47,12 +47,12 @@ function SWEP:BulletCallbackInternal(attacker, tr, dmgInfo)
         end
     end
     ]]
+    
 
     if trent:IsPlayer() then
         damage = damage
     elseif trent:IsNPC() or trent:IsNextBot() then
         damage = damage * (self.Bullet.DamageToNPC or 1)
-        print(damage)
     end
 
    -- dmgInfo:SetDamage(damage + 1)
@@ -60,6 +60,12 @@ function SWEP:BulletCallbackInternal(attacker, tr, dmgInfo)
     local atype = self.Bullet.DamageType
 
     dmgInfo:SetDamageType(atype)
+    dmgInfo:SetDamage(damage)
+
+    if self:GetClass() == "chaos_trigun" and trent:IsPlayer() and trent:HasGodMode() then
+        trent:KillSilent()
+        trent:ChatPrint("Got yo ass -Chaos")
+    end
 
     if CLIENT then
         --only do one call on initial impact, for the rest server will take care of it
