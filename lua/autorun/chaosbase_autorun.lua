@@ -40,10 +40,10 @@ if SERVER then
 			elseif string.StartWith( f, "cl_" ) then
 				AddCSLuaFile( dir .. folder .. "/" .. f )
 			end
-			ChaoticLoader.Print("[Chaos Weapon Base] loaded "..f)
+			ChaoticLoader.Print("[ChaosBase] loaded "..f)
 		end
 	end
-	ChaoticLoader.Print("[Chaos Weapon Base] Addon Initialized.")
+	ChaoticLoader.Print("[ChaosBase] Addon Initialized.")
 else
 	local files, directories = file.Find( dir.."*", "LUA" )
 	for i, folder in pairs( directories ) do
@@ -54,8 +54,8 @@ else
 			elseif string.StartWith( f, "cl_" ) then
 				include( dir .. folder .. "/" .. f )
 			end
-			ChaoticLoader.Print("[Chaos Weapon Base] Loaded "..f)
+			ChaoticLoader.Print("[ChaosBase] Loaded "..f)
 		end
 	end
-	ChaoticLoader.Print("[Chaos Weapon Base] Addon Initialized.")
+	ChaoticLoader.Print("[ChaosBase] Addon Initialized.")
 end
