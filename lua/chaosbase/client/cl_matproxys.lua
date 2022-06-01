@@ -46,3 +46,25 @@ matproxy.Add( {
         mat:SetVector( self.ResultTo, Vector(-angmath.y, 0, 0) )
     end
 } )
+
+matproxy.Add( {
+    name = "chaos_ScollPitch",
+    init = function( self, mat, values )
+        self.ResultTo = values.resultvar
+        self.LerpPower = mat:GetFloat("$pitch_ls")
+    end,
+
+    bind = function( self, mat, ent )
+        if !IsValid(ent) then ent = LocalPlayer() end
+        if ent:IsWeapon() && ent:GetOwner():EntIndex() != 0 then ent = ent:GetOwner() end
+        
+        if !self.LerpPower then self.LerpPower = 1 end
+        
+        local ea = ent:EyeAngles()
+        local pitch = ea.x
+        
+        self.drc_scrollpitchlerp = Lerp(RealFrameTime() * (self.LerpPower * 2.5), self.drc_scrollpitchlerp or ea.x, ea.x)
+
+        mat:SetVector( self.ResultTo, Vector(0, self.drc_scrollpitchlerp/3.33333333) )
+    end
+} )
