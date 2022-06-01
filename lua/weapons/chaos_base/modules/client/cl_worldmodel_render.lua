@@ -110,7 +110,7 @@ function SWEP:DrawWorldModelTranslucent(flags)
         if self.WElementsPosAdd and self.WElementsPosScale then
             if self:IsHighTier() then
                 v.pos = self.WElementPosAdd
-                v.size = self.WElementsPosScale
+                v.size = self.WelemntPosScale
             end
         end
 

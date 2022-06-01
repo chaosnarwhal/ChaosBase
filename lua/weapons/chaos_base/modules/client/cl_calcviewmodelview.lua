@@ -1,4 +1,3 @@
-
 AddCSLuaFile()
 local Vector = Vector
 local Angle = Angle
