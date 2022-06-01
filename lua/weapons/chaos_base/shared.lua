@@ -22,8 +22,11 @@ SWEP.CLSIDE_MODULES = {
     "modules/client/cl_calcviewmodelview.lua",
     "modules/client/cl_hud.lua",
     "modules/client/cl_scopes.lua",
+    "modules/client/cl_viewmodel_render.lua",
     "modules/client/cl_worldmodel_render.lua"
 }
+
+game.AddParticles("particles/ac_mw_handguns.pcf")
 
 --START GUN CODE.
 SWEP.Gun = "chaos_base"
@@ -383,6 +386,7 @@ end
 
 function SWEP:RecreateClientsideModels()
     if not IsValid(self.c_WorldModel) then
+        print("RecreatedWorldModels")
         self.c_WorldModel = ClientsideModel(self.WorldModel, self.RenderGroup)
         self.c_WorldModel:SetRenderMode(self.RenderMode)
         self.c_WorldModel.swep = self

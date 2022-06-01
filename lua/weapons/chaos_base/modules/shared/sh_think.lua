@@ -13,12 +13,9 @@ function SWEP:ChaosPlayerThinkCL(plyv)
     local ft = FrameTime()
 
     if self.BlowbackEnabled then
-        if not self.Blowback_SlideLock or self:Clip1() == -1 or self:Clip1() > 0.1 then
-            self.BlowbackCurrent = math.Approach(self.BlowbackCurrent, 0, self.BlowbackCurrent * ft *15)
-        end
-
-        self.BlowbackCurrentRoot = math.Approach(self.BlowbackCurrentRoot, 0, self.BlowbackCurrentRoot * ft * 15)
+        self.BlowbackCurrent = math.Approach(self.BlowbackCurrent, 0, self.BlowbackCurrent * ft * 15)
     end
+
 
     --Aim Behaviour Handles to pass through values to CL/Server
     --IronSight Pred Handling.
