@@ -1,3 +1,7 @@
+AddCSLuaFile()
+
+ChaosBase = ChaosBase or {}
+
 surface.CreateFont("branchcheck_24", {
     font = "Roboto",
     size = 24,

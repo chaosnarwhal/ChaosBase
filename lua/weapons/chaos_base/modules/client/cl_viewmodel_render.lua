@@ -12,7 +12,9 @@ function SWEP:PostDrawViewModel(vm, weapon, ply)
 
             if bolt and bolt >= 0 then
                 bpos = tbl.pos * self.BlowbackCurrent
+                bang = tbl.angle * self.BlowbackCurrent
                 vm:ManipulateBonePosition(bolt, bpos)
+                vm:ManipulateBoneAngles(bolt, bang)
             end
         end
     end
