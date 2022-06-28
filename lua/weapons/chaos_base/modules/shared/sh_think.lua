@@ -105,7 +105,7 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
 
     --cone
     local target = Lerp(self:GetAimDelta(), self.Cone.Hip, self.Cone.Ads)
-    self:SetCone(math.Approach(self:GetCone(), target, 4 * FrameTime()))
+    self:SetCone(math.Approach(self:GetCone(), target, (1 / self.Cone.Decrease) * FrameTime()))
 
     --Heat Handling
     self:DoHeat()
