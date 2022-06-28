@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 function SWEP:CalculateRecoil()
     math.randomseed(self.Recoil.Seed + self:GetSprayRounds())
-    local verticalRecoil = math.min(self:GetSprayRounds(), math.min(self:GetMaxClip1() * 0.33, 20)) * 0.1 + math.Rand(self.Recoil.Vertical[1], self.Recoil.Vertical[2])
+    local verticalRecoil = math.min(self:GetSprayRounds(), math.min(self:GetMaxClip1() * 0.33, 8)) * 0.1 + math.Rand(self.Recoil.Vertical[1], self.Recoil.Vertical[2])
     local horizontalRecoil = math.Rand(self.Recoil.Horizontal[1], self.Recoil.Horizontal[2])
     local angles = Angle(-verticalRecoil, horizontalRecoil, horizontalRecoil * -0.3)
     local Allowed = self:IsHighTier()
