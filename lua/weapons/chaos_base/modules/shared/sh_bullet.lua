@@ -32,23 +32,6 @@ function SWEP:BulletCallbackInternal(attacker, tr, dmgInfo)
     --Custom Hitgroup Damage Setting
     local dmgtable = self.BodyDamageMults
     local trent = tr.Entity
-
-    --[[
-    if dmgtable then
-        local hg = tr.HitGroup
-        local gam = ChaosBase.LimbCompensation[engine.ActiveGamemode()] or ChaosBase.LimbCompensation[1]
-
-        if dmgtable[hg] then
-            dmgInfo:ScaleDamage(dmgtable[hg])
-
-            if GetConVar("chaosbase_bodydamagemult_cancel"):GetBool() and gam[hg] then
-                dmgInfo:ScaleDamage(gam[hg])
-            end
-        end
-    end
-    ]]
-    
-
     if trent:IsPlayer() then
         damage = damage
     elseif trent:IsNPC() or trent:IsNextBot() then
@@ -58,9 +41,17 @@ function SWEP:BulletCallbackInternal(attacker, tr, dmgInfo)
    -- dmgInfo:SetDamage(damage + 1)
 
     local atype = self.Bullet.DamageType
-
     dmgInfo:SetDamageType(atype)
     dmgInfo:SetDamage(damage)
+
+    if dmgtable then
+        local hg = tr.HitGroup
+        local gam = ChaosBase.LimbCompensation[engine.ActiveGamemode()] or ChaosBase.LimbCompensation[1]
+
+        if dmgtable[hg] then
+            dmgInfo:ScaleDamage(dmgtable[hg])
+        end
+    end
 
     if self:GetClass() == "chaos_trigun" and trent:IsPlayer() and trent:HasGodMode() then
         trent:KillSilent()

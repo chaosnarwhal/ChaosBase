@@ -13,7 +13,11 @@ function SWEP:ChaosPlayerThinkCL(plyv)
     local ft = FrameTime()
 
     if self.BlowbackEnabled then
-        self.BlowbackCurrent = math.Approach(self.BlowbackCurrent, 0, self.BlowbackCurrent * ft * 15)
+        if self:Clip1() == 0 and self.Blowback_SlideLock and not self:GetIsReloading() then
+            self.BlowbackCurrent = 1
+        else
+            self.BlowbackCurrent = math.Approach(self.BlowbackCurrent, 0, self.BlowbackCurrent * ft * 15)
+        end
     end
 
 
@@ -67,9 +71,11 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
         self:PrimaryAttack()
     end
 
+    --[[
     if self:GetIsAiming() then
         self:SetNextIdle(0)
     end
+    ]]
     
     --Idle Anim timer
     if self:GetNextIdle() ~= 0 and self:GetNextIdle() <= CurTime() then

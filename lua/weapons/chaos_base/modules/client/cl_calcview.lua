@@ -1,5 +1,4 @@
 AddCSLuaFile()
-
 SWEP.ViewHolProg = 0
 SWEP.AttachmentViewOffset = Angle(0, 0, 0)
 SWEP.ProceduralViewOffset = Angle(0, 0, 0)
@@ -18,13 +17,12 @@ local targint, targbool
 
 function SWEP:GetCameraAttachment()
     local vm = self:GetOwner():GetViewModel()
+
     return vm:GetAttachment(vm:LookupAttachment("camera"))
 end
 
 function SWEP:SafeLerp(rate, current, target)
-    if (math.abs(current - target) < 0.001) then
-        return target
-    end
+    if math.abs(current - target) < 0.001 then return target end
 
     return Lerp(rate, current, target)
 end
@@ -52,76 +50,51 @@ SWEP.ZeroAngle = Angle(0, 0, 0)
 
 function SWEP:CalcView(ply, pos, ang, fov)
     local vm = self:GetOwner():GetViewModel()
-
-    if !IsValid(vm) then
-        return pos, ang, fov
-    end
-
+    if not IsValid(vm) then return pos, ang, fov end
     ang.p = math.Clamp(ang.p, -89, 90)
-
     local rpm = math.Clamp(self.Primary.RPM / 10, 55, 90)
     local rate = 60 / (rpm * 10)
     rate = 20 - (rate * 100)
     self.Camera.Shake = self:SafeLerp(rate * FrameTime(), self.Camera.Shake, 0)
-
     self._eyeang = ang * 1
-    
     local camAtt = self:GetCameraAttachment()
 
-    if (camAtt != nil) then
+    if camAtt ~= nil then
         local cameraAttAngles = camAtt.Ang
         cameraAttAngles:Sub(self:GetOwner():GetViewModel():GetAngles())
-        
         ang:Add(cameraAttAngles)
     end
 
     local pitch = (math.cos(CurTime() * rpm) * (self.Camera.Shake * 0.5)) * self:SafeLerp(self:GetAimDelta(), 1, 0.4)
-
     local recoilAndShakeAngles = Angle(pitch, 0, math.sin(CurTime() * rpm))
     recoilAndShakeAngles:Mul(self.Camera.Shake)
-
     ang:Add(recoilAndShakeAngles)
-
     local vpAngles = self:GetOwner():GetViewPunchAngles()
     vpAngles:Mul(self:SafeLerp(self:GetAimDelta(), 0.2, 0.01))
-
     ang:Sub(vpAngles)
-
     --breathing
     self.Camera.LerpBreathing = LerpAngle(10 * FrameTime(), self.Camera.LerpBreathing, self:GetBreathingAngle())
-
     ang:Add(self.Camera.LerpBreathing)
     --end breathing
-
     self:VectorAddAndMul(pos, ang:Forward(), -self.Camera.Shake)
-    
     self.Camera.Fov = self:SafeLerp(10 * FrameTime(), self.Camera.Fov, self:GetAimDelta())
-
     local diff = 0
 
-    if (self:GetIsReloading()) then
+    if self:GetIsReloading() then
         diff = (1 - self.Zoom.FovMultiplier) * 0.25
     end
 
     self.Camera.LerpReloadFov = self:SafeLerp(4 * FrameTime(), self.Camera.LerpReloadFov, diff)
-
     local fovMultiplier = self:SafeLerp(self.Camera.Fov, 1, self.Scope.ScopeMagnification or self.Scope.Magnification)
-
     fov = (fov * fovMultiplier) + (self.Camera.Shake * 1.5)
-
     --VIEWMODEL
-
     self:CalcViewModel(self:GetOwner():GetViewModel(), pos, ang)
-
     if not ang then return end
     if ply ~= LocalPlayer() then return end
-    local vm = ply:GetViewModel()
-
     local ftv = math.max(FrameTime(), 0.001)
     local viewbobintensity = self.ViewbobIntensity * 0.5
     local holprog = self:GetIsHolstering() and 1 or 0
     self.ViewHolProg = math.Approach(self.ViewHolProg, holprog, ftv / 5)
-
     oldangtmp = ang * 1
 
     if self.CameraAngCache and viewbob_animated then
@@ -130,10 +103,10 @@ function SWEP:CalcView(ply, pos, ang, fov)
         ang:RotateAroundAxis(ang:Up(), (self.CameraAngCache.y + self.CameraOffset.y) * viewbobintensity * self.CameraAttachmentScale)
         ang:RotateAroundAxis(ang:Forward(), (self.CameraAngCache.r + self.CameraOffset.r) * viewbobintensity * self.CameraAttachmentScale)
     else
-        local vb_r, irelaod
+        local vb_r
         ireload = self:GetIsReloading() or self:GetShotgunReloading()
         vb_r = viewbob_animated
-        targbool = (vb_r and ireload)
+        targbool = vb_r and ireload
         targint = targbool and 1 or 0
 
         if ireload then
@@ -183,7 +156,8 @@ function SWEP:CalcView(ply, pos, ang, fov)
         ang:RotateAroundAxis(ang:Up(), l_Lerp(progress, 0, self.ProceduralViewOffset.y / 2) * ints)
         ang:RotateAroundAxis(ang:Forward(), Lerp(progress, 0, self.ProceduralViewOffset.r / 3) * ints)
     end
-    self._fov = fov
-    return pos, LerpAngle(math.pow(self.ViewHolProg, 2), ang, oldangtmp), fov
 
+    self._fov = fov
+
+    return pos, LerpAngle(math.pow(self.ViewHolProg, 2), ang, oldangtmp), fov
 end
