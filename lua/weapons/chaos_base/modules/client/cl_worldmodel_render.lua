@@ -47,15 +47,15 @@ function SWEP:DrawWorldModelTranslucent(flags)
         self.c_WorldModel:SetModelScale(ModelScale)
 
         --ThirdPerson Bolt Handling
-        if not self.BlowbackBoneMods then
-            self.BlowbackBoneMods = {}
+        if not self.BlowbackBoneModsWorldModel then
+            self.BlowbackBoneModsWorldModel = {}
             self.BlowbackCurrent = 0
         end
 
         self.BlowbackCurrent = math.Approach(self.BlowbackCurrent, 0, self.BlowbackCurrent * FrameTime() * 30)
 
         if self.BlowbackBoneMods then
-            for boltname, tbl in pairs(self.BlowbackBoneMods) do
+            for boltname, tbl in pairs(self.BlowbackBoneModsWorldModel) do
                 local bolt = self.c_WorldModel:LookupBone(self.BoltWorldModelBone)
 
                 if bolt and bolt >= 0 then
