@@ -15,6 +15,11 @@ function SWEP:PostDrawViewModel(vm, weapon, ply)
                 bang = tbl.angle * self.BlowbackCurrent
                 vm:ManipulateBonePosition(bolt, bpos)
                 vm:ManipulateBoneAngles(bolt, bang)
+                if self.BoltWorldModelBoneExtra then
+                    local bolt2 = vm:LookupBone(self.BoltWorldModelBoneExtra)
+                    vm:ManipulateBonePosition(bolt2, bpos)
+                    vm:ManipulateBoneAngles(bolt2, bang)
+                end
             end
         end
     end
