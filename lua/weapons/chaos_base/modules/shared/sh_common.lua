@@ -86,6 +86,26 @@ function SWEP:IsFirstPerson()
     return true
 end
 
+function SWEP:VMIV()
+    local owent = self:GetOwner()
+
+    if not IsValid(self.OwnerViewModel) then
+        if IsValid(owent) and owent.GetViewModel then
+            self.OwnerViewModel = owent:GetViewModel()
+        end
+
+        return false
+    else
+        if not IsValid(owent) or not owent.GetViewModel then
+            self.OwnerViewModel = nil
+
+            return false
+        end
+
+        return self.OwnerViewModel
+    end
+end
+
 function ChaosBase.Cubic(t)
     return -2 * t * t * t + 3 * t * t
 end
