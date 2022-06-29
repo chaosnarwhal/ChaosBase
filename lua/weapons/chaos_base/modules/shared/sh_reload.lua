@@ -123,11 +123,13 @@ function SWEP:RestoreAmmo(count)
         chamber = 0
     end
 
+    local loadclip = self.ShotgunReload and 1 or 0
+
     local clip = self:GetCapacity()
     count = count or (clip)
     local reserve = self:Ammo1() or math.huge
-    local load = math.Clamp(count, 0, reserve)
-    load = math.Clamp(load, 0, clip + 1)
+    local load = math.Clamp(self:Clip1() + count, 0, reserve)
+    load = math.Clamp(load, 0, clip + loadclip)
     reserve = reserve - load
     self:GetOwner():SetAmmo(reserve, self.Primary.Ammo, true)
     self:SetClip1(load)

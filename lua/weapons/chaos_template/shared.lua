@@ -87,11 +87,6 @@ SWEP.HighTier = {
     --},
 }
 
---Custom Muzzle Flashes to Code in.
-SWEP.ParticleEffects = {
-    ["MuzzleFlash"] = "AC_muzzle_pistol",
-}
-
 --Swep damage and tracer handling.
 SWEP.Bullet = {
     Damage = 1, --first value is damage at 0 meters from impact, second value is damage at furthest point in effective range

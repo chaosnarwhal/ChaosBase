@@ -386,7 +386,6 @@ end
 
 function SWEP:RecreateClientsideModels()
     if not IsValid(self.c_WorldModel) then
-        print("RecreatedWorldModels")
         self.c_WorldModel = ClientsideModel(self.WorldModel, self.RenderGroup)
         self.c_WorldModel:SetRenderMode(self.RenderMode)
         self.c_WorldModel.swep = self
