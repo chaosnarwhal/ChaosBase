@@ -243,16 +243,9 @@ end
 
 function SWEP:Projectiles()
     if CLIENT then return end
-    local proj = ents.Create(self.Projectile.Class)
-    local angles = self:GetOwner():EyeAngles() + self:GetOwner():GetViewPunchAngles()
-    local src = LerpVector(self:GetAimDelta(), self:GetOwner():EyePos() + angles:Up() * -3 + angles:Right() * 3, self:GetOwner():EyePos())
-    math.randomseed(self:Clip1() + self:Ammo1() + CurTime() + self.Cone.Seed)
-    local spreadRight = math.random(-self:GetCone(), self:GetCone())
-    math.randomseed(-self:Clip1() * 0.5 + self:Ammo1() * 2 - CurTime() + self.Cone.Seed)
-    local spreadUp = math.random(-self:GetCone(), self:GetCone())
-    local spread = LerpVector(self:GetAimDelta(), Vector(spreadRight, spreadUp), Vector(0, 0))
-    angles:RotateAroundAxis(angles:Right(), spread.x)
-    angles:RotateAroundAxis(angles:Up(), spread.y)
+    local proj = ents.Create(self.Projectile)
+    local angles = self:GetOwner():EyeAngles()
+    local src = self:GetOwner():GetShootPos()
     proj.Weapon = self
     proj:SetPos(src)
     proj:SetAngles(angles)

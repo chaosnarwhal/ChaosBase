@@ -29,7 +29,7 @@ end
 
 function SWEP:GetMuzzlePos(ignorepos)
     fp = self:IsFirstPerson()
-    local vm = self.OwnerViewModel
+    local vm = self:GetOwner():GetViewModel()
 
     if not IsValid(vm) then
         vm = self
