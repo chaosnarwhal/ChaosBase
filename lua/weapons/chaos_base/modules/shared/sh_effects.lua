@@ -25,10 +25,10 @@ function SWEP:ShootEffectsCustom(ifp)
 
     if not self.MuzzleFlashEnabled then return end
     if self:IsFirstPerson() and not self:VMIV() then return end
-    if not self:GetOwner().GetShootPos then return end
+    --if not self:GetOwner().GetShootPos then return end
     ifp = ifp or IsFirstTimePredicted()
 
-    if (SERVER and sp and self.ParticleMuzzleFlash) or (SERVER and not sp) then
+    if (SERVER and sp) or (SERVER and not sp) then
         net.Start("ChaosBase_muzzle_mp", true)
         net.WriteEntity(self)
 
@@ -40,9 +40,8 @@ function SWEP:ShootEffectsCustom(ifp)
 
         return
     end
-
-    if (CLIENT and ifp and not sp) or (sp and SERVER) then
-        self:UpdateMuzzleAttachment()
+    if (CLIENT and ifp and not self:IsFirstPerson()) then
+        --self:UpdateMuzzleAttachment()
         self:MuzzleFlashCustom()
     end
 end

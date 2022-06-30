@@ -32,19 +32,14 @@ function SWEP:CanPrimaryAttack()
         return
     end
 
+    --[[
     --Bashing?
     if self:GetState() ~= ChaosBase.State_SIGHTS and owner:KeyDown(IN_USE) or self.PrimaryBash then
         self:Bash()
 
         return
     end
-
-    --Are you throwing the weapon?
-    if self.Throwing then
-        self:PreThrow()
-
-        return
-    end
+    ]]
 
     local SprintShoot = self:IsHighTier()
 
@@ -166,6 +161,10 @@ function SWEP:PrimaryAttack()
 
     if CLIENT and IsFirstTimePredicted() then
         self.Camera.Shake = self.Recoil.Shake --* Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier)
+    end
+
+    if self:Clip1() == 1 then
+        self:EmitSound("chaos.m6s.SlideBack")
     end
 
     --HighTier code for setting shootsprint anim to cancel.

@@ -1,4 +1,5 @@
 --WalkBob
+local vector_origin = Vector()
 SWEP.ti = 0
 SWEP.LastCalcBob = 0
 SWEP.tiView = 0
@@ -91,13 +92,13 @@ function SWEP:ChaosWalkBob(pos, ang, breathIntensity, walkIntensity, rate, ftv)
     pos:Add(upLocal * math.sin(self.ti * walkRate) * breathIntensity * 0.5 * breatheMult1)
     pos:Add(riLocal * math.cos(self.ti * walkRate / 2) * flip_v * breathIntensity * 0.6 * breatheMult2 * (1 - self.IronSightsProgressUnpredicted))
     --WalkAnims
-    self.WalkTI = (self.walkTI or 0) + delta * 160 / 60 * self:GetOwner():GetVelocity():Length2D() / self:GetOwner():GetWalkSpeed()
+    self.WalkTI = (self.walkTI or 0) + delta * 120 / 60 * self:GetOwner():GetVelocity():Length2D() / self:GetOwner():GetWalkSpeed()
     WalkPos.x = l_Lerp(delta * 5 * rateScaleFac, WalkPos.x, -math.sin(self.ti * walkRate * 0.5) * gunbob_intensity * walkIntesnsity)
     WalkPos.y = l_Lerp(delta * 5 * rateScaleFac, WalkPos.y, math.sin(self.ti * walkRate) / 1.5 * gunbob_intensity * walkIntesnsity)
     WalkPosLagged.x = l_Lerp(delta * 5 * rateScaleFac, WalkPosLagged.x, -math.sin((self.ti * walkRate * 0.5) + math.pi / 3) * gunbob_intensity * walkIntesnsity)
     WalkPosLagged.y = l_Lerp(delta * 5 * rateScaleFac, WalkPosLagged.y, math.sin(self.ti * walkRate + math.pi / 3) / 1.5 * gunbob_intensity * walkIntesnsity)
-    pos:Add(WalkPos.x * 0.33 * riLocal)
-    pos:Add(WalkPos.y * 0.25 * upLocal)
+    pos:Add(WalkPos.x * delta * riLocal)
+    pos:Add(WalkPos.y * delta * upLocal)
     ang:RotateAroundAxis(ri, -WalkPosLagged.y)
     ang:RotateAroundAxis(up, WalkPosLagged.x)
     ang:RotateAroundAxis(fw, WalkPos.x)
@@ -105,12 +106,6 @@ function SWEP:ChaosWalkBob(pos, ang, breathIntensity, walkIntensity, rate, ftv)
     pos:Add(riLocal * walkVec.x * flip_v)
     pos:Add(fwLocal * walkVec.y)
     pos:Add(upLocal * walkVec.z)
-    --Jumping
-    --local trigX = -math.Clamp(zVelocitySmooth / 200, -1, 1) * math.pi / 2
-    --local jumpIntensity = (3 + math.Clamp(math.abs(zVelocitySmooth) - 100, 0, 200) / 200 * 4) * (1 - self.IronSightsProgressUnpredicted * 0.8)
-    --pos:Add(ri * math.sin(trigX) * scale_r * 0.1 * jumpIntensity * flip_v * 0.4)
-    --pos:Add(-up * math.sin(trigX) * scale_r * 0.1 * jumpIntensity * 0.4)
-    --ang:RotateAroundAxis(ang:Forward(), math.sin(trigX) * scale_r * jumpIntensity * flip_v * 0.4)
     --Rolling with horizontal motion
     local xVelocityClamped = xVelocitySmooth
 
@@ -163,4 +158,24 @@ function SWEP:SprintBob(pos, ang, intensity, origPos, origAng)
     end
 
     return pos, ang
+end
+
+local fac, bscale
+function SWEP:UpdateEngineBob()
+
+    local isp = self.IronSightsProgressUnpredicted or self:GetIronSightsProgress()
+    local wpr = 1
+    local spr = self.SprintProgressUnpredicted
+
+    fac = 0.5 * ((1 - isp) * 0.85 + 0.15)
+    bscale = fac
+
+    if spr > 0.005 then
+        bscale = bscale * l_Lerp(spr, 1, self.SprintBobMult)
+    elseif wpr > 0.005 then
+        bscale = bscale * l_Lerp(wpr, 1, l_Lerp(isp, self.WalkBobMult, self.WalkBobMult_Iron or self.WalkBobMult))
+    end
+
+    self.BobScale = bscale
+    self.SwayScale = fac
 end

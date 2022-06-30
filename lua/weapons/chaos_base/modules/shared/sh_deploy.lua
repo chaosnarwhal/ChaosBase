@@ -29,6 +29,8 @@ function SWEP:Deploy(fromFallback)
     self:SetBurstRounds(0)
     self:SetSafety(false)
     self:SetIsFiring(false)
+    self:SetHoldType(self.HoldtypeActive)
+    self:SetIsSprinting(false)
 
     if not self:GetOwner():InVehicle() then
         local prd = false

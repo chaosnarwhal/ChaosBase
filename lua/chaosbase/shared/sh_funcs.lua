@@ -65,6 +65,8 @@ if CLIENT then
 	hook.Add("PreDrawViewModel", "ChaosBasePreDrawViewModel", function(vm, plyv, wepv)
 		if not IsValid(wepv) or not wepv.ChaosBase then return end
 
+		wepv:UpdateEngineBob()
+
 		local st = SysTime()
 		st_old = st_old or st
 
@@ -153,3 +155,31 @@ hook.Add("Initialize", "chaos_SetupAmmoTypes", function()
 		})
 	end
 end)
+
+function ChaosBase:DLight(ent, pos, col, size, lifetime, emissive)
+	local HDR = render.GetHDREnabled()
+
+	if emissive == nil then emissive = false end
+	if IsEntity(ent) then ent = ent:EntIndex() end
+	local dl = DynamicLight(ent, emissive)
+	dl.pos = pos
+	dl.r = col.r
+	dl.g = col.g
+	dl.b = col.b
+	dl.brightness = col.a
+	dl.Decay = (1000 / lifetime)
+	dl.size = size
+	dl.DieTime = CurTime() + lifetime
+	
+	if HDR == false && emissive == false then
+		local el = DynamicLight(ent, true)
+		el.pos = pos
+		el.r = col.r
+		el.g = col.g
+		el.b = col.b
+		el.brightness = col.a
+		el.Decay = (1000 / lifetime)
+		el.size = size
+		el.DieTime = CurTime() + lifetime
+	end
+end

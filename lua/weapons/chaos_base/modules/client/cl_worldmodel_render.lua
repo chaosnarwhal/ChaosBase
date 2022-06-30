@@ -23,7 +23,10 @@ function SWEP:DrawWorldModelTranslucent(flags)
     local ModelScale = self.WepScale
     local HighTierTable = self.HighTier
     local elementOffsetVec = Vector(0,0,0)
-    local index = ply:getJobTable().category or ply:getJobTable().name
+
+    if IsValid(ply) then
+        local index = ply:getJobTable().category or ply:getJobTable().name or nil
+    end
 
     if IsValid(ply) then
         if HighTierTable[index] then
@@ -52,10 +55,8 @@ function SWEP:DrawWorldModelTranslucent(flags)
             self.BlowbackCurrent = 0
         end
 
-        self.BlowbackCurrent = math.Approach(self.BlowbackCurrent, 0, self.BlowbackCurrent * FrameTime() * 30)
-
-        if self.BlowbackBoneMods then
-            for boltname, tbl in pairs(self.BlowbackBoneModsWorldModel) do
+        if self.BlowbackBoneModsWorldModel then
+            for boltname, tbl in pairs(self.BlowbackBoneModsWorldModel or self.BlowbackBoneMods) do
                 local bolt = self.c_WorldModel:LookupBone(self.BoltWorldModelBone)
 
                 if bolt and bolt >= 0 then
@@ -174,6 +175,7 @@ function SWEP:DrawWorldModelTranslucent(flags)
             cam.End3D2D()
         end
     end
+    self:RenderModelsWorld(self.c_WorldModel, 0)
 end
 
 --[[ 
