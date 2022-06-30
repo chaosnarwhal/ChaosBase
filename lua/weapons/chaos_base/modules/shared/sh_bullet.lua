@@ -2,17 +2,24 @@ AddCSLuaFile()
 
 function SWEP:CalculateRecoil()
     math.randomseed(self.Recoil.Seed + self:GetSprayRounds())
-    local verticalRecoil = math.min(self:GetSprayRounds(), math.min(self:GetMaxClip1() * 0.33, 8)) * 0.1 + math.Rand(self.Recoil.Vertical[1], self.Recoil.Vertical[2])
+    local verticalRecoil = math.min(self:GetSprayRounds(), math.min(self:GetMaxClip1() * 0.33, 15)) * 0.1 + math.Rand(self.Recoil.Vertical[1], self.Recoil.Vertical[2])
     local horizontalRecoil = math.Rand(self.Recoil.Horizontal[1], self.Recoil.Horizontal[2])
     local angles = Angle(-verticalRecoil, horizontalRecoil, horizontalRecoil * -0.3)
     local Allowed = self:IsHighTier()
     local RecoilReduce = self:RecoilReduce()
-    local RecoilReducer = self.Recoil.RecoilReducer or 1
-    if Allowed then
-        return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier) * RecoilReduce
-    elseif not Allowed then
-        return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier) * RecoilReducer
+    local RecoilReducer = 1 or self.Recoil.RecoilReducer
+
+    if self:GetBipodDeployed() then
+        angles = angles * 0.1
     end
+
+    if Allowed then
+        angles = angles * RecoilReduce
+    else
+        angles = angles
+    end
+
+    return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier)
 end
 
 function SWEP:CalculateCone()
@@ -86,7 +93,7 @@ function SWEP:ShootBullets(hitpos)
     local spread = Vector(self:CalculateCone(), -self:CalculateCone()) * 0.1
 
     if self.Bullet.NumBullets == 1 then
-        spread = LerpVector(self:GetAimDelta(), Vector(self:CalculateCone(), -self:CalculateCone()) * 0.1, Vector(0, 0))
+        spread = LerpVector(self:GetAimDelta(), Vector(self:CalculateCone(), -self:CalculateCone()) * 0.1, Vector(self:CalculateCone(), -self:CalculateCone()) * 0.1)
     end
 
     local dir = (self:GetOwner():EyeAngles() + self:GetOwner():GetViewPunchAngles() + self:GetBreathingAngle()):Forward()
@@ -107,7 +114,7 @@ function SWEP:ShootBullets(hitpos)
         Spread = spread,
         Num = SERVER and 1 or self.Bullet.NumBullets,
         Damage = self.Bullet.Damage[1],
-        HullSize = self.Bullet.HullSize,
+        HullSize = self.Bullet.HullSize or 0,
         --Force = (self.Bullet.Damage[1] * self.Bullet.PhysicsMultiplier) * 0.01,
         Distance = self:MetersToHU(self.Bullet.Range),
         Tracer = self.Bullet.Tracer and 1 or 0,

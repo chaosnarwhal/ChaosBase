@@ -74,6 +74,41 @@ local function ChaosBase_PlayerBindPress(ply, bind, pressed)
 
 end
 
+local function ChaosCreateMove(move)
+    ply = LocalPlayer()
+    wep = ply:GetActiveWeapon()
+
+    if IsValid(wep) and wep.ChaosBase then
+        local ft = FrameTime()
+        local ct = CurTime()
+
+        if wep:GetBipodDeployed() and wep.DeployAngle then
+            ang = move:GetViewAngles()
+
+            local EA = ply:EyeAngles()
+            dif = math.AngleDifference(EA.y, wep.DeployAngle.y)
+
+            if dif >= wep.BipodAngleLimitYaw then
+                ang.y = wep.DeployAngle.y + wep.BipodAngleLimitYaw
+            elseif dif <= -wep.BipodAngleLimitYaw then
+                ang.y = wep.DeployAngle.y - wep.BipodAngleLimitYaw
+            end
+
+            dif = math.AngleDifference(EA.p, wep.DeployAngle.p)
+
+            if dif >= wep.BipodAngleLimitPitch then
+                ang.p = wep.DeployAngle.p + wep.BipodAngleLimitPitch
+            elseif dif <= -wep.BipodAngleLimitPitch then
+                ang.p = wep.DeployAngle.p - wep.BipodAngleLimitPitch
+            end
+
+            move:SetViewAngles(ang)
+        end
+    end
+end
+
+hook.Add("CreateMove", "ChaosBaseCreateMove", ChaosCreateMove)
+
 hook.Add("PlayerBindPress", "ChaosBase_PlayerBindPress", ChaosBase_PlayerBindPress)
 
 --Register the Binds

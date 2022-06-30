@@ -20,7 +20,6 @@ function SWEP:ChaosPlayerThinkCL(plyv)
         end
     end
 
-
     --Aim Behaviour Handles to pass through values to CL/Server
     --IronSight Pred Handling.
     local is = self:GetIsAiming()
@@ -38,6 +37,10 @@ function SWEP:ChaosPlayerThinkCL(plyv)
     local issprintingt = issprinting and 1 or 0
     self.SprintProgressUnpredicted = math.Approach(self.SprintProgressUnpredicted or 0, issprintingt, (issprintingt - (self.SprintProgressUnpredicted or 0)) * ft * sprintspeed * 1.2)
 
+    self:ChaosPlayerThinkCLCustom()
+end
+
+function SWEP:ChaosPlayerThinkCLCustom()
 end
 
 function SWEP:ChaosThink2(is_working_out_prediction_errors)
@@ -63,6 +66,8 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
         self:SafetyHandlerModule()
         self:AimBehaviourModule()
     end
+
+    self:BipodModule()
 
     --SprintBehaviour
     self:SprintBehaviour()
@@ -110,4 +115,10 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
 
     --Handling Wacky Fungy Timers
     --self:ProcessTimers()
+
+    self:ChaosCustomThink()
+end
+
+function SWEP:ChaosCustomThink()
+
 end

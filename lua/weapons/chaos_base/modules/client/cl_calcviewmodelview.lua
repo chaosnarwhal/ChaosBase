@@ -14,6 +14,11 @@ local zVelocity, zVelocitySmooth = 0,0
 local xVelocity, xVelocitySmooth, rightVec = 0, 0, Vector()
 local flatVec = Vector(1,1,0)
 
+local Vec0, Ang0 = Vector(0, 0, 0), Angle(0, 0, 0)
+
+SWEP.BipodPos = Vector(0, 0, 0)
+SWEP.BipodAng = Vector(0, 0, 0)
+
 --[[ 
 Function Name:  GetViewModelPosition
 Syntax: self:GetViewModelPosition(pos, ang ).
@@ -85,6 +90,9 @@ Purpose:  Utility function / Animation
 ]]
 --
 function SWEP:CalculateViewModelOffset(delta)
+    local FT = FrameTime()
+    local CT = CurTime()
+    local EA = EyeAngles()
     local target_pos, target_ang
     --IronSights Offset
     local additivePos = self.AdditiveViewModelPosition
@@ -134,9 +142,35 @@ function SWEP:CalculateViewModelOffset(delta)
         target_ang:Add(self.ViewModelAngle)
     end
 
-    target_pos.x = target_pos.x + chaosbase_vmoffset_x:GetFloat() * (1 - AimDelta)
-    target_pos.y = target_pos.y + chaosbase_vmoffset_y:GetFloat() * (1 - AimDelta)
-    target_pos.z = target_pos.z + chaosbase_vmoffset_z:GetFloat() * (1 - AimDelta)
+    if self:GetBipodDeployed() and self.DeployAngle and not self:GetIsReloading() then
+        local dif1 = math.AngleDifference(self.DeployAngle.y, EA.y)
+        local dif2 = math.AngleDifference(self.DeployAngle.p, EA.p)
+        target_pos.z = target_pos.z - 2
+        target_pos.y = target_pos.y + 2
+
+        if CT < self.BipodMoveTime then
+            self.BipodPos[1] = math.Approach(self.BipodPos[1], dif1 * self.BipodSensitivity.x, FT * 50)
+            self.BipodPos[3] = math.Approach(self.BipodPos[3], dif2 * self.BipodSensitivity.z, FT * 50)
+            
+            self.BipodAng[1] = math.Approach(self.BipodAng[1], dif2 * self.BipodSensitivity.p, FT * 50)
+            self.BipodAng[3] = math.Approach(self.BipodAng[3], dif2 * self.BipodSensitivity.r, FT * 50)
+        else
+            self.BipodPos[1] = dif1 * self.BipodSensitivity.x
+            self.BipodPos[3] = dif2 * self.BipodSensitivity.z
+            
+            self.BipodAng[1] = dif2 * self.BipodSensitivity.p
+            --self.BipodAng[2] = dif1 * -0.1
+            self.BipodAng[3] = dif2 * self.BipodSensitivity.r
+        end
+    else
+        self.BipodPos = self:LerpVectorPod(FT * 10, self.BipodPos, Vec0)
+        self.BipodAng = self:LerpVectorPod(FT * 10, self.BipodAng, Vec0)
+        self.BipodMoveTime = CT + 0.2
+    end
+
+    target_pos.x = (target_pos.x + self.BipodPos[1]) + chaosbase_vmoffset_x:GetFloat() * (1 - AimDelta)
+    target_pos.y = (target_pos.y + self.BipodPos[2]) + chaosbase_vmoffset_y:GetFloat() * (1 - AimDelta)
+    target_pos.z = (target_pos.z + self.BipodPos[3]) + chaosbase_vmoffset_z:GetFloat() * (1 - AimDelta)
 
     local intensityWalk = math.min(self:GetOwner():GetVelocity():Length2D() / self:GetOwner():GetWalkSpeed(), 1) * self:SafeLerp(AimDelta, self.WalkBobMult, self.WalkBobMult_Iron or self.WalkBobMult) * 0.5
     local intensityBreath = self:SafeLerp(AimDelta, self.BreathScale, intensityWalk)
@@ -466,6 +500,10 @@ function SWEP:CalcRecoil()
         local verticalTrans = math.sin(CurTime() * speed * 0.5) * 0.05
         local verticalRot = math.cos(CurTime() * speed * 0.5) * 0.25
         local horizRecoil = math.max(math.abs(self.Recoil.Horizontal[1]), math.abs(self.Recoil.Horizontal[2]))
+
+        if self:GetBipodDeployed() then
+            horizRecoil = horizRecoil * 0.2
+        end
 
         if self.Recoil.ViewModelMultiplier ~= nil then
             horizRecoil = horizRecoil * self.Recoil.ViewModelMultiplier

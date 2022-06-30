@@ -21,6 +21,7 @@ SWEP.CLSIDE_MODULES = {
     "modules/client/cl_calcview.lua",
     "modules/client/cl_calcviewmodelview.lua",
     "modules/client/cl_hud.lua",
+    "modules/client/cl_sck.lua",
     "modules/client/cl_scopes.lua",
     "modules/client/cl_viewmodel_render.lua",
     "modules/client/cl_worldmodel_render.lua"
@@ -207,6 +208,7 @@ SWEP.Bullet = {
     Range = 180, --in meters, after this distance the bullet stops existing
     Tracer = false, --show tracer
     TracerName = nil,
+    HullSize = 0,
     NumBullets = 1, --the amount of bullets to fire
     PhysicsMultiplier = 1, --damage is multiplied by this amount when pushing objects 
     DamageType = DMG_BULLET
@@ -313,6 +315,17 @@ SWEP.ShotgunReload = false
 
 SWEP.MuzzleFlashParticle = nil
 
+--Bipod Shit
+SWEP.BipodDelay = 0
+SWEP.BipodDeployTime = 0.25
+SWEP.BipodUndeployTime = 0.25
+SWEP.BipodAngleLimitYaw = 30
+SWEP.BipodAngleLimitPitch = 10
+SWEP.BipodSensitivity = {x = -0.3, z = -0.3, p = 0.1, r = 0.1}
+SWEP.BipodInstalled = true 
+SWEP.BipodDeployHeightRequirement = -1
+SWEP.WeaponRestHeightRequirement = -0.6
+SWEP.CanRestOnObjects = false
 
 --BASE VALUES DONT TOUCH.
 SWEP.IronSightsProgressUnpredicted = 0
@@ -337,6 +350,7 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Int", 7, "ShotgunReloading")
     self:NetworkVar("Int", 8, "MagUpCount")
     self:NetworkVar("Int", 9, "SprayRounds")
+    self:NetworkVar("Int", 10, "Charge")
     
     self:NetworkVar("Bool", 0, "HeatLocked")
     self:NetworkVar("Bool", 1, "NeedCycle")
@@ -350,6 +364,8 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Bool", 12, "ToggleSafety")
     self:NetworkVar("Bool", 13, "IsFiring")
     self:NetworkVar("Bool", 13, "IsFiring")
+    self:NetworkVar("Bool", 14, "IsCharging")
+    self:NetworkVar("Bool", 15, "BipodDeployed")
 
     self:NetworkVar("Float", 0, "Heat")
     self:NetworkVar("Float", 1, "ReloadingREAL")

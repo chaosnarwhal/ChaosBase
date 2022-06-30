@@ -9,6 +9,11 @@ Purpose:  Utility
 --
 local fp
 
+local reg = debug.getregistry()
+local GetVelocity = reg.Entity.GetVelocity
+local Length = reg.Vector.Length
+local GetAimVector = reg.Player.GetAimVector
+
 ChaosBase.LimbCompensation = {
     [1] = {
         [HITGROUP_HEAD]     = 1 / 2,
@@ -110,6 +115,131 @@ function ChaosBase.Cubic(t)
     return -2 * t * t * t + 3 * t * t
 end
 
+local mins, maxs = Vector(-8, -8, -1), Vector(8, 8, 1)
+local td = {}
+td.mins = mins
+td.maxs = maxs
+
+function SWEP:CanRestWeapon(height)
+    height = height or -1
+    local vel = Length(GetVelocity(self:GetOwner()))
+    local pitch = self:GetOwner():EyeAngles().p
+    
+    if vel == 0 and pitch <= 60 and pitch >= -20 then
+        local sp = self:GetOwner():GetShootPos()
+        local aim = self:GetOwner():GetAimVector()
+        
+        td.start = sp
+        td.endpos = td.start + aim * 35
+        td.filter = self:GetOwner()
+                
+        local tr = util.TraceHull(td)
+
+        -- fire first trace to check whether there is anything IN FRONT OF US
+        if tr.Hit then
+            -- if there is, don't allow us to deploy
+            return false
+        end
+        
+        aim.z = height
+        
+        td.start = sp
+        td.endpos = td.start + aim * 25
+        td.filter = self:GetOwner()
+                
+        tr = util.TraceHull(td)
+        
+        if tr.Hit then
+            local ent = tr.Entity
+            
+            -- if the second trace passes, we can deploy
+            if not ent:IsPlayer() and not ent:IsNPC() then
+                return true
+            end
+        end
+        
+        return false
+    end
+    
+    return false
+end
+
+function SWEP:setupBipodVars()
+    -- network/predict bipod angles
+    
+    self.DeployAngle = self:GetOwner():EyeAngles()
+    
+    -- delay all actions
+    self:performBipodDelay()
+end
+
+function SWEP:performBipodDelay(time)
+    time = time or self.BipodDeployTime
+    local CT = CurTime()
+    
+    self.BipodDelay = CT + time
+    self:SetNextPrimaryFire(CT + time)
+    self:SetNextSecondaryFire(CT + time)
+    self.ReloadWait = CT + time
+end
+
+function SWEP:BipodModule()
+    local CT = CurTime()
+    if (SP and SERVER) or not SP then
+        if self:GetBipodDeployed() or self.DeployAngle then
+            --Check whether the bipid can be placed on the current surface (so we don't end up placing on nothing)
+            if not self:CanRestWeapon(self.BipodDeployHeightRequirement) then
+                self:SetBipodDeployed(false)
+                self.DeployAngle = nil
+
+                if not self.ReloadDelay then
+                    if CT > self.BipodDelay then
+                        self:performBipodDelay(self.BipodUndeployTime)
+                    else
+                        self.BipodUndeployPost = true
+                    end
+                else
+                    self.BipodUnDeployPost = true
+                end
+            end
+        end
+
+        if not self.ReloadDelay then
+            if self.BipodUnDeployPost then
+                if CT > self.BipodDelay then
+                    if not self:CanRestWeapon(self.BipodDeployHeightRequirement) then
+                        self:performBipodDelay(self.BipodUndeployTime)
+                        self.BipodUnDeployPost = false
+                    else
+                        self:SetBipodDeployed(true)
+                        self:setupBipodVars()
+                        self.BipodUnDeployPost = false
+                    end
+                end
+            end
+
+            if self:GetOwner():KeyPressed(IN_USE) then
+                if CT > self.BipodDelay then
+                    if self.BipodInstalled then
+                        if self:GetBipodDeployed() then
+                            self:SetBipodDeployed(false)
+                            self.DeployAngle = nil
+
+                            self:performBipodDelay(self.BipodUndeployTime)
+                        else
+                            self:SetBipodDeployed(self:CanRestWeapon(self.BipodDeployHeightRequirement))
+
+                            if self:GetBipodDeployed() then
+                                self:performBipodDelay(self.BipodDeployTime)
+                                self:setupBipodVars()
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
 
 --[[
 Function Name:  Sound Handling
@@ -270,112 +400,6 @@ if CLIENT or game.SinglePlayer() then
     end
 
     SWEP.wRenderOrder = nil
-
-function SWEP:DrawWorldModel()
-        local ply = self:GetOwner()
-        
-        if (!self.WElements) then return end
-        
-        if (!self.wRenderOrder) then
-            self.wRenderOrder = {}
-            for k, v in pairs( self.WElements ) do
-                if (v.type == "Model") then
-                    table.insert(self.wRenderOrder, 1, k)
-                elseif (v.type == "Sprite" or v.type == "Quad") then
-                    table.insert(self.wRenderOrder, k)
-                end
-            end
-        end
-        
-        if (IsValid(self.Owner)) then
-            bone_ent = self.c_WorldModel
-        else
-            // when the weapon is dropped
-            bone_ent = self
-        end
-        
-        for k, name in pairs( self.wRenderOrder ) do
-        
-            local v = self.WElements[name]
-            if (!v) then self.wRenderOrder = nil break end
-            if (v.hide) then continue end
-            
-            local pos, ang
-            
-            if (v.bone) then
-                pos, ang = self:GetBoneOrientation( self.WElements, v, bone_ent )
-            else
-                pos, ang = self:GetBoneOrientation( self.WElements, v, bone_ent, "ValveBiped.Bip01_R_Hand" )
-            end
-            
-            if (!pos) then continue end
-            
-            local model = v.modelEnt
-            local sprite = v.spriteMaterial
-            
-            if (v.type == "Model" and IsValid(model)) then
-                model:SetPos(pos + ang:Forward() * v.pos.x + ang:Right() * v.pos.y + ang:Up() * v.pos.z )
-                ang:RotateAroundAxis(ang:Up(), v.angle.y)
-                ang:RotateAroundAxis(ang:Right(), v.angle.p)
-                ang:RotateAroundAxis(ang:Forward(), v.angle.r)
-                model:SetAngles(ang)
-                //model:SetModelScale(v.size)
-                local matrix = Matrix()
-                matrix:Scale(v.size)
-                model:EnableMatrix( "RenderMultiply", matrix )
-                
-                if (v.material == "") then
-                    model:SetMaterial("")
-                elseif (model:GetMaterial() != v.material) then
-                    model:SetMaterial( v.material )
-                end
-                
-                if (v.skin and v.skin != model:GetSkin()) then
-                    model:SetSkin(v.skin)
-                end
-                
-                if (v.bodygroup) then
-                    for k, v in pairs( v.bodygroup ) do
-                        if (model:GetBodygroup(k) != v) then
-                            model:SetBodygroup(k, v)
-                        end
-                    end
-                end
-                
-                if (v.surpresslightning) then
-                    render.SuppressEngineLighting(true)
-                end
-                
-                render.SetColorModulation(v.color.r/255, v.color.g/255, v.color.b/255)
-                render.SetBlend(v.color.a/255)
-                model:DrawModel()
-                render.SetBlend(1)
-                render.SetColorModulation(1, 1, 1)
-                
-                if (v.surpresslightning) then
-                    render.SuppressEngineLighting(false)
-                end
-                
-            elseif (v.type == "Sprite" and sprite) then
-                
-                local drawpos = pos + ang:Forward() * v.pos.x + ang:Right() * v.pos.y + ang:Up() * v.pos.z
-                render.SetMaterial(sprite)
-                render.DrawSprite(drawpos, v.size.x, v.size.y, v.color)
-                
-            elseif (v.type == "Quad" and v.draw_func) then
-                local drawpos = pos + ang:Forward() * v.pos.x + ang:Right() * v.pos.y + ang:Up() * v.pos.z
-                ang:RotateAroundAxis(ang:Up(), v.angle.y)
-                ang:RotateAroundAxis(ang:Right(), v.angle.p)
-                ang:RotateAroundAxis(ang:Forward(), v.angle.r)
-                
-                cam.Start3D2D(drawpos, ang, v.size)
-                    v.draw_func( self )
-                cam.End3D2D()
-            end
-            
-        end
-        
-    end
     function SWEP:GetBoneOrientation( basetab, tab, ent, bone_override )
         
         local bone, pos, ang

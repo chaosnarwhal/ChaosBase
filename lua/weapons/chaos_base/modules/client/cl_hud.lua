@@ -1,12 +1,74 @@
+local White, Black = Color(255, 255, 255, 255), Color(0, 0, 0, 255)
+local x, y, x2, y2, lp, size, FT, CT, tr, x3, x4, y3, y4, UCT, sc1, sc2
+local td = {}
+
+local surface = surface
+local math = math
+local draw = draw
+local dst = draw.SimpleText
+
+function draw.ShadowText(text, font, x, y, colortext, colorshadow, dist, xalign, yalign)
+    dst(text, font, x + dist, y + dist, colorshadow, xalign, yalign)
+    dst(text, font, x, y, colortext, xalign, yalign)
+end
+
+
 function SWEP:DrawHUD()
     if not self:IsFirstPerson() then return end
     self:Crosshair()
+    self:BipodUse()
+end
+
+function SWEP:BipodUse()
+    FT, CT, x, y = FrameTime(), CurTime(), ScrW(), ScrH()
+    UCT = UnPredictedCurTime()
+
+    if not self.dt.BipodDeployed then 
+        if self.BipodInstalled then
+            if self:CanRestWeapon(self.BipodDeployHeightRequirement) then
+                draw.ShadowText("[USE KEY]", DermaDefault, x / 2, y / 2 + 100, White, Black, 2, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                
+                --surface.SetTexture(Deploy)
+                
+                --surface.SetDrawColor(0, 0, 0, 255)
+                --surface.DrawTexturedRect(x / 2 - 47, y / 2 + 126, 96, 96)
+                
+                --surface.SetDrawColor(255, 255, 255, 255)
+                --surface.DrawTexturedRect(x / 2 - 48, y / 2 + 125, 96, 96)
+            end
+        else
+            if self:GetIsAiming() then
+                if self.CanRestOnObjects then
+                    if self:CanRestWeapon(self.WeaponRestHeightRequirement) then
+                        draw.ShadowText("[RESTED]", DermaDefault, x / 2, y / 2 + 100, White, Black, 2, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                        --surface.SetTexture(deployedOnObject)
+                        
+                        --surface.SetDrawColor(0, 0, 0, 255)
+                        --surface.DrawTexturedRect(x / 2 - 47, y / 2 + 150, 96, 96)
+                        
+                        --surface.SetDrawColor(255, 255, 255, 255)
+                        --surface.DrawTexturedRect(x / 2 - 48, y / 2 + 150, 96, 96)
+                    end
+                end
+            end
+        end
+    else
+        draw.ShadowText("[DEPLOYED]", DermaDefault, x / 2, y / 2 + 100, White, Black, 2, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            
+        --surface.SetTexture(UnDeploy)
+            
+        --surface.SetDrawColor(0, 0, 0, 255)
+        --surface.DrawTexturedRect(x / 2 - 47, y / 2 + 126, 96, 96)
+            
+        --surface.SetDrawColor(255, 255, 255, 255)
+        --surface.DrawTexturedRect(x / 2 - 48, y / 2 + 125, 96, 96)
+    end
 end
 
 function SWEP:DrawCrosshairSticks(x, y)
     local aimDelta = 1 - self:GetAimDelta()
 
-    surface.SetAlphaMultiplier(aimDelta)
+    --surface.SetAlphaMultiplier(aimDelta)
 
     local crosshairAlpha = 200
 
@@ -22,9 +84,9 @@ function SWEP:DrawCrosshairSticks(x, y)
     local color = Color(255,255,255)
     surface.SetDrawColor(color.r, color.g, color.b, 200)
 
-    surface.SetAlphaMultiplier(aimDelta * (1 - dotDelta))
+    --surface.SetAlphaMultiplier(aimDelta * (1 - dotDelta))
     surface.DrawRect(x - 1, y - 1, 2, 2)
-    surface.SetAlphaMultiplier(aimDelta)
+    --surface.SetAlphaMultiplier(aimDelta)
 
     local cone = self:GetCone() * 100
         

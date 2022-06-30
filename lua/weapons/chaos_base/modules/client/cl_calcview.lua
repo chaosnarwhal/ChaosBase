@@ -15,6 +15,16 @@ local mzang_velocity = Angle()
 local progress = 0
 local targint, targbool
 
+function SWEP:LerpVectorPod(delta, start, finish)
+    delta = delta > 1 and 1 or delta
+    
+    start.x = start.x + delta * (finish.x - start.x)
+    start.y = start.y + delta * (finish.y - start.y)
+    start.z = start.z + delta * (finish.z - start.z)
+    
+    return start
+end
+
 function SWEP:GetCameraAttachment()
     local vm = self:GetOwner():GetViewModel()
 
@@ -58,6 +68,10 @@ function SWEP:CalcView(ply, pos, ang, fov)
     self.Camera.Shake = self:SafeLerp(rate * FrameTime(), self.Camera.Shake, 0)
     self._eyeang = ang * 1
     local camAtt = self:GetCameraAttachment()
+
+    if self:GetBipodDeployed() then
+        self.Camera.Shake = self.Camera.Shake * 0.2
+    end
 
     if camAtt ~= nil then
         local cameraAttAngles = camAtt.Ang
