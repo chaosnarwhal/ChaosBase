@@ -129,9 +129,7 @@ function SWEP:SprintBob(pos, ang, intensity, origPos, origAng)
     local localForward = ang:Forward()
     intensity = intensity * gunbob_intensity * 1.5
     gunbob_intensity = 1
-    local c = self:IsHighTier()
-
-    if c then
+    if self:GetIsHighTier() then
         intensity = intensity * 0.2
     end
 

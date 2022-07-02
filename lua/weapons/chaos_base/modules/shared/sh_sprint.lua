@@ -13,10 +13,7 @@ function SWEP:EnterSprint()
     self.Sighted = false
     self.Sprinted = true
     local ct = CurTime()
-
-    local a,b,SprintShoot = self:IsHighTier()
-
-    if not SprintShoot and self:GetNextPrimaryFire() <= ct then
+    if not self:GetCanSprintShoot() and self:GetNextPrimaryFire() <= ct then
         self:SetNextPrimaryFire(ct)
     end
 
@@ -58,24 +55,22 @@ function SWEP:ExitSprint()
     self:SetState(ChaosBase.STATE_IDLE)
     self.Sighted = false
     self.Sprinted = false
-    local a,b,SprintShoot = self:IsHighTier()
 
-    if not SprintShoot and self:GetNextPrimaryFire() <= ct then
+    if not self:GetCanSprintShoot() and self:GetNextPrimaryFire() <= ct then
         self:SetNextPrimaryFire(ct)
     end
 
     local anim = self:SelectAnimation("idle")
 
-    if anim and not SprintShoot and self:GetNextSecondaryFire() <= ct then
+    if anim and not self:GetCanSprintShoot() and self:GetNextSecondaryFire() <= ct then
         self:PlayAnimation(anim, 0.1, true, nil, false, nil, false, false)
-    elseif not anim and not SprintShoot then
+    elseif not anim and not self:GetCanSprintShoot() then
         self:SetReloading(UnPredictedCurTime() + self:GetSprintTime() * delta)
     end
 end
 
 function SWEP:SprintBehaviour()
     local ply = self:GetOwner()
-    local a,b,SprintShoot = self:IsHighTier()
     local walking = (ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT) or ply:KeyDown(IN_FORWARD) or ply:KeyDown(IN_BACK)) and not ply:KeyDown(IN_SPEED)
     self:HoldTypeHandler()
     

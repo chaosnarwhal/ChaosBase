@@ -97,8 +97,6 @@ function SWEP:CalculateViewModelOffset(delta)
     --IronSights Offset
     local additivePos = self.AdditiveViewModelPosition
 
-    local a,b,SprintShoot = self:IsHighTier()
-
     if additivePos then
         target_pos, target_ang = Vector(), Vector()
     else
@@ -131,7 +129,7 @@ function SWEP:CalculateViewModelOffset(delta)
     local SprintAng = self.RunAng
 
 
-    if SprintDelta > 0.005 and self.SafetyProgressUnpredicted < 1 and !self:GetIsReloading() and not SprintShoot then
+    if SprintDelta > 0.005 and self.SafetyProgressUnpredicted < 1 and !self:GetIsReloading() and not self:GetCanSprintShoot() then
         if self.AnimatedSprint then return end
         self:SafeLerpVector(self.SprintProgressUnpredicted, target_pos, SprintPos)
         self:SafeLerpVector(self.SprintProgressUnpredicted, target_ang, SprintAng)

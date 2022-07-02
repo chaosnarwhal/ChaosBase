@@ -13,7 +13,6 @@ function SWEP:Deploy(fromFallback)
     if not IsValid(self:GetOwner()) or self:GetOwner():IsNPC() then return end
     self:IsAuthorizedToUse()
     self:HoldTypeHandler()
-    self:IsHighTier()
     self:ChaosCustomDeploy()
     --Reset NW Values when weapon is pulled out.
     self:SetReloading(false)
@@ -31,6 +30,8 @@ function SWEP:Deploy(fromFallback)
     self:SetIsFiring(false)
     self:SetHoldType(self.HoldtypeActive)
     self:SetIsSprinting(false)
+
+    self:InitHighTierValues()
 
     if not self:GetOwner():InVehicle() then
         local prd = false
@@ -91,6 +92,8 @@ function SWEP:Initialize()
     if game.SinglePlayer() and self:GetOwner():IsValid() and SERVER then
         self:CallOnClient("Initialize")
     end
+
+    self:InitHighTierValues()
 
     self:ChaosCustomInitialize()
     self:SetState(0)
@@ -248,55 +251,29 @@ Returns: Returns Some Values from a HighTier Table. Only if the player is Allowe
 Purpose: SWEP Aux function.
 ]]
 --
-function SWEP:IsHighTier(Allowed)
-    if not self.HighTierAllow then return end
+
+function SWEP:InitHighTierValues()
     local HighTierTable = self.HighTier
     local ply = self:GetOwner()
+    if not IsValid(ply) then return end
     local index = ply:getJobTable().category or ply:getJobTable().name
 
     if HighTierTable[index] then
-        Allowed = HighTierTable[index]
-        return Allowed
+        self:SetClassType(HighTierTable[index].Type)
+        self:SetRecoilReduce(HighTierTable[index].RecoilReduce)
+        self:SetCanSprintShoot(HighTierTable[index].SprintShoot)
+        self:SetIsHighTier(true)
     else
-        return false
+        self:SetClassType("Marine")
+        self:SetRecoilReduce(1)
+        self:SetCanSprintShoot(false)
+        self:SetIsHighTier(false)
     end
-end
 
-function SWEP:IsSpartan()
-    if not self.HighTierAllow then return end
-    local HighTeirTable = self.HighTier
-    local ply = self:GetOwner()
-    local index = ply:getJobTable().category or ply:getJobTable().name
-
-    if HighTierTable[index] == "SPARTAN" then
-        return true
-    else
-        return nil
-    end
-end
-
-function SWEP:RecoilReduce()
-    if not self.HighTierAllow then return end
-    local HighTeirTable = self.HighTier
-    local ply = self:GetOwner()
-    local index = ply:getJobTable().category or ply:getJobTable().name
-
-    if HighTeirTable[index] then
-        return HighTeirTable[index].RecoilReduce or 1
-    else
-        return 1
-    end
-end
-
-function SWEP:CanSprintShoot()
-    if not self.HighTierAllow then return end
-    local HighTeirTable = self.HighTier
-    local ply = self:GetOwner()
-    local index = ply:getJobTable().category or ply:getJobTable().name
-
-    if HighTierTable[index] then
-        return HighTierTable[index].SprintShoot
-    else
-        return false
-    end
+    --[[
+    print("ClassType: "..self:GetClassType().."")
+    print("RecoilReduce: "..self:GetRecoilReduce().."")
+    print("SprintShoot: "..tostring(self:GetCanSprintShoot()).."")
+    print("HighTier: "..tostring(self:GetIsHighTier()).."")
+    ]]
 end

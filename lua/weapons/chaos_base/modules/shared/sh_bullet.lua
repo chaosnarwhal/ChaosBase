@@ -1,25 +1,25 @@
 AddCSLuaFile()
 
+local bul, tr = {}, {}
+
 function SWEP:CalculateRecoil()
     math.randomseed(self.Recoil.Seed + self:GetSprayRounds())
-    local verticalRecoil = math.min(self:GetSprayRounds(), math.min(self:GetMaxClip1() * 0.33, 15)) * 0.1 + math.Rand(self.Recoil.Vertical[1], self.Recoil.Vertical[2])
+    local verticalRecoil = math.min(self:GetSprayRounds(), math.min(self:GetMaxClip1() * 0.33, 10)) * 0.1 + math.Rand(self.Recoil.Vertical[1], self.Recoil.Vertical[2])
     local horizontalRecoil = math.Rand(self.Recoil.Horizontal[1], self.Recoil.Horizontal[2])
     local angles = Angle(-verticalRecoil, horizontalRecoil, horizontalRecoil * -0.3)
-    local Allowed = self:IsHighTier()
-    local RecoilReduce = self:RecoilReduce()
-    local RecoilReducer = 1 or self.Recoil.RecoilReducer
+    local RecoilReducer = self.Recoil.RecoilReducer or 1
 
     if self:GetBipodDeployed() then
         angles = angles * 0.1
     end
 
-    if Allowed then
-        angles = angles * RecoilReduce
+    if self:GetIsHighTier() then
+        angles = angles * self:GetRecoilReduce()
     else
         angles = angles
     end
 
-    return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier)
+    return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier) * RecoilReducer
 end
 
 function SWEP:CalculateCone()
@@ -53,7 +53,7 @@ function SWEP:BulletCallbackInternal(attacker, tr, dmgInfo)
 
     if dmgtable then
         local hg = tr.HitGroup
-        local gam = ChaosBase.LimbCompensation[engine.ActiveGamemode()] or ChaosBase.LimbCompensation[1]
+        local gam = ChaosBase.LimbCompensation[1]
 
         if dmgtable[hg] then
             dmgInfo:ScaleDamage(dmgtable[hg])
@@ -74,6 +74,7 @@ function SWEP:BulletCallbackInternal(attacker, tr, dmgInfo)
             net.SendToServer()
         end
     end
+
 end
 
 function SWEP:ShootProjectile(isent, data)
@@ -107,18 +108,34 @@ function SWEP:ShootBullets(hitpos)
         self:Projectiles()
     end
 
+    --[[
+    bul.Attacker = self:GetOwner()
+    bul.Num = 1
+    bul.Src = self:GetOwner():EyePos()
+    bul.Dir = dir
+    bul.Spread = spread
+    bul.Tracer =  self.Bullet.Tracer and 1 or 0
+    bul.TracerName = self.Bullet.TracerName
+    bul.Damage = 0
+    bul.Distance = self:MetersToHU(self.Bullet.Range)
+    bul.Callback = function(attacker, tr, dmgInfo) self:BulletCallback(attacker, tr, dmgInfo, bFromServer) end
+
+    self:GetOwner():FireBullets(bul)
+    ]]
     self:FireBullets({
+        wep = self,
         Attacker = self:GetOwner(),
         Src = self:GetOwner():EyePos(),
         Dir = dir,
         Spread = spread,
         Num = SERVER and 1 or self.Bullet.NumBullets,
-        Damage = self.Bullet.Damage[1],
+        Damage = 0,
         HullSize = self.Bullet.HullSize or 0,
-        --Force = (self.Bullet.Damage[1] * self.Bullet.PhysicsMultiplier) * 0.01,
+        Force = (self.Bullet.Damage[1] * self.Bullet.PhysicsMultiplier) * 0.01,
         Distance = self:MetersToHU(self.Bullet.Range),
         Tracer = self.Bullet.Tracer and 1 or 0,
         TracerName = self.Bullet.TracerName,
+        AmmoType = self.Primary.Ammo,
         Callback = function(attacker, tr, dmgInfo)
             self:BulletCallback(attacker, tr, dmgInfo, bFromServer)
         end
@@ -126,5 +143,5 @@ function SWEP:ShootBullets(hitpos)
 end
 
 function SWEP:MetersToHU(meters)
-    return (meters * 100) / 2.54
+    return (meters * 100) / 1.905
 end

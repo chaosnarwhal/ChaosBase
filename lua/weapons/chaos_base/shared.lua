@@ -236,23 +236,8 @@ SWEP.Recoil = {
     Seed = 67498 --give this a random number until you like the current recoil pattern 
 }
 
---Setup Bashing
-SWEP.CanBash = true -- Can Melee?
-SWEP.PrimaryBash = false -- primary attack triggers melee attack (energy Sword or Grav Hammer)
-SWEP.Lunge = nil -- Whether to allow the bash/melee to lunge a short distance
-SWEP.LungeLength = 64 -- Maximum distance for lunging
-SWEP.MeleeDamage = 25
-SWEP.MeleeRange = 16
-SWEP.MeleeDamageType = DMG_CLUB
-SWEP.MeleeTime = 0.5
-SWEP.MeleeGesture = nil
-SWEP.MeleeAttackTime = 0.2
-SWEP.Melee2 = false
-SWEP.Melee2Damage = 25
-SWEP.Melee2Range = 16
-SWEP.Melee2Time = 0.5
-SWEP.Melee2Gesture = nil
-SWEP.Melee2AttackTime = 0.2
+SWEP.CrosshairColor     = Color(127, 220, 255, 255)
+SWEP.CrosshairNoIronFade = true
 
 SWEP.Secondary.OwnerFOV = 70
 -- AKA IronViewModelFOV
@@ -363,9 +348,13 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Bool", 11, "Safety")
     self:NetworkVar("Bool", 12, "ToggleSafety")
     self:NetworkVar("Bool", 13, "IsFiring")
-    self:NetworkVar("Bool", 13, "IsFiring")
     self:NetworkVar("Bool", 14, "IsCharging")
     self:NetworkVar("Bool", 15, "BipodDeployed")
+    self:NetworkVar("Bool", 16, "CanSprintShoot")
+    self:NetworkVar("Bool", 17, "IsHighTier")
+    self:NetworkVar("Bool", 18, "FiredSplazor")
+
+    self:NetworkVar("String", 1, "ClassType")
 
     self:NetworkVar("Float", 0, "Heat")
     self:NetworkVar("Float", 1, "ReloadingREAL")
@@ -382,6 +371,7 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Float", 12, "BreathingDelta")
     self:NetworkVar("Float", 13, "SafetyDelta")
     self:NetworkVar("Float", 14, "NextInspectTime")
+    self:NetworkVar("Float", 15, "RecoilReduce")
 
     self:NetworkVar("Entity", 0, "NextWeapon")
     self:NetworkVar("Angle", 0, "BreathingAngle")

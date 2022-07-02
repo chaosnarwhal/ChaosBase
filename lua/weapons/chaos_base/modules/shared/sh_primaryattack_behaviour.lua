@@ -41,11 +41,9 @@ function SWEP:CanPrimaryAttack()
     end
     ]]
 
-    local SprintShoot = self:IsHighTier()
-
     --Sprinting ? (Check for Sprint Attack Value)
     if self:GetIsSprinting() == true then
-        if SprintShoot then
+        if self:GetCanSprintShoot() then
             return true
         else
             return false
@@ -90,7 +88,7 @@ Purpose: Main SWEP function.
 --
 function SWEP:PrimaryAttack()
     if not self:CanPrimaryAttack() then return end
-    local a, c = self:IsHighTier()
+
     local delay = 60 / self.Primary.RPM
     local curtime = CurTime()
     local curatt = self:GetNextPrimaryFire()
@@ -109,8 +107,10 @@ function SWEP:PrimaryAttack()
             self:SetIsPumping(false)
         end
     end
+ 
 
-    if a and c then
+
+    if self:GetCanSprintShoot() then
         self:SetIsFiring(true)
     end
 
@@ -137,8 +137,6 @@ function SWEP:PrimaryAttack()
     if not self.Projectile then
         if CLIENT then
             self:ShootBullets()
-        elseif game.SinglePlayer() then
-            self:CallOnClient("ShootBullets")
         end
     else
         self:Projectiles()
@@ -168,7 +166,7 @@ function SWEP:PrimaryAttack()
     end
 
     --HighTier code for setting shootsprint anim to cancel.
-    if c then
+    if self:GetIsHighTier() and self:GetCanSprintShoot() then
         timer.Simple(2, function()
             if not self:IsValid() then return end
             self:SetIsFiring(false)
@@ -199,6 +197,7 @@ function SWEP:DoShootSound(sndoverride, dsndoverride, voloverride, pitchoverride
     local spv = self.ShootPitchVariation
     local volume = self.ShootVol
     local pitch = self.ShootPitch * math.Rand(1 - spv, 1 + spv)
+    local level = self.ShootLevel
     volume = math.Clamp(volume, 51, 149)
     pitch = math.Clamp(pitch, 0, 255)
 
@@ -223,7 +222,7 @@ function SWEP:DoShootSound(sndoverride, dsndoverride, voloverride, pitchoverride
     end
 
     if fsound then
-        self:ChaosEmitSound(fsound, volume, pitch, 1, CHAN_WEAPON)
+        self:ChaosEmitSound(fsound, level, pitch, volume, CHAN_WEAPON, false)
     end
 end
 
