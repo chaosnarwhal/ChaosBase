@@ -31,11 +31,10 @@ if game.SinglePlayer() then
     end
 end
 
-
 util.AddNetworkString("chaosbase_clienthitreg")
 
 net.Receive("chaosbase_clienthitreg", function(len, ply)
-    if not IsValid(ply:GetActiveWeapon()) or not weapons.IsBasedOn(ply:GetActiveWeapon():GetClass(), "chaos_base") then return end
+    if not IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon().ChaosBase then return end
     if ply:GetActiveWeapon().Projectile ~= nil then return end
     local ent = net.ReadEntity()
     local hb = net.ReadInt(8)
