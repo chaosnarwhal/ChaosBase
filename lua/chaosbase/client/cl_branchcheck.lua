@@ -1,7 +1,5 @@
 AddCSLuaFile()
 
-ChaosBase = ChaosBase or {}
-
 surface.CreateFont("branchcheck_24", {
     font = "Roboto",
     size = 24,
@@ -12,7 +10,7 @@ local frameColor = Color(47, 54, 64)
 local buttonColor = Color(53, 59, 72)
 local buttonColorConfirm = Color(0, 200, 0)
 
-function ChaosBase.OpenBranchMenu()
+function ChaosBase:OpenBranchMenu()
     local scrw, scrh = ScrW(), ScrH()
 
     if IsValid(ChaosBase.BranchMenu) or IsValid(ChaosBase.HELPGIF) then
