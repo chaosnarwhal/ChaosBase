@@ -28,18 +28,22 @@
 
 local ViewmodelPanel = {
     { type = "b", text = "Flip Viewmodel?", var = "chaosbase_vmflip", min = 0, max = 1 },
-    { type = "f", text = "Viewmodel FOV Offset", var = "chaosbase_vm_offset_fov", min = 50, max = 170 },
-    { type = "f", text = "Viewmodel Offset x", var = "chaosbase_vmoffset_x", min = -10, max = 10 },
-    { type = "f", text = "Viewmodel Offset y", var = "chaosbase_vmoffset_y", min = -10, max = 10 },
-    { type = "f", text = "Viewmodel Offset z", var = "chaosbase_vmoffset_z", min = -10, max = 10 },
+    { type = "i", text = "Viewmodel FOV Offset", var = "chaosbase_vm_offset_fov", min = 50, max = 170 },
+    { type = "i", text = "Viewmodel Offset x", var = "chaosbase_vmoffset_x", min = -10, max = 10 },
+    { type = "i", text = "Viewmodel Offset y", var = "chaosbase_vmoffset_y", min = -10, max = 10 },
+    { type = "i", text = "Viewmodel Offset z", var = "chaosbase_vmoffset_z", min = -10, max = 10 },
 }
 
-local BindsPanel = {
-    { type = "h", text = "ChaosBase Binds" },
-    { type = "b", text = "Safety", var = "chaosbase_altsafety" },
-    { type = "b", text = "Alternate Binds", var = "chaosbase_altbindsonly" },
-    { type = "c", text = "Only use alternate binds?" },
-    { type = "d", text = "Change Firemode Bind", var = "chaosbase_firemode" },
+local OptionsPanel = {
+    { type = "h", text = "ChaosBase Options" },
+    { type = "b", text = "Draw Crosshair?", var = "chaosbase_crosshair", min = 0, max = 1 },
+    { type = "b", text = "Disable Other Muzzle Effects", var = "chaosbase_muzzle_effect", min = 0, max = 1 },
+    { type = "b", text = "Toggle Ironsights?", var = "chaosbase_ironsights_toggle", min = 0, max = 1 },
+    { type = "b", text = "Toggle Ironsights Resight?", var = "chaosbase_ironsights_resight", min = 0, max = 1 },
+    { type = "b", text = "Toggle Responsive Ironsights  (mixed held down/toggle)", var = "chaosbase_ironsights_responsive", min = 0, max = 1 },
+    { type = "f", text = "Held Time Threshhold", var = "chaosbase_ironsights_responsive_timer", min = 0.01, max = 2 },
+    { type = "c", text = "ChaosBase has been a 6 month project and will probably be many more. Please report any Bugs to a Dev or Chaosnarwhal/Meliodas. Thank you for playing revival and thank you for being beautiful." },
+
 }
 
 function ChaosBase.NetworkConvar(convar, value, p)
@@ -131,6 +135,7 @@ end
 local ViewmodelPresets = {
     ["Default Preset"] = {
         chaosbase_vmflip = "0",
+        chaosbase_crosshair = "1",
         chaosbase_vm_offset_fov = "75",
         chaosbase_vmoffset_x = "0",
         chaosbase_vmoffset_y = "0",
@@ -152,14 +157,33 @@ function ChaosBase_Options_Viewmodel(panel, no_preset)
     ChaosBase.GeneratePanelElements(panel, ViewmodelPanel)
 end
 
-function ChaosBase_Options_Binds(panel)
-    ChaosBase.GeneratePanelElements(panel, BindsPanel)
-end
+local OptionsPresets = {
+    ["Default Preset"] = {
+        chaosbase_crosshair = "0",
+        chaosbase_ironsights_toggle = "0",
+        chaosbase_ironsights_resight = "0",
+        chaosbase_ironsights_responsive = "0",
+        chaosbase_ironsights_responsive_timer = "0.1",
+    }
+}
 
+function ChaosBase_Options_Main(panel, no_preset)
+    if not no_preset then
+        panel:AddControl("ComboBox", {
+            MenuButton = "1",
+            Label      = "Presets",
+            Folder     = "chaosbase_options",
+            CVars      = { "" },
+            Options    = OptionsPresets
+        })
+    end
+
+    ChaosBase.GeneratePanelElements(panel, OptionsPanel)
+end
 
 ChaosBase.ClientMenus = {
     ["ChaosBase_Options_Viewmodel"] = { text = "Viewmodel", func = ChaosBase_Options_Viewmodel, tbl = ViewmodelPanel },
-    ["ChaosBase_Options_Binds"]    = { text = "Binds", func = ChaosBase_Options_Binds, tbl = BindsPanel },
+    ["ChaosBase_Options_Options"] = { text = "Options", func = ChaosBase_Options_Main, tbl = OptionsPanel },
 }
 
 hook.Add("PopulateToolMenu", "ChaosBase_Options", function()

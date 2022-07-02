@@ -20,13 +20,18 @@ ChaosBase.ClientConVars = {
     ["chaosbase_vmflip"]                = { def = 0 },
 
     --BINDS SECTION
-    ["chaosbase_altbindsonly"]          = { def = 0, usri = true },
-    ["chaosbase_altsafety"]             = { def = 0, usri = true },
-    ["chaosbase_altfgckey"]             = { def = 0, usri = true },
+    ["chaosbase_altbindsonly"]  = { def = 0, usri = true },
+    ["chaosbase_altsafety"]     = { def = 0, usri = true },
+    ["chaosbase_altfgckey"]     = { def = 0, usri = true },
 
+    ["chaosbase_crosshair"]                     = { def = 1, usri = true },
+    ["chaosbase_muzzle_effect"]                 = { def = 1, usri = true },
+    ["chaosbase_dev_shootinfo"]                 = { def = 0 , usri = true },
+    ["chaosbase_ironsights_toggle"]             = { def = 0 , usri = true },
+    ["chaosbase_ironsights_resight"]            = { def = 0 , usri = true },
+    ["chaosbase_ironsights_responsive"]         = { def = 0 , usri = true },
+    ["chaosbase_ironsights_responsive_timer"]   = { def = 0 , usri = true },
 
-    ["chaosbase_dev_shootinfo"]         = { def = 0},
-    ["chaosbase_toggleads"]             = { def = 0},
 
     --Scopes
     ["chaosbase_cheapscopes"]           = { def = 0},
