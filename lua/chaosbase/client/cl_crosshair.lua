@@ -7,6 +7,9 @@ function ChaosBase:halo_Crosshair()
     if not IsValid(wep) then return end
     if not wep.ChaosBase then return end
     if GetConVar("cl_drawhud"):GetFloat() == 0 then return end
+    local chaosbase_crosshair = (ply:GetInfoNum("chaosbase_crosshair", 0) or 0) >= 1
+
+    if not chaosbase_crosshair then return end
 
     if (wep._eyeang == nil) then
         return
