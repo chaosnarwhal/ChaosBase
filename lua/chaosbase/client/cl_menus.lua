@@ -159,11 +159,11 @@ end
 
 local OptionsPresets = {
     ["Default Preset"] = {
-        chaosbase_crosshair = "0",
+        chaosbase_crosshair = "1",
         chaosbase_ironsights_toggle = "0",
         chaosbase_ironsights_resight = "0",
         chaosbase_ironsights_responsive = "0",
-        chaosbase_ironsights_responsive_timer = "0.1",
+        chaosbase_ironsights_responsive_timer = "0.175",
     }
 }
 

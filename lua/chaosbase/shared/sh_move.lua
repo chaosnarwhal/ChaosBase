@@ -63,10 +63,9 @@ local function FinishMove(ply, cmovedata)
 			end
 		elseif wep:GetIsAiming() and not chaosbase_ironsights_resight and (not wep:GetIsAiming() and wep:GetIsSprinting()) then
 			wep:SetIsAiming(true)
-			wep:SetLastIronSightsPressed(-2)
+			wep:SetLastIronSightsPressed(-1)
 		end
 	end
-
 end
 
 hook.Add("FinishMove", "ChaosFinishMove", FinishMove)

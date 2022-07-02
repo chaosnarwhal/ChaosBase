@@ -60,7 +60,7 @@ local function ChaosBase_PlayerBindPress(ply, bind, pressed)
 
     bind, alt = ChaosBase_TranslateBindToEffect(bind)
 
-    if wep:GetIsAiming() == true then
+    if wep:GetIsAiming() then
         if bind == "zoomin" then
             wep:Scroll(-1)
             block = true
