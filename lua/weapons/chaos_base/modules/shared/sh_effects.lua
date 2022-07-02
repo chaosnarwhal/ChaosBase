@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-local sp = nil, game.SinglePlayer()
+local sp = game.SinglePlayer()
 
 function SWEP:MuzzleFlashCustom(spv)
     local att = self:GetMuzzleAttachment()
@@ -40,6 +40,9 @@ function SWEP:ShootEffectsCustom(ifp)
 
         return
     end
+
+    self:GetOwner():MuzzleFlash()
+
     if (CLIENT and ifp and not self:IsFirstPerson()) then
         --self:UpdateMuzzleAttachment()
         self:MuzzleFlashCustom()
