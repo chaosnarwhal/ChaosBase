@@ -179,6 +179,20 @@ SWEP.Cone = {
     Seed = 95235 --just give this a random number 
 }
 
+SWEP.ViewModelOffsets = {
+    Aim = {
+        Angles = Angle(0, 0, 0),
+        Pos = Vector(0, 0, 0)
+    },
+    Idle = {
+        Angles = Angle(0, 0, 0),
+        Pos = Vector(0, 0, 0)
+    },
+    RecoilMultiplier = 1.15,
+    KickMultiplier = 2,
+    AimKickMultiplier = 0.15
+}
+
 --Weapon Sound Defaults
 SWEP.Primary.Sound = Sound("")
 SWEP.ShootVol = 125 -- volume of shoot sound
@@ -264,20 +278,6 @@ SWEP.WElements = {}
 
 SWEP.Bodygroups = {}
 
-SWEP.ViewModelOffsets = {
-    Aim = {
-        Angles = Angle(0, 0, 0),
-        Pos = Vector(0, 0, 0)
-    },
-    Idle = {
-        Angles = Angle(0, 0, 0),
-        Pos = Vector(0, 0, 0)
-    },
-    RecoilMultiplier = 1.15,
-    KickMultiplier = 2,
-    AimKickMultiplier = 0.15
-}
-
 SWEP.BlowbackEnabled        = false -- Enable Blowback?
 SWEP.BlowbackVector         = Vector(0, -1, 0) -- Vector to move bone <or root> relative to bone <or view> orientation.
 SWEP.BlowbackAngle          = nil -- Angle(0, 0, 0)
@@ -336,6 +336,9 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Int", 8, "MagUpCount")
     self:NetworkVar("Int", 9, "SprayRounds")
     self:NetworkVar("Int", 10, "Charge")
+
+    self:NetworkVar("Int", 11, "DownButtons")
+    self:NetworkVar("Int", 12, "LastPressedButtons")
     
     self:NetworkVar("Bool", 0, "HeatLocked")
     self:NetworkVar("Bool", 1, "NeedCycle")
@@ -360,8 +363,6 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Float", 1, "ReloadingREAL")
     self:NetworkVar("Float", 2, "NextIdle")
     self:NetworkVar("Float", 3, "NextHolsterTime")
-    self:NetworkVar("Float", 4, "NWSightDelta")
-    self:NetworkVar("Float", 5, "NWSprintDelta")
     self:NetworkVar("Float", 6, "WeaponOpDelay")
     self:NetworkVar("Float", 7, "MagUpIn")
     self:NetworkVar("Float", 8, "IronSightsRatio")
@@ -372,6 +373,8 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Float", 13, "SafetyDelta")
     self:NetworkVar("Float", 14, "NextInspectTime")
     self:NetworkVar("Float", 15, "RecoilReduce")
+    self:NetworkVar("Float", 16, "LastReloadPressed")
+    self:NetworkVar("Float", 17, "LastIronSightsPressed")
 
     self:NetworkVar("Entity", 0, "NextWeapon")
     self:NetworkVar("Angle", 0, "BreathingAngle")

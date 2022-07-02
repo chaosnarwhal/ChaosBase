@@ -127,6 +127,20 @@ SWEP.Cone = {
     Seed = 9523 --just give this a random number
 }
 
+SWEP.ViewModelOffsets = {
+    Aim = {
+        Angles = Angle(0, 0, 0),
+        Pos = Vector(0, 0, 0)
+    },
+    Idle = {
+        Angles = Angle(0, 0, 0),
+        Pos = Vector(0, 0, 0)
+    },
+    RecoilMultiplier = 1.15,
+    KickMultiplier = 2,
+    AimKickMultiplier = 0.15
+}
+
 SWEP.IronSightTime = 0.1 --Swep Ironsight time. Clientside predicted value.
 
 SWEP.Scope = {
