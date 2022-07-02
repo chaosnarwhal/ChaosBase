@@ -68,6 +68,7 @@ function SWEP:CalcView(ply, pos, ang, fov)
     self.Camera.Shake = self:SafeLerp(rate * FrameTime(), self.Camera.Shake, 0)
     self._eyeang = ang * 1
     local camAtt = self:GetCameraAttachment()
+    local AimDelta = self.IronSightsProgressUnpredicted
 
     if self:GetBipodDeployed() then
         self.Camera.Shake = self.Camera.Shake * 0.2
@@ -79,19 +80,19 @@ function SWEP:CalcView(ply, pos, ang, fov)
         ang:Add(cameraAttAngles)
     end
 
-    local pitch = (math.cos(CurTime() * rpm) * (self.Camera.Shake * 0.5)) * self:SafeLerp(self:GetAimDelta(), 1, 0.4)
+    local pitch = (math.cos(CurTime() * rpm) * (self.Camera.Shake * 0.5)) * self:SafeLerp(AimDelta, 1, 0.4)
     local recoilAndShakeAngles = Angle(pitch, 0, math.sin(CurTime() * rpm))
     recoilAndShakeAngles:Mul(self.Camera.Shake)
     ang:Add(recoilAndShakeAngles)
     local vpAngles = self:GetOwner():GetViewPunchAngles()
-    vpAngles:Mul(self:SafeLerp(self:GetAimDelta(), 0.2, 0.01))
+    vpAngles:Mul(self:SafeLerp(AimDelta, 0.2, 0.01))
     ang:Sub(vpAngles)
     --breathing
     self.Camera.LerpBreathing = LerpAngle(10 * FrameTime(), self.Camera.LerpBreathing, self:GetBreathingAngle())
     ang:Add(self.Camera.LerpBreathing)
     --end breathing
     self:VectorAddAndMul(pos, ang:Forward(), -self.Camera.Shake)
-    self.Camera.Fov = self:SafeLerp(10 * FrameTime(), self.Camera.Fov, self:GetAimDelta())
+    self.Camera.Fov = self:SafeLerp(10 * FrameTime(), self.Camera.Fov, AimDelta)
     local diff = 0
 
     if self:GetIsReloading() then
@@ -99,7 +100,7 @@ function SWEP:CalcView(ply, pos, ang, fov)
     end
 
     self.Camera.LerpReloadFov = self:SafeLerp(4 * FrameTime(), self.Camera.LerpReloadFov, diff)
-    local fovMultiplier = self:SafeLerp(self.Camera.Fov, 1, self.Scope.ScopeMagnification or self.Scope.Magnification)
+    local fovMultiplier = self:SafeLerp(self.Camera.Fov, 1, (self.Scope.ScopeMagnification or self.Scope.Magnification))
     fov = (fov * fovMultiplier) + (self.Camera.Shake * 1.5)
     --VIEWMODEL
     self:CalcViewModel(self:GetOwner():GetViewModel(), pos, ang)

@@ -1,3 +1,4 @@
+
 --WalkBob
 local vector_origin = Vector()
 SWEP.ti = 0
@@ -36,6 +37,7 @@ local gunbob_intensity = 0
 SWEP.VMOffsetWalk = Vector(0.5, -0.5, -0.5)
 SWEP.footstepTotal = 0
 SWEP.footstepTotalTarget = 0
+SWEP.bobRateCached = 0
 local upVec, riVec, fwVec = Vector(0, 0, 1), Vector(1, 0, 0), Vector(0, 1, 0)
 
 local function l_Lerp(t, a, b)

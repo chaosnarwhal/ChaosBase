@@ -44,7 +44,7 @@ function SWEP:ShootEffectsCustom(ifp)
     self:GetOwner():MuzzleFlash()
 
     if (CLIENT and ifp and not self:IsFirstPerson()) then
-        --self:UpdateMuzzleAttachment()
+        self:UpdateMuzzleAttachment()
         self:MuzzleFlashCustom()
     end
 end

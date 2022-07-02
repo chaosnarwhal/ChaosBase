@@ -150,7 +150,6 @@ function SWEP:PrimaryAttack()
     if shouldBlowback and IsFirstTimePredicted() then
         self:BlowbackFull(ifp)
     end
-
     --MuzzleFlash
     self:ShootEffectsCustom()
     --Start Punching view to Recoil and add to the Cone of spray.

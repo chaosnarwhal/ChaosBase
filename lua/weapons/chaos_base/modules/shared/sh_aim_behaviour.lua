@@ -1,6 +1,5 @@
 AddCSLuaFile()
 
---[[
 --Test that GIT shit
 function SWEP:CanAim()
     local owner = self:GetOwner()
@@ -18,7 +17,6 @@ function SWEP:AimBehaviourModule()
         self:SetAimDelta(math.max(self:GetAimDelta() - speed * FrameTime(), 0))
     end
 end
-]]
 
 function SWEP:SafetyHandlerModule()
     if self:GetIsSprinting() then return end

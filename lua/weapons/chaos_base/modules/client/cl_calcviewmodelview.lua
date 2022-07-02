@@ -333,7 +333,7 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
     CalcVMViewHookBypass = false
     vm:SetPos(EyePos)
     vm:SetAngles(EyeAng)
-    --self.ViewModelFOV = self:SafeLerp(self.Camera.Fov, self.m_OriginalViewModelFOV, self.m_OriginalViewModelFOV * self.Zoom.ViewModelFovMultiplier)
+    self.ViewModelFOV = self:SafeLerp(self.Camera.Fov, self.m_OriginalViewModelFOV, self.m_OriginalViewModelFOV * self.Zoom.ViewModelFovMultiplier)
 end
 
 --[[ 

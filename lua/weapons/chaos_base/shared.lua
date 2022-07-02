@@ -393,7 +393,16 @@ function SWEP:LookupBoneCached(model, name)
 
 end
 
+SWEP.VModel = nil
+
 function SWEP:RecreateClientsideModels()
+    --[[
+    if not IsValid(self.c_ViewModel) then
+        self.c_ViewModel = ClientsideModel(self.VModel, self.RenderGroup)
+        self.c_ViewModel:SetRenderMode(self.RenderMode)
+        self.c_ViewModel.swep = self
+    end
+    ]]
     if not IsValid(self.c_WorldModel) then
         self.c_WorldModel = ClientsideModel(self.WorldModel, self.RenderGroup)
         self.c_WorldModel:SetRenderMode(self.RenderMode)
