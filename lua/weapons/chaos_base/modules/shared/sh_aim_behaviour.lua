@@ -1,5 +1,6 @@
 AddCSLuaFile()
 
+--[[
 --Test that GIT shit
 function SWEP:CanAim()
     local owner = self:GetOwner()
@@ -11,22 +12,13 @@ function SWEP:AimBehaviourModule()
     local owner = self:GetOwner()
     local speed = 1 / self.IronSightTime
 
-    if owner:GetInfoNum("chaosbase_toggleads", 0) >= 1 then
-        if owner:KeyPressed(IN_ATTACK2) then
-            self:SetToggleAim(not self:GetToggleAim())
-        end
-    else
-        self:SetToggleAim(self:GetOwner():KeyDown(IN_ATTACK2))
-    end
-
-    if self:CanAim() and self:GetToggleAim() then
-        self:SetIsAiming(true)
+    if self:CanAim() and self:GetIsAiming() then
         self:SetAimDelta(math.min(self:GetAimDelta() + speed * FrameTime(), 1))
     else
-        self:SetIsAiming(false)
         self:SetAimDelta(math.max(self:GetAimDelta() - speed * FrameTime(), 0))
     end
 end
+]]
 
 function SWEP:SafetyHandlerModule()
     if self:GetIsSprinting() then return end

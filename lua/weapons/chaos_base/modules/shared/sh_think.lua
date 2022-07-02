@@ -64,7 +64,7 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
 
     if not sp and SERVER then
         self:SafetyHandlerModule()
-        self:AimBehaviourModule()
+        --self:AimBehaviourModule()
     end
 
     self:BipodModule()
