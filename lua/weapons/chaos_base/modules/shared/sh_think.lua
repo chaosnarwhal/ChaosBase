@@ -25,8 +25,7 @@ function SWEP:ChaosPlayerThinkCL(plyv)
     local is = self:GetIsAiming()
     local ist = is and 1 or 0
     self.IronSightsProgressUnpredicted = math.Approach(self.IronSightsProgressUnpredicted or 0, ist, (ist - (self.IronSightsProgressUnpredicted or 0)) * ft * speed * 1.2)
-    
-    
+
     --Safety Pred handling.
     local issafety = self:GetSafety()
     local issafetyt = issafety and 1 or 0
@@ -47,8 +46,11 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
     local ct = CurTime()
     local owner = self:GetOwner()
     --Hi Tasteful. Hope u get manager
-    if not is_working_out_prediction_errors and CLIENT then
-        self.CurTimePredictionAdvance = ct - UnPredictedCurTime()
+    if not is_working_out_prediction_errors then
+        if CLIENT then
+            self.CurTimePredictionAdvance = ct - UnPredictedCurTime()
+        end
+        self:IronSightSounds()
     end
 
     for i, v in ipairs(self.EventTable) do
@@ -64,7 +66,14 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
 
     if not sp and SERVER then
         self:SafetyHandlerModule()
-        --self:AimBehaviourModule()
+
+        local speed = 1 / self.IronSightTime
+        if self:GetIsAiming() then
+            self:SetAimDelta(math.min(self:GetAimDelta() + speed * FrameTime(), 1))
+        else
+            self:SetAimDelta(math.max(self:GetAimDelta() - speed * FrameTime(), 0))
+        end
+
     end
 
     self:BipodModule()

@@ -142,6 +142,9 @@ SWEP.HoldtypeCustomize = "slam"
 SWEP.HoldtypeSprintShoot = nil
 SWEP.HoldtypeNPC = nil
 
+SWEP.IronSightsInSound = nil
+SWEP.IronSightsOutSound = nil
+
 SWEP.SprintBobMult = 1.1 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this > 1 probably for sprinting.
 SWEP.IronBobMult = 0 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this < 1 for sighting, 0 to outright disable.
 SWEP.IronBobMultWalk = 0 -- More is more bobbing, proportionally.  This is multiplication, not addition.  You want to make this < 1 for sighting, 0 to outright disable.
