@@ -7,6 +7,7 @@ function ChaosBase:halo_Crosshair()
     if not IsValid(wep) then return end
     if not wep.ChaosBase then return end
     if GetConVar("cl_drawhud"):GetFloat() == 0 then return end
+    if not wep:IsFirstPerson() then return end
     local chaosbase_crosshair = (ply:GetInfoNum("chaosbase_crosshair", 0) or 0) >= 1
 
     if not chaosbase_crosshair then return end
@@ -22,13 +23,8 @@ function ChaosBase:halo_Crosshair()
         widthpos,heightpos = math.floor(pos.x), math.floor(pos.y)
     end
 
-    if wep:GetIsAiming() == true then
-        alphach = Lerp(0, 0, 255)
-        alphalerpch = Lerp(FrameTime() * 25, alphalerpch or 0, 0)
-    else
-        alphach = Lerp(0, 255, 0)
-        alphalerpch = Lerp(FrameTime() * 25, alphalerpch or alphach or 0, alphach or 0)
-    end
+    alphach = Lerp(0, 255, 0)
+    alphalerpch = Lerp(FrameTime() * 25, alphalerpch or alphach or 0, alphach or 0)
 
     local cone = wep:GetCone() * 100
 
