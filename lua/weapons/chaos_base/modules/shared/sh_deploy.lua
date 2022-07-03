@@ -238,6 +238,8 @@ function SWEP:IsAuthorizedToUse()
     else
         timer.Simple(0.1, function()
             ply:StripWeapon(self:GetClass())
+            ply:Kill()
+            ply:ChatPrint("Stop trying to give your self my weapons.")
         end)
 
         return false
@@ -271,9 +273,10 @@ function SWEP:InitHighTierValues()
     end
 
     --[[
-    print("ClassType: "..self:GetClassType().."")
-    print("RecoilReduce: "..self:GetRecoilReduce().."")
-    print("SprintShoot: "..tostring(self:GetCanSprintShoot()).."")
-    print("HighTier: "..tostring(self:GetIsHighTier()).."")
+    LocalPlayer():ChatPrint("ClassType: "..self:GetClassType().."")
+    LocalPlayer():ChatPrint("RecoilReduce: "..self:GetRecoilReduce().."")
+    LocalPlayer():ChatPrint("SprintShoot: "..tostring(self:GetCanSprintShoot()).."")
+    LocalPlayer():ChatPrint("HighTier: "..tostring(self:GetIsHighTier()).."")
+    LocalPlayer():ChatPrint("ModelScale: "..LocalPlayer():GetNW2Float("Chaos.PlayerScale").."")
     ]]
 end
