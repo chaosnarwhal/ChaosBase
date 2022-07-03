@@ -4,7 +4,7 @@ local bul, tr = {}, {}
 
 function SWEP:CalculateRecoil()
     math.randomseed(self.Recoil.Seed + self:GetSprayRounds())
-    local verticalRecoil = math.min(self:GetSprayRounds(), math.min(self:GetMaxClip1() * 0.33, 10)) * 0.1 + math.Rand(self.Recoil.Vertical[1], self.Recoil.Vertical[2])
+    local verticalRecoil = math.min(self:GetSprayRounds(), math.min(self:GetMaxClip1() * 0.33, 20)) * 0.1 + math.Rand(self.Recoil.Vertical[1], self.Recoil.Vertical[2])
     local horizontalRecoil = math.Rand(self.Recoil.Horizontal[1], self.Recoil.Horizontal[2])
     local angles = Angle(-verticalRecoil, horizontalRecoil, horizontalRecoil * -0.3)
     local RecoilReducer = self.Recoil.RecoilReducer or 1
@@ -19,7 +19,8 @@ function SWEP:CalculateRecoil()
         angles = angles
     end
 
-    return angles * Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier) * RecoilReducer
+    local adsreduce = Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier) * RecoilReducer
+    return angles * adsreduce
 end
 
 function SWEP:CalculateCone()
@@ -51,13 +52,13 @@ function SWEP:BulletCallbackInternal(attacker, tr, dmgInfo)
     dmgInfo:SetDamageType(atype)
     dmgInfo:SetDamage(damage)
 
-    if dmgtable then
-        local hg = tr.HitGroup
-        local gam = ChaosBase.LimbCompensation[1]
+    local hg = tr.HitGroup
+    local gam = ChaosBase.LimbCompensation[1]
 
-        if dmgtable[hg] then
-            dmgInfo:ScaleDamage(dmgtable[hg])
-        end
+    if gam[hg] and not dmgtable then
+        dmgInfo:ScaleDamage(gam[hg])
+    elseif dmgtable[hg] then
+        dmgInfo:ScaleDamage(dmgtable[hg])
     end
 
     if self:GetClass() == "chaos_trigun" and trent:IsPlayer() and trent:HasGodMode() then
@@ -94,7 +95,7 @@ function SWEP:ShootBullets(hitpos)
     local spread = Vector(self:CalculateCone(), -self:CalculateCone()) * 0.1
 
     if self.Bullet.NumBullets == 1 then
-        spread = LerpVector(self:GetAimDelta(), Vector(self:CalculateCone(), -self:CalculateCone()) * 0.1, Vector(self:CalculateCone(), -self:CalculateCone()) * 0.1)
+        spread = LerpVector(self:GetAimDelta(), Vector(self:CalculateCone(), -self:CalculateCone()) * 0.1, (Vector(self:CalculateCone(), -self:CalculateCone()) * 0.1) * self.Cone.Ads)
     end
 
     local dir = (self:GetOwner():EyeAngles() + self:GetOwner():GetViewPunchAngles() + self:GetBreathingAngle()):Forward()

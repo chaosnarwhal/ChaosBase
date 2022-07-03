@@ -18,6 +18,21 @@ function SWEP:AimBehaviourModule()
     end
 end
 
+function SWEP:IronSightSounds()
+    local is = self:GetIsAiming()
+
+    if SERVER or IsFirstTimePredicted() then
+        if is ~= self.is_sndcache_old and self.IronSightsInSound then
+            if is then
+                self:EmitSound(self.IronSightsInSound)
+            else
+                self:EmitSound(self.IronSightsOutSound)
+            end
+        end
+        self.is_sndcache_old = is
+    end
+end
+
 function SWEP:SafetyHandlerModule()
     if self:GetIsSprinting() then return end
     local owner = self:GetOwner()
