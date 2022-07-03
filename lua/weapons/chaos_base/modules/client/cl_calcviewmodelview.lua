@@ -251,7 +251,7 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
     local aimPos, aimAng = self:GetAvailableAimOffsets()
     aimAng = aimAng * 1
     aimAng:Mul(self:SafeLerp(ironprogress, 0, 1))
-    local idleAng = self.ViewModelOffsets.Idle.Angles * self:SafeLerp(self:GetAimDelta(), 1, 0)
+    local idleAng = self.ViewModelOffsets.Idle.Angles * self:SafeLerp(ironprogress, 1, 0)
     self:SafeLerpAngle(50 * FrameTime(), vars.LerpAimAngles, aimAng)
     EyeAng:Add(vars.LerpAimAngles)
     EyeAng:Add(idleAng)
@@ -376,7 +376,7 @@ end
 function SWEP:GetAvailableAimOffsets()
     local posoffset, angoffset = self.ViewModelOffsets.Aim.Pos, self.ViewModelOffsets.Aim.Angles
 
-    return LerpVector(self:GetAimDelta(), self.ViewModelOffsets.Aim.Pos, posoffset), LerpAngle(self:GetAimDelta(), self.ViewModelOffsets.Aim.Angles, angoffset)
+    return LerpVector(self.IronSightsProgressUnpredicted, self.ViewModelOffsets.Aim.Pos, posoffset), LerpAngle(self:GetAimDelta(), self.ViewModelOffsets.Aim.Angles, angoffset)
 end
 
 --[[ 
@@ -491,7 +491,7 @@ Purpose:  Utility function / Animation
 --
 function SWEP:CalcRecoil()
     local owner = self:GetOwner()
-    local aimDelta = self:SafeLerp(self.IronSightsProgressUnpredicted, 0.75, 0.2)
+    local aimDelta = self:SafeLerp(self.IronSightsProgressUnpredicted, 1, 0.2)
 
     if self.Primary.Automatic then
         local speed = 25
