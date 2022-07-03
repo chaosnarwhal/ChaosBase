@@ -106,7 +106,7 @@ function SWEP:InSprint()
     local walkspeed = owner:GetWalkSpeed()
     local curspeed = owner:GetVelocity():Length()
     if not owner:KeyDown(IN_SPEED) then return false end
-    if curspeed < Lerp(0.5, walkspeed, sprintspeed) then return false end
+    if curspeed < Lerp(0.2, walkspeed, sprintspeed) then return false end
     if not owner:OnGround() then return false end
     if owner:Crouching() then return false end
 
