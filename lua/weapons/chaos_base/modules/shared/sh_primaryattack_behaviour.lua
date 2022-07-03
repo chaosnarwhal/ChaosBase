@@ -160,10 +160,6 @@ function SWEP:PrimaryAttack()
         self.Camera.Shake = self.Recoil.Shake --* Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier)
     end
 
-    if self:Clip1() == 1 then
-        self:EmitSound("chaos.m6s.SlideBack")
-    end
-
     --HighTier code for setting shootsprint anim to cancel.
     if self:GetIsHighTier() and self:GetCanSprintShoot() then
         timer.Simple(2, function()
