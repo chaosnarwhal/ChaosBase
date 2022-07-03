@@ -22,6 +22,7 @@ ChaosBase.LimbCompensation = {
         [HITGROUP_LEFTLEG]  = 1 / 0.25,
         [HITGROUP_RIGHTLEG] = 1 / 0.25,
         [HITGROUP_GEAR]     = 1 / 0.25,
+        [HITGROUP_STOMACH]   = 1 / 0.25,
     },
 }
 
