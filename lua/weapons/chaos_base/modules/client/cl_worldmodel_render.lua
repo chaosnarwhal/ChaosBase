@@ -29,13 +29,11 @@ function SWEP:DrawWorldModelTranslucent(flags)
     end
 
     if IsValid(ply) then
-        if HighTierTable[index] then
+        if self:GetClassType() == "SPARTAN" then
             ModelScale = ply:GetNW2Float("Chaos.PlayerScale")
-            if HighTierTable[index].Type == "SPARTAN" then
-                offsetVec = Vector(self.SparWorldModelOffsetPos)
-                offsetAng = Angle(self.SparWorldModelOffsetAng)
-                elementOffsetVec = Vector(1.5,0.15,2)
-            end
+            offsetVec = Vector(self.SparWorldModelOffsetPos)
+            offsetAng = Angle(self.SparWorldModelOffsetAng)
+            elementOffsetVec = Vector(1.5,0.15,2)
         end
 
         local boneid = ply:LookupBone("ValveBiped.Bip01_R_Hand")
