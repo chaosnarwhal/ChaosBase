@@ -21,7 +21,7 @@ end
 function SWEP:IronSightSounds()
     local is = self:GetIsAiming()
 
-    if SERVER or IsFirstTimePredicted() then
+    if SERVER or IsFirstTimePredicted() and self:CanAim() then
         if is ~= self.is_sndcache_old and self.IronSightsInSound then
             if is then
                 self:EmitSound(self.IronSightsInSound)
