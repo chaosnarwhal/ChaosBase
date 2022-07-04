@@ -124,7 +124,6 @@ function SWEP:ShootBullets(hitpos)
     self:GetOwner():FireBullets(bul)
     ]]
     self:FireBullets({
-        wep = self,
         Attacker = self:GetOwner(),
         Src = self:GetOwner():EyePos(),
         Dir = dir,
