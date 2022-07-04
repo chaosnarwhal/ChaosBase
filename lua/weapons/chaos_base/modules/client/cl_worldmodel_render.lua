@@ -30,7 +30,7 @@ function SWEP:DrawWorldModelTranslucent(flags)
 
     if IsValid(ply) then
         if self:GetClassType() == "SPARTAN" then
-            ModelScale = ply:GetNW2Float("Chaos.PlayerScale")
+            ModelScale = self.SparWepScale or ply:GetNW2Float("Chaos.PlayerScale")
             offsetVec = Vector(self.SparWorldModelOffsetPos)
             offsetAng = Angle(self.SparWorldModelOffsetAng)
             elementOffsetVec = Vector(1.5,0.15,2)
@@ -46,6 +46,7 @@ function SWEP:DrawWorldModelTranslucent(flags)
         self.c_WorldModel:SetupBones()
         self:RenderModelsWorld(self.c_WorldModel, 0)
         self.c_WorldModel:SetModelScale(ModelScale)
+        self.c_WorldModel.MuzzleAttachment = self.c_WorldModel:LookupAttachment(self.MuzzleAttachment)
 
         --ThirdPerson Bolt Handling
         if not self.BlowbackBoneModsWorldModel then
