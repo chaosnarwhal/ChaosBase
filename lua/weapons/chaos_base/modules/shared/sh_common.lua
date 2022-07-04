@@ -28,7 +28,7 @@ ChaosBase.LimbCompensation = {
 
 function SWEP:GetMuzzleAttachment()
     local vmod = self:GetOwner():GetViewModel()
-    local att = math.max(1, self.MuzzleAttachmentRaw or (sp and vmod or self):LookupAttachment(self.MuzzleAttachment))
+    local att = self.c_WorldModel:LookupAttachment(self.MuzzleAttachment)
 
     return att
 end
@@ -55,7 +55,7 @@ function SWEP:GetMuzzlePos(ignorepos)
     if fp then
         muzzlepos = vm:GetAttachment(obj)
     else
-        muzzlepos = self:GetAttachment(obj)
+        muzzlepos = self.c_WorldModel:GetAttachment(obj)
     end
 
     return muzzlepos
