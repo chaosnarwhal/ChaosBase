@@ -258,12 +258,12 @@ function SWEP:InitHighTierValues()
     local HighTierTable = self.HighTier
     local ply = self:GetOwner()
     if not IsValid(ply) then return end
-    local index = ply:getJobTable().category or ply:getJobTable().name
+    local index = HighTierTable[ply:getJobTable().category] or HighTierTable[ply:getJobTable().name]
 
-    if HighTierTable[index] then
-        self:SetClassType(HighTierTable[index].Type)
-        self:SetRecoilReduce(HighTierTable[index].RecoilReduce)
-        self:SetCanSprintShoot(HighTierTable[index].SprintShoot)
+    if index then
+        self:SetClassType(index.Type)
+        self:SetRecoilReduce(index.RecoilReduce)
+        self:SetCanSprintShoot(index.SprintShoot)
         self:SetIsHighTier(true)
     else
         self:SetClassType("Marine")
