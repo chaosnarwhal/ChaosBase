@@ -1,6 +1,4 @@
-
 --WalkBob
-local vector_origin = Vector()
 SWEP.ti = 0
 SWEP.LastCalcBob = 0
 SWEP.tiView = 0
@@ -131,6 +129,7 @@ function SWEP:SprintBob(pos, ang, intensity, origPos, origAng)
     local localForward = ang:Forward()
     intensity = intensity * gunbob_intensity * 1.5
     gunbob_intensity = 1
+
     if self:GetIsHighTier() then
         intensity = intensity * 0.2
     end
@@ -161,12 +160,11 @@ function SWEP:SprintBob(pos, ang, intensity, origPos, origAng)
 end
 
 local fac, bscale
-function SWEP:UpdateEngineBob()
 
+function SWEP:UpdateEngineBob()
     local isp = self.IronSightsProgressUnpredicted or self:GetIronSightsProgress()
     local wpr = 1
     local spr = self.SprintProgressUnpredicted
-
     fac = 0.5 * ((1 - isp) * 0.85 + 0.15)
     bscale = fac
 

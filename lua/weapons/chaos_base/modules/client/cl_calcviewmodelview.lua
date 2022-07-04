@@ -3,22 +3,9 @@ local Vector = Vector
 local Angle = Angle
 local math = math
 local LerpVector = LerpVector
-
-local TAU = math.pi * 2
-local rateScaleFac = 2
-local walkIntensitySmooth, breathIntensitySmooth = 0, 0
-local walkRate = 160 / 60 * TAU / 1.085 / 2 * rateScaleFac
-local walkVec = Vector()
-local ownerVelocity, ownerVelocityMod = Vector(), Vector()
-local zVelocity, zVelocitySmooth = 0,0
-local xVelocity, xVelocitySmooth, rightVec = 0, 0, Vector()
-local flatVec = Vector(1,1,0)
-
-local Vec0, Ang0 = Vector(0, 0, 0), Angle(0, 0, 0)
-
+local Vec0 = Vector(0, 0, 0)
 SWEP.BipodPos = Vector(0, 0, 0)
 SWEP.BipodAng = Vector(0, 0, 0)
-
 --[[ 
 Function Name:  GetViewModelPosition
 Syntax: self:GetViewModelPosition(pos, ang ).
@@ -31,7 +18,6 @@ local chaosbase_vmoffset_x = GetConVar("chaosbase_vmoffset_x")
 local chaosbase_vmoffset_y = GetConVar("chaosbase_vmoffset_y")
 local chaosbase_vmoffset_z = GetConVar("chaosbase_vmoffset_z")
 local chaosbase_flip_cv = GetConVar("chaosbase_vmflip")
-local cv_fov = GetConVar("fov_desired")
 local fovmod_add = GetConVar("chaosbase_vm_offset_fov")
 local fovmod_mult = GetConVar("chaosbase_vm_multiplier_fov")
 SWEP.OldPos = Vector(0, 0, 0)
@@ -40,25 +26,18 @@ SWEP.CrouchVector = Vector(-1, -1, -1)
 
 function SWEP:GetViewModelPosition(opos, oang, ...)
     if not self.pos_cached then return opos, oang end
-
     local npos, nang = opos * 1, oang * 1
-
     nang:RotateAroundAxis(nang:Right(), self.ang_cached.p)
     nang:RotateAroundAxis(nang:Up(), self.ang_cached.r)
     nang:RotateAroundAxis(nang:Forward(), self.ang_cached.y)
-
     npos:Add(nang:Right() * self.pos_cached.x)
     npos:Add(nang:Forward() * self.pos_cached.y)
     npos:Add(nang:Up() * self.pos_cached.z)
-
     npos, nang = self:SprintBob(npos, nang, Lerp(self.SprintProgressUnpredicted, 0, self.SprintBobMult))
-
     if not pos or not ang then return npos, nang end
     local ofpos, ofang = WorldToLocal(npos, nang, opos, oang)
-
     self.OldPos = npos
     self.OldAng = nang
-
     local AimDelta = self.IronSightsProgressUnpredicted
 
     if AimDelta > 0.005 then
@@ -128,8 +107,7 @@ function SWEP:CalculateViewModelOffset(delta)
     local SprintPos = self.RunPos
     local SprintAng = self.RunAng
 
-
-    if SprintDelta > 0.005 and self.SafetyProgressUnpredicted < 1 and !self:GetIsReloading() and not self:GetCanSprintShoot() then
+    if SprintDelta > 0.005 and self.SafetyProgressUnpredicted < 1 and not self:GetIsReloading() and not self:GetCanSprintShoot() then
         if self.AnimatedSprint then return end
         self:SafeLerpVector(self.SprintProgressUnpredicted, target_pos, SprintPos)
         self:SafeLerpVector(self.SprintProgressUnpredicted, target_ang, SprintAng)
@@ -149,13 +127,11 @@ function SWEP:CalculateViewModelOffset(delta)
         if CT < self.BipodMoveTime then
             self.BipodPos[1] = math.Approach(self.BipodPos[1], dif1 * self.BipodSensitivity.x, FT * 50)
             self.BipodPos[3] = math.Approach(self.BipodPos[3], dif2 * self.BipodSensitivity.z, FT * 50)
-            
             self.BipodAng[1] = math.Approach(self.BipodAng[1], dif2 * self.BipodSensitivity.p, FT * 50)
             self.BipodAng[3] = math.Approach(self.BipodAng[3], dif2 * self.BipodSensitivity.r, FT * 50)
         else
             self.BipodPos[1] = dif1 * self.BipodSensitivity.x
             self.BipodPos[3] = dif2 * self.BipodSensitivity.z
-            
             self.BipodAng[1] = dif2 * self.BipodSensitivity.p
             --self.BipodAng[2] = dif1 * -0.1
             self.BipodAng[3] = dif2 * self.BipodSensitivity.r
@@ -169,20 +145,13 @@ function SWEP:CalculateViewModelOffset(delta)
     target_pos.x = (target_pos.x + self.BipodPos[1]) + chaosbase_vmoffset_x:GetFloat() * (1 - AimDelta)
     target_pos.y = (target_pos.y + self.BipodPos[2]) + chaosbase_vmoffset_y:GetFloat() * (1 - AimDelta)
     target_pos.z = (target_pos.z + self.BipodPos[3]) + chaosbase_vmoffset_z:GetFloat() * (1 - AimDelta)
-
     local intensityWalk = math.min(self:GetOwner():GetVelocity():Length2D() / self:GetOwner():GetWalkSpeed(), 1) * self:SafeLerp(AimDelta, self.WalkBobMult, self.WalkBobMult_Iron or self.WalkBobMult) * 0.5
     local intensityBreath = self:SafeLerp(AimDelta, self.BreathScale, intensityWalk)
     intensityWalk = (1 - AimDelta) * intensityWalk
     local intensityRun = self:SafeLerp(self.SprintProgressUnpredicted, 0, self.SprintBobMult)
     local velocity = math.max(self:GetOwner():GetVelocity():Length2D() - self:GetOwner():GetVelocity().z * 0.5, 0)
     local rate = math.min(math.max(0.15, math.sqrt(velocity / self:GetOwner():GetRunSpeed()) * 1.75), self:GetIsSprinting() and 5 or 3)
-
-    self.pos_cached, self.ang_cached = self:ChaosWalkBob(
-        target_pos,
-        Angle(target_ang.x, target_ang.y, target_ang.z),
-        math.max(intensityBreath - intensityWalk - intensityRun, 0),
-        math.max(intensityWalk - intensityRun, 0), rate, delta)
-
+    self.pos_cached, self.ang_cached = self:ChaosWalkBob(target_pos, Angle(target_ang.x, target_ang.y, target_ang.z), math.max(intensityBreath - intensityWalk - intensityRun, 0), math.max(intensityWalk - intensityRun, 0), rate, delta)
 end
 
 --[[ 
@@ -212,11 +181,10 @@ function SWEP:CalculateViewModelFlip()
     if self.ViewModelFLip ~= shouldflip then
         self.ViewModelFlip = shouldflip
     end
-    self.ViewModelFOV_OG = self.ViewModelFOV
 
+    self.ViewModelFOV_OG = self.ViewModelFOV
     local cam_fov = 90
     local iron_add = cam_fov * (1 - 90 / cam_fov) * math.max(1 - self.Secondary.OwnerFOV / 90, 0)
-
     self.ViewModelFOV = Lerp(self.IronSightsProgressUnpredicted, self.ViewModelFOV_OG, self.Secondary.ViewModelFOV) * fovmod_mult:GetFloat() + fovmod_add:GetFloat() + iron_add + self.IronSightsProgressUnpredicted
 end
 
@@ -236,17 +204,13 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
     vars.LerpAimDelta = self:SafeLerp(10 * FrameTime(), vars.LerpAimDelta, ironprogress)
     --jump
     self:CalcViewModelJump()
-
     --movement sway
     self:CalcMovementSway()
-
     --fake recoil
     self:CalcRecoil()
     local recoilPos, recoilAng = vars.Recoil.Translation, vars.Recoil.Rotation
     --sway
-
     self:CalcSway(EyeAng)
-
     --idle and aim offsets
     local aimPos, aimAng = self:GetAvailableAimOffsets()
     aimAng = aimAng * 1
@@ -256,64 +220,53 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
     EyeAng:Add(vars.LerpAimAngles)
     EyeAng:Add(idleAng)
     --end idle and aim offsets
-
     --viewpunch
     local vpAngles = self:GetOwner():GetViewPunchAngles()
     vpAngles:Mul(self:SafeLerp(ironprogress, 0.2, 0.01))
     EyeAng:Add(vpAngles)
     --end viewpunch
-
     --jump
     local jumpAngles = Angle(vars.Jump.Lerp, 0, 0)
     jumpAngles:Mul(self:SafeLerp(vars.LerpAimDelta, 0.2, 0.05))
     EyeAng:Add(jumpAngles)
     --end jump
-
     --sway
     local swayAngles = Angle(vars.Sway.Y.Lerp, vars.Sway.X.Lerp, 0)
     swayAngles:Mul(self:SafeLerp(vars.LerpAimDelta, 0.1, 0.05))
     EyeAng:Add(swayAngles)
     --end sway
-
     --fake recoil
-    EyeAng:Add(recoilAng*0.2)
+    EyeAng:Add(recoilAng * 0.2)
     --end fake recoil
-
     local forward = EyeAng:Forward()
     local right = EyeAng:Right()
     local up = EyeAng:Up()
     --recoil
-
     local intensity = (math.Clamp(self:GetOwner():GetViewPunchAngles().p / 90, -1, 1) * 20) * self:SafeLerp(ironprogress, 0.3 * self.ViewModelOffsets.RecoilMultiplier, 0.01 * self.ViewModelOffsets.RecoilMultiplier)
     self:VectorAddAndMul(EyePos, up, intensity * 0.3)
     self:VectorAddAndMul(EyePos, forward, intensity)
     self:VectorAddAndMul(EyePos, forward, -self.Camera.Shake * self:SafeLerp(ironprogress, 0.7, 1.3) * self:SafeLerp(ironprogress, self.ViewModelOffsets.KickMultiplier or 1, self.ViewModelOffsets.AimKickMultiplier or 1))
     --end recoil
-
     --movement
     self:VectorAddAndMul(EyePos, up, vars.Jump.LerpZ * -0.05 * self:SafeLerp(vars.LerpAimDelta, 1, 0.1))
     self:VectorAddAndMul(EyePos, forward, -vars.LerpForward * self:SafeLerp(vars.LerpAimDelta, 2, 0.3))
     self:VectorAddAndMul(EyePos, right, -vars.LerpRight * self:SafeLerp(vars.LerpAimDelta, 1, 0.05))
     --end movement
-
     --idle
     self:VectorAddAndMul(EyePos, up, math.cos(CurTime() * 2) * math.cos(CurTime()) * 0.1 * self:SafeLerp(vars.LerpAimDelta, 1, 0))
     self:VectorAddAndMul(EyePos, right, math.cos(CurTime() * 2) * math.sin(CurTime()) * 0.1 * self:SafeLerp(vars.LerpAimDelta, 1, 0))
     -- end of idle
-
     --sway
     self:VectorAddAndMul(EyePos, up, (vars.Sway.PosY.Lerp * 0.25) * self:SafeLerp(vars.LerpAimDelta, 1, 0.1))
     self:VectorAddAndMul(EyePos, forward, (vars.Sway.PosForward.Lerp * 0.1) * self:SafeLerp(vars.LerpAimDelta, 1, 0.1))
     self:VectorAddAndMul(EyePos, right, (vars.Sway.PosX.Lerp * 0.25) * self:SafeLerp(vars.LerpAimDelta, 1, 0.1))
     --end sway
-
     --offsets
     self:SafeLerpVector(50 * FrameTime(), vars.LerpAimPos, aimPos)
     local idleOffset = self:CalcOffset(self.ViewModelOffsets.Idle.Pos, EyeAng * 1)
     idleOffset:Mul(self:SafeLerp(ironprogress, 1, 0))
     EyePos:Add(idleOffset)
     --end offsets
-
     --crouch
     self:SafeLerpVector(10 * FrameTime(), vars.LerpCrouch, self:CalcCrouchOffset())
     vars.LerpCrouch:Mul(1 - ironprogress)
@@ -321,13 +274,11 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
     self:VectorAddAndMul(EyePos, forward, vars.LerpCrouch.y)
     self:VectorAddAndMul(EyePos, right, vars.LerpCrouch.x)
     --end crouch
-
     --fake recoil
     self:VectorAddAndMul(EyePos, up, recoilPos.z)
     self:VectorAddAndMul(EyePos, forward, recoilPos.y)
     self:VectorAddAndMul(EyePos, right, recoilPos.x)
     --end fake recoil
-
     CalcVMViewHookBypass = true
     EyePos, EyeAng = hook.Run("CalcViewModelView", self, vm, vm:GetPos(), vm:GetAngles(), EyePos * 1, EyeAng * 1)
     CalcVMViewHookBypass = false

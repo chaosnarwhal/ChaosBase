@@ -13,6 +13,7 @@ function SWEP:EnterSprint()
     self.Sighted = false
     self.Sprinted = true
     local ct = CurTime()
+
     if not self:GetCanSprintShoot() and self:GetNextPrimaryFire() <= ct then
         self:SetNextPrimaryFire(ct)
     end
@@ -73,7 +74,7 @@ function SWEP:SprintBehaviour()
     local ply = self:GetOwner()
     local walking = (ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT) or ply:KeyDown(IN_FORWARD) or ply:KeyDown(IN_BACK)) and not ply:KeyDown(IN_SPEED)
     self:HoldTypeHandler()
-    
+
     --Sprint Handler
     if not game.SinglePlayer() and IsFirstTimePredicted() then
         if self:InSprint() and (self:GetState() ~= ChaosBase.STATE_SPRINT) then

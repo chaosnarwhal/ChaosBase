@@ -1,14 +1,12 @@
 AddCSLuaFile()
-
 local sp = game.SinglePlayer()
 
 function SWEP:MuzzleFlashCustom(spv)
     local att = self.c_WorldModel:LookupAttachment(self.MuzzleAttachment)
-    
+
     if self.MuzzleFlashParticle then
         ParticleEffectAttach(self.MuzzleFlashParticle, PATTACH_POINT_FOLLOW, self.c_WorldModel, att)
     end
-
 end
 
 --[[
@@ -19,10 +17,7 @@ Notes:  Calls the proper muzzleflash, muzzle smoke, muzzle light code.
 Purpose:  FX
 ]]
 --
-
 function SWEP:ShootEffectsCustom(ifp)
-    local owner = self:GetOwner()
-
     if not self.MuzzleFlashEnabled then return end
     if self:IsFirstPerson() and not self:VMIV() then return end
     --if not self:GetOwner().GetShootPos then return end
@@ -43,8 +38,7 @@ function SWEP:ShootEffectsCustom(ifp)
 
     self:GetOwner():MuzzleFlash()
 
-    if (CLIENT and ifp and not self:IsFirstPerson()) then
+    if CLIENT and ifp and not self:IsFirstPerson() then
         self:MuzzleFlashCustom()
     end
 end
-

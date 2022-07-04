@@ -4,9 +4,7 @@ end
 function SWEP:chaos_scope()
     if GetConVar("cl_drawhud"):GetFloat() == 0 then return end
     if not self.ChaosBase then return end
-
     local scopetable = self.Scope
-
     local w, h = ScrW(), ScrH()
     local ss = 4 * scopetable.ScopeScale
     local sw = scopetable.ScopeWidth
@@ -18,67 +16,66 @@ function SWEP:chaos_scope()
     local Q3Mat = scopetable.Q3Mat
     local Q4Mat = scopetable.Q4Mat
     local YOffset = -scopetable.ScopeYOffset
+    surface.SetDrawColor(scopetable.ScopeBGColor)
+    surface.DrawRect(0, (h / 2 - hi * sh) * YOffset, w / 2 - hi / 2 * sw * 2, hi * 2)
+    surface.DrawRect(w / 2 + hi * sw, (h / 2 - hi * sh) * YOffset, w / 2 + wi * sw, hi * 2)
+    surface.DrawRect(0, 0, w * ss, h / 2 - hi * sh)
+    surface.DrawRect(0, (h / 2 + hi * sh) * YOffset, w * ss, h / 1.99 - hi * sh)
 
+    if scopetable.ScopeColor ~= nil then
+        surface.SetDrawColor(scopetable.ScopeColor)
+    else
+        surface.SetDrawColor(Color(0, 0, 0, 255))
+    end
 
-        surface.SetDrawColor(scopetable.ScopeBGColor)
-        surface.DrawRect(0, (h / 2 - hi * sh) * YOffset, w / 2 - hi / 2 * sw * 2, hi * 2)
-        surface.DrawRect(w / 2 + hi * sw, (h / 2 - hi * sh) * YOffset, w / 2 + wi * sw, hi * 2)
-        surface.DrawRect(0, 0, w * ss, h / 2 - hi * sh)
-        surface.DrawRect(0, (h / 2 + hi * sh) * YOffset, w * ss, h / 1.99 - hi * sh)
+    if Q1Mat == nil then
+        surface.SetMaterial(Material("sprites/scope_arc"))
+    else
+        surface.SetMaterial(Material(Q1Mat))
+    end
 
-        if scopetable.ScopeColor ~= nil then
-            surface.SetDrawColor(scopetable.ScopeColor)
-        else
-            surface.SetDrawColor(Color(0, 0, 0, 255))
-        end
+    surface.DrawTexturedRectUV(w / 2 - hi / 2 * sw * 2, (h / 2 - hi) * YOffset, hi * sw, hi * sh, 1, 1, 0, 0)
 
+    if Q2Mat == nil then
         if Q1Mat == nil then
             surface.SetMaterial(Material("sprites/scope_arc"))
         else
             surface.SetMaterial(Material(Q1Mat))
         end
+    else
+        surface.SetMaterial(Material(Q2Mat))
+    end
 
-        surface.DrawTexturedRectUV(w / 2 - hi / 2 * sw * 2, (h / 2 - hi) * YOffset, hi * sw, hi * sh, 1, 1, 0, 0)
+    surface.DrawTexturedRectUV(w / 2, (h / 2 - hi) * YOffset, hi * sw, hi * sh, 0, 1, 1, 0)
 
-        if Q2Mat == nil then
-            if Q1Mat == nil then
-                surface.SetMaterial(Material("sprites/scope_arc"))
-            else
-                surface.SetMaterial(Material(Q1Mat))
-            end
+    if Q3Mat == nil then
+        if Q1Mat == nil then
+            surface.SetMaterial(Material("sprites/scope_arc"))
         else
-            surface.SetMaterial(Material(Q2Mat))
+            surface.SetMaterial(Material(Q1Mat))
         end
+    else
+        surface.SetMaterial(Material(Q3Mat))
+    end
 
-        surface.DrawTexturedRectUV(w / 2, (h / 2 - hi) * YOffset, hi * sw, hi * sh, 0, 1, 1, 0)
+    surface.DrawTexturedRectUV(w / 2 - hi / 2 * sw * 2, h / 2, hi * sw, hi * sh, 1, 0, 0, 1)
 
-        if Q3Mat == nil then
-            if Q1Mat == nil then
-                surface.SetMaterial(Material("sprites/scope_arc"))
-            else
-                surface.SetMaterial(Material(Q1Mat))
-            end
+    if Q4Mat == nil then
+        if Q1Mat == nil then
+            surface.SetMaterial(Material("sprites/scope_arc"))
         else
-            surface.SetMaterial(Material(Q3Mat))
+            surface.SetMaterial(Material(Q1Mat))
         end
+    else
+        surface.SetMaterial(Material(Q4Mat))
+    end
 
-        surface.DrawTexturedRectUV(w / 2 - hi / 2 * sw * 2, h / 2, hi * sw, hi * sh, 1, 0, 0, 1)
-
-        if Q4Mat == nil then
-            if Q1Mat == nil then
-                surface.SetMaterial(Material("sprites/scope_arc"))
-            else
-                surface.SetMaterial(Material(Q1Mat))
-            end
-        else
-            surface.SetMaterial(Material(Q4Mat))
-        end
-
-        surface.DrawTexturedRectUV(w / 2, h / 2, hi * sw, hi * sh, 0, 0, 1, 1)
+    surface.DrawTexturedRectUV(w / 2, h / 2, hi * sw, hi * sh, 0, 0, 1, 1)
 end
 
 function SWEP:DrawHUDBackground()
-	if not self.Scoped then return end
+    if not self.Scoped then return end
+
     --Scope Overlay Handle
     if self.IronSightsProgressUnpredicted > self.ScopeOverlayThreshold and self:GetIsAiming() and self:CanAim() then
         self:chaos_scope()
@@ -87,31 +84,25 @@ function SWEP:DrawHUDBackground()
 end
 
 function SWEP:Scroll(var)
-	local Scope = self.Scope
+    local Scope = self.Scope
 
-	if Scope.ScrollFunc == ChaosBase.SCROLL_ZOOM then
-		if !Scope.ScopeMagnificationMin then return end
-		if !Scope.ScopeMagnificationMax then return end
+    if Scope.ScrollFunc == ChaosBase.SCROLL_ZOOM then
+        if not Scope.ScopeMagnificationMin then return end
+        if not Scope.ScopeMagnificationMax then return end
+        local minus = var < 0
+        var = math.abs(Scope.ScopeMagnificationMax - Scope.ScopeMagnificationMin)
+        var = var / (Scope.ZoomLevels or 5)
 
-		local OriginalMagnification = Scope.ScopeMagnification
+        if minus then
+            var = var * -1
+        end
 
-		local minus = var < 0
+        Scope.ScopeMagnification = Scope.ScopeMagnification - var
+        Scope.ScopeMagnification = math.Clamp(Scope.ScopeMagnification, Scope.ScopeMagnificationMin, Scope.ScopeMagnificationMax)
 
-		var = math.abs(Scope.ScopeMagnificationMax - Scope.ScopeMagnificationMin)
-
-		var = var / (Scope.ZoomLevels or 5)
-
-		if minus then
-			var = var * -1
-		end
-
-		Scope.ScopeMagnification = Scope.ScopeMagnification - var
-
-		Scope.ScopeMagnification = math.Clamp(Scope.ScopeMagnification, Scope.ScopeMagnificationMin, Scope.ScopeMagnificationMax)
-
-		if old != Scope.ScopeMagnification then
+        if old ~= Scope.ScopeMagnification then
             self:EmitSound(Scope.ZoomSound or "", 75, math.Rand(95, 105), 1, CHAN_ITEM)
-       end
+        end
     end
 end
 
@@ -119,13 +110,13 @@ function SWEP:AdjustMouseSensitivity()
     local Scope = self.Scope
     local ScopeScroll = Scope.ScopeMagnification
     local ScopeSens = ScopeScroll / 1
+
     if self:GetIsAiming() then
         return ScopeSens
     else
         return 1
     end
 end
-
 --[[
 --RT SCOPE CODE TO FINISH. NEED TO FORMAT ATTACHMENTS FOR SCOPED WEAPONS TO DRAW RT/CHEAP SCOPE.
 function SWEP:ShouldFlatScope()
@@ -203,118 +194,118 @@ local pp_cc_tab = {
 }
 
 function SWEP:FormPP(tex)
-	if !render.SupportsPixelShaders_2_0 then return end
+    if !render.SupportsPixelShaders_2_0 then return end
 
-	local asight = self:GetActiveSights()
+    local asight = self:GetActiveSights()
 
-	if asight.Thermal then return end
+    if asight.Thermal then return end
 
-	local cs = GetConVar("chaosbase_cheapscopes"):GetBool()
-	local refract = GetConvar("chaosbase_scopepp_refract"):GetBool()
-	local pp = GetConVar("chaosbase_scopepp"):GetBool()
+    local cs = GetConVar("chaosbase_cheapscopes"):GetBool()
+    local refract = GetConvar("chaosbase_scopepp_refract"):GetBool()
+    local pp = GetConVar("chaosbase_scopepp"):GetBool()
 
-	if refract or pp then
-		if !cs then render.PushRenderTraget(tex) end
+    if refract or pp then
+        if !cs then render.PushRenderTraget(tex) end
 
-		if pp then
-			render.SetMaterial(pp_ca_base)
-			render.DrawScreenQuad()
-			render.SetMaterial(pp_ca_r)
-			render.DrawScreenQuad()
-			render.SetMaterial(pp_ca_g)
-			render.DrawScreenQuad()
-			render.SetMaterial(pp_ca_b)
-			render.DrawScreenQuad()
+        if pp then
+            render.SetMaterial(pp_ca_base)
+            render.DrawScreenQuad()
+            render.SetMaterial(pp_ca_r)
+            render.DrawScreenQuad()
+            render.SetMaterial(pp_ca_g)
+            render.DrawScreenQuad()
+            render.SetMaterial(pp_ca_b)
+            render.DrawScreenQuad()
 
-			DrawColorModify(pp_cc_tab)
-			DrawSharpen(-0.1, 5)
-		end
+            DrawColorModify(pp_cc_tab)
+            DrawSharpen(-0.1, 5)
+        end
 
-		if refract then
-			local addads = math.Clamp(additionalFOVconvar:GetFloat(), -2, 14)
-			local refractratio = GetConVar("chaosbase_scopepp_refract_ratio"):GetFloat() or 0
-			local refractamount = (-0.6 + addads / 30) * refractratio
+        if refract then
+            local addads = math.Clamp(additionalFOVconvar:GetFloat(), -2, 14)
+            local refractratio = GetConVar("chaosbase_scopepp_refract_ratio"):GetFloat() or 0
+            local refractamount = (-0.6 + addads / 30) * refractratio
 
-			refractmat:SetFloat( "$refractamount", refractamount)
+            refractmat:SetFloat( "$refractamount", refractamount)
 
-			render.SetMaterial(refractmat)
-			render.DrawScreenQuad()
-		end
+            render.SetMaterial(refractmat)
+            render.DrawScreenQuad()
+        end
 
-		if !cs then render.PopRenderTarget() end
-	end
+        if !cs then render.PopRenderTarget() end
+    end
 end
 
 
 
 function SWEP:FormCheapScope()
-	local screen = render.GetRenderTarget()
+    local screen = render.GetRenderTarget()
 
-	render.CopyTexture(sreen, rtmat_spare)
+    render.CopyTexture(sreen, rtmat_spare)
 
-	render.PushRenderTarget(screen)
-	cam.Start3D(EyePos(), EyeAngles(), nil, nil, nil, nil, nil, 0, nil)
-	cam.End3D()
+    render.PushRenderTarget(screen)
+    cam.Start3D(EyePos(), EyeAngles(), nil, nil, nil, nil, nil, 0, nil)
+    cam.End3D()
 
-	self:FormPP(screen)
+    self:FormPP(screen)
 
-	render.PopRenderTarget()
+    render.PopRenderTarget()
 
-	local asight = self:GetActiveSights()
+    local asight = self:GetActiveSights()
 
-	if asight.Thermal then return end
+    if asight.Thermal then return end
 
-	if asight.SpecialScopeFunction then
-		asight.SpecialScopeFunction(screen)
-	end
+    if asight.SpecialScopeFunction then
+        asight.SpecialScopeFunction(screen)
+    end
 
-	render.CopyTexture(screen, rtmat_cheap)
+    render.CopyTexture(screen, rtmat_cheap)
 
-	render.DrawTextureToScreen(rtmat_spare)
+    render.DrawTextureToScreen(rtmat_spare)
 
-	render.UpdateFullScreenDepthTexture()
+    render.UpdateFullScreenDepthTexture()
 
 end
 
 function SWEP:FormRTScope()
-	local asight = self:GetActiveSights()
+    local asight = self:GetActiveSights()
 
-	if !asight then return end
+    if !asight then return end
 
-	if !asight.MagnifiedOptic then return end
+    if !asight.MagnifiedOptic then return end
 
-	local mag = asight.ScopeMagnification
+    local mag = asight.ScopeMagnification
 
-	cam.Start3D()
+    cam.Start3D()
 
-	ChaosBase.Overdraw = true
-	ChaosBase.LaserBehavior = true
-	ChaosBase.VMInRT = true
+    ChaosBase.Overdraw = true
+    ChaosBase.LaserBehavior = true
+    ChaosBase.VMInRT = true
 
-	local rtangles, rtpos, rtdrawvm
+    local rtangles, rtpos, rtdrawvm
 
-	if GetConVar("chaosbase_drawbarrel"):GetBool() and asight.Slot and asight.Slot == 1 then
-		rtangles = self.ViewModelAngle - self.ang_cached - (self:GetOurViewPunchAngles() * mag * 0.1)
-		rtangles.x = rtangles.x - self.pos_cached.z * 10
+    if GetConVar("chaosbase_drawbarrel"):GetBool() and asight.Slot and asight.Slot == 1 then
+        rtangles = self.ViewModelAngle - self.ang_cached - (self:GetOurViewPunchAngles() * mag * 0.1)
+        rtangles.x = rtangles.x - self.pos_cached.z * 10
         rtangles.y = rtangles.y + self.pos_cached.y * 10
 
         rtpos = self.ViewModelPos + self.ViewModelAngle:Forward() * (asight.EVPos.y + 7 + (asight.ScopeMagnificationMax and asight.ScopeMagnificationMax / 3))
         rtdrawvm = true
     else
-    	rtangles = EyeAngles()
-    	rtpos = EyePos()
-    	rtdrawvm = false
+        rtangles = EyeAngles()
+        rtpos = EyePos()
+        rtdrawvm = false
     end
 
     local addads = math.Clamp(additionalFOVconvar:GetFloat(), -2, 14)
 
     local rt = {
-    	w = rtsize,
-    	h = rtsize,
-    	angles = rtangles,
-    	origin = rtpos,
-    	drawviewmodel = rtdrawvm,
-    	fov = self:GetOwner():GetFOV() / mg / 1.2 - (addads or 0) / 4,
+        w = rtsize,
+        h = rtsize,
+        angles = rtangles,
+        origin = rtpos,
+        drawviewmodel = rtdrawvm,
+        fov = self:GetOwner():GetFOV() / mg / 1.2 - (addads or 0) / 4,
     }
 
     rtsize = ScrH()
@@ -330,9 +321,9 @@ function SWEP:FormRTScope()
     render.ClearRenderTarget(rt, blackColor)
 
     if self:GetState() == ChaosBase.STATE_SIGHTS then
-    	render.RenderView(rt)
-    	cam.Start3D(EyePos(), EyeAngles(), rt.fov, 0, 0, nil, nil, 0, nil)
-    	cam.End3D()
+        render.RenderView(rt)
+        cam.Start3D(EyePos(), EyeAngles(), rt.fov, 0, 0, nil, nil, 0, nil)
+        cam.End3D()
     end
 
     ChaosBase.Overdraw = false
@@ -347,12 +338,12 @@ function SWEP:FormRTScope()
 end
 
 hook.Add("RenderScene", "ChaosBase", function()
-	if GetConVar("chaosbase_cheapscopes"):GetBool() then return end
+    if GetConVar("chaosbase_cheapscopes"):GetBool() then return end
 
-	local wpn = LocalPlayer():GetActiveWeapon()
+    local wpn = LocalPlayer():GetActiveWeapon()
 
-	if !wpn.ChaosBase then return end
+    if !wpn.ChaosBase then return end
 
-	wpn:FormRTScope()
+    wpn:FormRTScope()
 end)
 ]]

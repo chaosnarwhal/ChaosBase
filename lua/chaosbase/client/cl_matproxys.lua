@@ -25,46 +25,50 @@ matproxy.Add({
     end
 })
 
-matproxy.Add( {
+matproxy.Add({
     name = "chaos_Compass",
-    init = function( self, mat, values )
+    init = function(self, mat, values)
         self.ResultTo = values.resultvar
         self.SnapDegree = mat:GetFloat("$compassSnap")
     end,
-
-    bind = function( self, mat, ent )
-        if ( !IsValid( ent )) then return end
+    bind = function(self, mat, ent)
+        if not IsValid(ent) then return end
         local owner = ent:GetOwner()
-        if ( !IsValid( owner ) or !owner:IsPlayer() ) then return end
+        if not IsValid(owner) or not owner:IsPlayer() then return end
         local ang = owner:EyeAngles()
-        
-        if self.SnapDegree == nil then self.SnapDegree = 0.01 end
+
+        if self.SnapDegree == nil then
+            self.SnapDegree = 0.01
+        end
+
         local antistupidity = math.Clamp(self.SnapDegree, 0.01, 360)
-        
         local angmath = ang:SnapTo("y", antistupidity)
-
-        mat:SetVector( self.ResultTo, Vector(-angmath.y, 0, 0) )
+        mat:SetVector(self.ResultTo, Vector(-angmath.y, 0, 0))
     end
-} )
+})
 
-matproxy.Add( {
+matproxy.Add({
     name = "chaos_ScollPitch",
-    init = function( self, mat, values )
+    init = function(self, mat, values)
         self.ResultTo = values.resultvar
         self.LerpPower = mat:GetFloat("$pitch_ls")
     end,
+    bind = function(self, mat, ent)
+        if not IsValid(ent) then
+            ent = LocalPlayer()
+        end
 
-    bind = function( self, mat, ent )
-        if !IsValid(ent) then ent = LocalPlayer() end
-        if ent:IsWeapon() && ent:GetOwner():EntIndex() != 0 then ent = ent:GetOwner() end
-        
-        if !self.LerpPower then self.LerpPower = 1 end
-        
+        if ent:IsWeapon() and ent:GetOwner():EntIndex() ~= 0 then
+            ent = ent:GetOwner()
+        end
+
+        if not self.LerpPower then
+            self.LerpPower = 1
+        end
+
         local ea = ent:EyeAngles()
-        local pitch = ea.x
-        
-        self.drc_scrollpitchlerp = Lerp(RealFrameTime() * (self.LerpPower * 2.5), self.drc_scrollpitchlerp or ea.x, ea.x)
 
-        mat:SetVector( self.ResultTo, Vector(0, self.drc_scrollpitchlerp/3.33333333) )
+        self.chaos_scrollpitchlerp = Lerp(RealFrameTime() * (self.LerpPower * 2.5), self.chaos_scrollpitchlerp or ea.x, ea.x)
+        mat:SetVector(self.ResultTo, Vector(0, self.chaos_scrollpitchlerp / 3.33333333))
     end
-} )
+})

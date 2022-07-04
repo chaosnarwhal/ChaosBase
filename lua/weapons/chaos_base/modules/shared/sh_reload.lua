@@ -14,6 +14,7 @@ function SWEP:CanInspect()
     if self:GetIsReloading() then return false end
     if self:GetOwner():KeyDown(IN_USE) then return false end
     if self.IronSightsProgressUnpredicted > 0 then return false end
+
     return true
 end
 
@@ -118,15 +119,13 @@ end
 function SWEP:RestoreAmmo(count)
     if self:GetOwner():IsNPC() then return end
 
-    local chamber = math.Clamp(self:Clip1(), 0, 1)
     if self:GetNeedCycle() then
         chamber = 0
     end
 
     local loadclip = self.ShotgunReload and 1 or 0
-
     local clip = self:GetCapacity()
-    count = count or (clip)
+    count = count or clip
     local reserve = self:Ammo1() or math.huge
     local load = math.Clamp(self:Clip1() + count, 0, reserve)
     load = math.Clamp(load, 0, clip + loadclip)

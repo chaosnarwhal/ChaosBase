@@ -17,11 +17,10 @@ local targint, targbool
 
 function SWEP:LerpVectorPod(delta, start, finish)
     delta = delta > 1 and 1 or delta
-    
     start.x = start.x + delta * (finish.x - start.x)
     start.y = start.y + delta * (finish.y - start.y)
     start.z = start.z + delta * (finish.z - start.z)
-    
+
     return start
 end
 
@@ -100,9 +99,7 @@ function SWEP:CalcView(ply, pos, ang, fov)
     end
 
     self.Camera.LerpReloadFov = self:SafeLerp(4 * FrameTime(), self.Camera.LerpReloadFov, diff)
-
-
-    local fovMultiplier = self:SafeLerp(self.Camera.Fov, 1, (self.Scope.ScopeMagnification or self.Scope.Magnification))
+    local fovMultiplier = self:SafeLerp(self.Camera.Fov, 1, self.Scope.ScopeMagnification or self.Scope.Magnification)
 
     if self:GetIsSprinting() then
         fovMultiplier = 1

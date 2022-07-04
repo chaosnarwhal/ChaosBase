@@ -8,7 +8,6 @@ function SWEP:CanAim()
 end
 
 function SWEP:AimBehaviourModule()
-    local owner = self:GetOwner()
     local speed = 1 / self.IronSightTime
 
     if self:CanAim() and self:GetIsAiming() then
@@ -29,6 +28,7 @@ function SWEP:IronSightSounds()
                 self:EmitSound(self.IronSightsOutSound)
             end
         end
+
         self.is_sndcache_old = is
     end
 end

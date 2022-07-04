@@ -44,7 +44,7 @@ function SWEP:AddHeat(a)
 
     if overheat then
         if self.HeatFix then
-            timer.Simple(self:GetAnimKeyTime(anim)+1, function()
+            timer.Simple(self:GetAnimKeyTime(anim) + 1, function()
                 self:SetHeat(0)
             end)
         end
@@ -66,7 +66,6 @@ function SWEP:DoHeat()
     end
 
     --self:GetOwner():SetAmmo(self:GetHeat(), 100)
-
     local diss = self.HeatDissipation or 2
     local ft = FrameTime()
     self.Heat = self:GetHeat() - (ft * diss)

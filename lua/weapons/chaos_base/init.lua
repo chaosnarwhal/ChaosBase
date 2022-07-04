@@ -1,32 +1,32 @@
---[[ AddCSLua our other essential functions. ]]--
+--[[ AddCSLua our other essential functions. ]]
+--
+AddCSLuaFile("cl_init.lua")
+AddCSLuaFile("shared.lua")
+--[[ Load up our shared code. ]]
+--
+include("shared.lua")
 
-AddCSLuaFile( "cl_init.lua" )
-AddCSLuaFile( "shared.lua" )
-
---[[ Load up our shared code. ]]--
-
-include('shared.lua')
-
---[[ Include these modules]]--
-
-for k,v in pairs(SWEP.SV_MODULES) do
+--[[ Include these modules]]
+--
+for k, v in pairs(SWEP.SV_MODULES) do
     include(v)
 end
 
---[[ Include these modules, and AddCSLua them, since they're shared.]]--
-
-for k,v in pairs(SWEP.SH_MODULES) do
+--[[ Include these modules, and AddCSLua them, since they're shared.]]
+--
+for k, v in pairs(SWEP.SH_MODULES) do
     AddCSLuaFile(v)
     include(v)
 end
 
---[[ Include these modules if singleplayer, and AddCSLua them, since they're clientside.]]--
-
-for k,v in pairs(SWEP.CLSIDE_MODULES) do
+--[[ Include these modules if singleplayer, and AddCSLua them, since they're clientside.]]
+--
+for k, v in pairs(SWEP.CLSIDE_MODULES) do
     AddCSLuaFile(v)
 end
+
 if game.SinglePlayer() then
-    for k,v in pairs(SWEP.CLSIDE_MODULES) do
+    for k, v in pairs(SWEP.CLSIDE_MODULES) do
         include(v)
     end
 end

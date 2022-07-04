@@ -17,7 +17,6 @@ function SWEP:CanPrimaryAttack()
 
     -- Gun is locked from heat.
     if self:GetHeatLocked() then return end
-
     if self:Clip1() <= 0 then return false end
     if CurTime() < self:GetNextPrimaryFire() then return false end
     if CurTime() < self:GetNextFiremodeTime() then return false end
@@ -40,7 +39,6 @@ function SWEP:CanPrimaryAttack()
         return
     end
     ]]
-
     --Sprinting ? (Check for Sprint Attack Value)
     if self:GetIsSprinting() == true then
         if self:GetCanSprintShoot() then
@@ -88,7 +86,6 @@ Purpose: Main SWEP function.
 --
 function SWEP:PrimaryAttack()
     if not self:CanPrimaryAttack() then return end
-
     local delay = 60 / self.Primary.RPM
     local curtime = CurTime()
     local curatt = self:GetNextPrimaryFire()
@@ -107,8 +104,6 @@ function SWEP:PrimaryAttack()
             self:SetIsPumping(false)
         end
     end
- 
-
 
     if self:GetCanSprintShoot() then
         self:SetIsFiring(true)
@@ -150,6 +145,7 @@ function SWEP:PrimaryAttack()
     if shouldBlowback and IsFirstTimePredicted() then
         self:BlowbackFull(ifp)
     end
+
     --MuzzleFlash
     self:ShootEffectsCustom()
     --Start Punching view to Recoil and add to the Cone of spray.

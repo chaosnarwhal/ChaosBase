@@ -14,7 +14,7 @@ local GetVelocity = reg.Entity.GetVelocity
 local Length = reg.Vector.Length
 local GetAimVector = reg.Player.GetAimVector
 
-ChaosBase.LimbCompensation = {
+SWEP.LimbCompensation = {
     [1] = {
         [HITGROUP_HEAD]     = 1 / 2,
         [HITGROUP_LEFTARM]  = 1 / 0.25,

@@ -11,16 +11,13 @@ local bxor = bit.bxor
 local bnot = bit.bnot
 local GetTimeScale = game.GetTimeScale
 local IN_ATTACK2 = IN_ATTACK2
-local IN_RELOAD = IN_RELOAD
 
 local function FinishMove(ply, cmovedata)
     if ply:InVehicle() then return end
     local wep = ply:GetActiveWeapon()
     if not IsValid(wep) or not wep.ChaosBase then return end
-    local impulse = cmovedata:GetImpulseCommand()
     local lastButtons = wep:GetDownButtons()
     local buttons = cmovedata:GetButtons()
-    local stillPressed = band(lastButtons, buttons)
     local changed = bxor(lastButtons, buttons)
     local pressed = band(changed, bnot(lastButtons), buttons)
     local depressed = band(changed, lastButtons, bnot(buttons))
@@ -59,16 +56,6 @@ end
 
 --Movement Rework
 AddCSLuaFile()
-
-local mat_speeds = {
-    [MAT_DIRT] = 0.8,
-    [MAT_FLESH] = 0.8,
-    [MAT_SNOW] = 0.7,
-    [MAT_SAND] = 0.8,
-    [MAT_SLOSH] = 0.7,
-    [MAT_GRASS] = 0.9,
-}
-
 local CMoveData = FindMetaTable("CMoveData")
 
 function CMoveData:RemoveKeys(keys)
@@ -114,7 +101,6 @@ local bhop_kill = true
 local min_speed = 200
 local min_speed_mult = 0.6
 local side_speed_mult = 1
-local speed_change = 0.5
 local crouching_speed = 0.35
 
 hook.Add("PlayerSpawn", "InitiateMoveSpeeds", function(ply)
@@ -142,7 +128,6 @@ hook.Add("PlayerNoClip", "isInNoClip", function(ply, desiredNoClipState)
 end)
 
 hook.Add("SetupMove", "Movement", function(ply, mv, cmd)
-    local ct = CurTime()
     local max_speed = ply:getJobTable().RunSpeed or 250
     if ply:GetInNoclip() then return end
 
@@ -233,6 +218,7 @@ hook.Add("SetupMove", "JumpHeight", function(ply, mv, cmd)
     local jump_power = 5
     ply:SetJumpPower(jump_height)
     if not jump_enabled then return end
+
     if ply:KeyDown(IN_JUMP) and not ply:OnGround() and mv:GetVelocity()[3] > 0 then
         mv:SetVelocity(mv:GetVelocity() + Vector(0, 0, jump_power))
     end
@@ -249,10 +235,8 @@ end)
 hook.Add("StartCommand", "Prevent_Duck_Spam", function(ply, cmd)
     if ply:GetInNoclip() then return end
 
-    if ply:GetNWInt("allowduck") == 0 then
-        if not ply:IsOnGround() then
-            cmd:SetButtons(IN_DUCK)
-        end
+    if ply:GetNWInt("allowduck") == 0 and not ply:IsOnGround() then
+        cmd:SetButtons(IN_DUCK)
     end
 
     if ply:KeyReleased(IN_DUCK) then
@@ -266,7 +250,7 @@ hook.Add("OnPlayerHitGround", "OnPlayerHitGround-anti-duck-crouch-spam", functio
     --If the player is on the ground.
     if player:IsOnGround() then
         --Allow the player to duck again.
-        if player:GetNWInt("allowduck") == 0 then end
+        if player:GetNWInt("allowduck") == 0 then return end
         player:SetNWInt("allowduck", 1)
     end
 

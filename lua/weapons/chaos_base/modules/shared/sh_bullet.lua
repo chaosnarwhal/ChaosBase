@@ -1,7 +1,5 @@
 AddCSLuaFile()
 
-local bul, tr = {}, {}
-
 function SWEP:CalculateRecoil()
     math.randomseed(self.Recoil.Seed + self:GetSprayRounds())
     local verticalRecoil = math.min(self:GetSprayRounds(), math.min(self:GetMaxClip1() * 0.33, 20)) * 0.1 + math.Rand(self.Recoil.Vertical[1], self.Recoil.Vertical[2])
@@ -20,6 +18,7 @@ function SWEP:CalculateRecoil()
     end
 
     local adsreduce = Lerp(self:GetAimDelta(), 1, self.Recoil.AdsMultiplier) * RecoilReducer
+
     return angles * adsreduce
 end
 
@@ -40,20 +39,19 @@ function SWEP:BulletCallbackInternal(attacker, tr, dmgInfo)
     --Custom Hitgroup Damage Setting
     local dmgtable = self.BodyDamageMults
     local trent = tr.Entity
+
     if trent:IsPlayer() then
         damage = damage
     elseif trent:IsNPC() or trent:IsNextBot() then
         damage = damage * (self.Bullet.DamageToNPC or 1)
     end
 
-   -- dmgInfo:SetDamage(damage + 1)
-
+    -- dmgInfo:SetDamage(damage + 1)
     local atype = self.Bullet.DamageType
     dmgInfo:SetDamageType(atype)
     dmgInfo:SetDamage(damage)
-
     local hg = tr.HitGroup
-    local gam = ChaosBase.LimbCompensation[1]
+    local gam = self.LimbCompensation[1]
 
     if gam[hg] and not dmgtable then
         dmgInfo:ScaleDamage(gam[hg])
@@ -66,16 +64,13 @@ function SWEP:BulletCallbackInternal(attacker, tr, dmgInfo)
         trent:ChatPrint("Got yo ass -Chaos")
     end
 
-    if CLIENT then
+    if CLIENT and self.LastHitEntity == NULL then
         --only do one call on initial impact, for the rest server will take care of it
-        if self.lastHitEntity == NULL then
-            net.Start("chaosbase_clienthitreg", true)
-            net.WriteEntity(tr.Entity)
-            net.WriteInt(tr.HitBox or 0, 8)
-            net.SendToServer()
-        end
+        net.Start("chaosbase_clienthitreg", true)
+        net.WriteEntity(tr.Entity)
+        net.WriteInt(tr.HitBox or 0, 8)
+        net.SendToServer()
     end
-
 end
 
 function SWEP:ShootProjectile(isent, data)

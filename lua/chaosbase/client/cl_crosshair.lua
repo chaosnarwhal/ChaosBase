@@ -9,25 +9,17 @@ function ChaosBase:halo_Crosshair()
     if GetConVar("cl_drawhud"):GetFloat() == 0 then return end
     if not wep:IsFirstPerson() then return end
     local chaosbase_crosshair = (ply:GetInfoNum("chaosbase_crosshair", 0) or 0) >= 1
-
     if not chaosbase_crosshair then return end
-
-    if (wep._eyeang == nil) then
-        return
-    end
-    
-    local widthpos, heightpos = ScrW() * 0.5, ScrH() * 0.5
+    if wep._eyeang == nil then return end
     local pos = (EyePos() + wep._eyeang:Forward() * 10):ToScreen()
 
-    if (Vector(widthpos, 0, heightpos):Distance(Vector(pos.x, 0, pos.y)) > 1.5) then
-        widthpos,heightpos = math.floor(pos.x), math.floor(pos.y)
+    if Vector(widthpos, 0, heightpos):Distance(Vector(pos.x, 0, pos.y)) > 1.5 then
+        widthpos, heightpos = math.floor(pos.x), math.floor(pos.y)
     end
 
     alphach = Lerp(0, 255, 0)
     alphalerpch = Lerp(FrameTime() * 25, alphalerpch or alphach or 0, alphach or 0)
-
     local cone = wep:GetCone() * 100
-
     local modspread = 1
     local modspreaddiv = 20
     local spread = cone * modspread
@@ -50,7 +42,7 @@ function ChaosBase:halo_Crosshair()
         end
     })
 
-    local crosshairColorTrace = Color(127,220,255,255)
+    local crosshairColorTrace = Color(127, 220, 255, 255)
 
     if tr.Entity and tr.Entity:IsNPC() or tr.Entity:IsPlayer() then
         crosshairColorTrace.r = 255

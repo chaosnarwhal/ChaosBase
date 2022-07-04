@@ -17,23 +17,16 @@ function SWEP:DrawWorldModelTranslucent(flags)
     self:DrawModel()
     render.SetBlend(1)
     local ply = self:GetOwner()
-
     local offsetVec = Vector(self.WorldModelOffsetPos)
     local offsetAng = Angle(self.WorldModelOffsetAng)
     local ModelScale = self.WepScale
-    local HighTierTable = self.HighTier
-    local elementOffsetVec = Vector(0,0,0)
-
-    if IsValid(ply) then
-        local index = ply:getJobTable().category or ply:getJobTable().name or nil
-    end
 
     if IsValid(ply) then
         if self:GetClassType() == "SPARTAN" then
             ModelScale = self.SparWepScale or ply:GetNW2Float("Chaos.PlayerScale")
             offsetVec = Vector(self.SparWorldModelOffsetPos)
             offsetAng = Angle(self.SparWorldModelOffsetAng)
-            elementOffsetVec = Vector(1.5,0.15,2)
+            elementOffsetVec = Vector(1.5, 0.15, 2)
         end
 
         local boneid = ply:LookupBone("ValveBiped.Bip01_R_Hand")
@@ -107,11 +100,9 @@ function SWEP:DrawWorldModelTranslucent(flags)
             pos, ang = self:GetBoneOrientation(self.WElements, v, bone_ent, "Bip01_R_Hand")
         end
 
-        if self.WElementsPosAdd and self.WElementsPosScale then
-            if self:IsHighTier() then
-                v.pos = self.WElementPosAdd
-                v.size = self.WelemntPosScale
-            end
+        if self.WElementsPosAdd and self.WElementsPosScale and self:IsHighTier() then
+            v.pos = self.WElementPosAdd
+            v.size = self.WelemntPosScale
         end
 
         if not pos then continue end
@@ -169,11 +160,12 @@ function SWEP:DrawWorldModelTranslucent(flags)
             ang:RotateAroundAxis(ang:Up(), v.angle.y)
             ang:RotateAroundAxis(ang:Right(), v.angle.p)
             ang:RotateAroundAxis(ang:Forward(), v.angle.r)
-            cam.Start3D2D(drawpos, ang, v.size * ( 1 or ply:GetNW2Float("Chaos.PlayerScale") ) )
+            cam.Start3D2D(drawpos, ang, v.size * (1 or ply:GetNW2Float("Chaos.PlayerScale")))
             v.draw_func(self)
             cam.End3D2D()
         end
     end
+
     self:RenderModelsWorld(self.c_WorldModel, 0)
 end
 
