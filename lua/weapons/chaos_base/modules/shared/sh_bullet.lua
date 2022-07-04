@@ -83,6 +83,8 @@ function SWEP:BulletCallback(attacker, tr, dmgInfo)
     self:BulletCallbackInternal(attacker, tr, dmgInfo)
 end
 
+local bul = {}
+
 function SWEP:ShootBullets(hitpos)
     hitpos = hitpos or nil
     if (CLIENT and not game.SinglePlayer()) and not IsFirstTimePredicted() then return end
@@ -100,13 +102,13 @@ function SWEP:ShootBullets(hitpos)
         spread = Vector()
     end
 
-    if self.tracerEntity then
-        self:Projectiles()
-    end
+    --if self.tracerEntity then
+        --self:Projectiles()
+    --end
 
     --[[
     bul.Attacker = self:GetOwner()
-    bul.Num = 1
+    bul.Num = SERVER and 1 or self.Bullet.NumBullets
     bul.Src = self:GetOwner():EyePos()
     bul.Dir = dir
     bul.Spread = spread
@@ -115,9 +117,9 @@ function SWEP:ShootBullets(hitpos)
     bul.Damage = 0
     bul.Distance = self:MetersToHU(self.Bullet.Range)
     bul.Callback = function(attacker, tr, dmgInfo) self:BulletCallback(attacker, tr, dmgInfo, bFromServer) end
-
     self:GetOwner():FireBullets(bul)
     ]]
+
     self:FireBullets({
         Attacker = self:GetOwner(),
         Src = self:GetOwner():EyePos(),
@@ -126,11 +128,10 @@ function SWEP:ShootBullets(hitpos)
         Num = SERVER and 1 or self.Bullet.NumBullets,
         Damage = 0,
         HullSize = self.Bullet.HullSize or 0,
-        Force = (self.Bullet.Damage[1] * self.Bullet.PhysicsMultiplier) * 0.01,
+        --Force = (self.Bullet.Damage[1] * self.Bullet.PhysicsMultiplier) * 0.01,
         Distance = self:MetersToHU(self.Bullet.Range),
         Tracer = self.Bullet.Tracer and 1 or 0,
         TracerName = self.Bullet.TracerName,
-        AmmoType = self.Primary.Ammo,
         Callback = function(attacker, tr, dmgInfo)
             self:BulletCallback(attacker, tr, dmgInfo, bFromServer)
         end

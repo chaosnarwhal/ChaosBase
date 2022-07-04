@@ -2,9 +2,10 @@ AddCSLuaFile()
 local sp = game.SinglePlayer()
 
 function SWEP:MuzzleFlashCustom(spv)
-    local att = self.c_WorldModel:LookupAttachment(self.MuzzleAttachment)
+    local att = self.c_WorldModel:LookupAttachment(self.MuzzleAttachment) or self:LookupAttachment(self.MuzzleAttachment) or nil
 
-    if self.MuzzleFlashParticle then
+
+    if self.MuzzleFlashParticle and IsValid(self.c_WorldModel) then
         ParticleEffectAttach(self.MuzzleFlashParticle, PATTACH_POINT_FOLLOW, self.c_WorldModel, att)
     end
 end
