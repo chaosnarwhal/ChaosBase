@@ -234,16 +234,15 @@ SWEP.Bullet = {
 SWEP.Projectile = nil
 
 --Custom Body Part Damage
-SWEP.BodyDamageMults = nil
-
--- if a limb is not set the damage multiplier will default to 1
--- that means gmod's stupid default limb mults will **NOT** apply
--- {
---     [HITGROUP_HEAD] = 1.25,
---     [HITGROUP_CHEST] = 1,
---     [HITGROUP_LEFTARM] = 0.9,
---     [HITGROUP_RIGHTARM] = 0.9,
--- }
+SWEP.BodyDamageMults = {
+     [HITGROUP_HEAD] = 0.5,
+     [HITGROUP_CHEST] = 1,
+     [HITGROUP_LEFTARM] = 1,
+     [HITGROUP_RIGHTARM] = 1,
+     [HITGROUP_LEFTLEG]  = 1,
+     [HITGROUP_RIGHTLEG] = 1,
+     [HITGROUP_STOMACH] = 1
+}
 
 SWEP.Recoil = {
     Vertical = {1, 3.5}, --random value between the 2
