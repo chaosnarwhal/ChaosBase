@@ -34,7 +34,7 @@ ChaosBase.scalethesewhitelist = {
 	["Praetor"] = 1.28,
 }
 
-hook.Add("PlayerSpawn", "ScaleThatSpartan",function(ply)
+hook.Add("PlayerSpawn", "ScaleThatPlayer",function(ply)
 	if not IsValid(ply) then return end
 	
 	--if not scalethesewhitelist[ply:getJobTable().category] then return end
