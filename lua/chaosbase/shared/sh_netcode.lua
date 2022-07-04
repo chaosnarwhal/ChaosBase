@@ -10,5 +10,4 @@ else
 			wep:ShootEffectsCustom(true)
 		end
 	end)
-
 end
