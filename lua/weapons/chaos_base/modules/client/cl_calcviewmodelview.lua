@@ -108,7 +108,7 @@ function SWEP:CalculateViewModelOffset(delta)
     local IronSightsPosition = self.IronSightsPos
     local IronSightsAngle = self.IronSightsAng
 
-    if AimDelta > 0.002 then
+    if AimDelta > 0.002 and self:CanAim() then
         self:SafeLerpVector(AimDelta, target_pos, IronSightsPosition)
         self:SafeLerpVector(AimDelta, target_ang, IronSightsAngle)
     end

@@ -80,7 +80,7 @@ end
 function SWEP:DrawHUDBackground()
 	if not self.Scoped then return end
     --Scope Overlay Handle
-    if self.IronSightsProgressUnpredicted > self.ScopeOverlayThreshold and self:GetIsAiming() and not self:GetIsSprinting() then
+    if self.IronSightsProgressUnpredicted > self.ScopeOverlayThreshold and self:GetIsAiming() and self:CanAim() then
         self:chaos_scope()
         self:ChaosDrawCustom2DScopeElements()
     end
