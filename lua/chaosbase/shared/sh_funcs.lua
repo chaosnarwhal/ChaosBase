@@ -132,3 +132,170 @@ function ChaosBase:DLight(ent, pos, col, size, lifetime, emissive)
         el.DieTime = CurTime() + lifetime
     end
 end
+
+CreateConVar("rev_killfeed", "true", FCVAR_ARCHIVE , "Enables or Disables the killfeed protection.")
+
+local disablefeed = disablefeed or {}
+
+disablefeed = {
+	["Admin"] = true,
+}
+
+hook.Add("DrawDeathNotice", "DisableKills", function()
+	local master_switch = GetConVar("rev_killfeed")
+
+	if master_switch:GetBool() == true then
+			return 0.85,0.04
+		else
+
+		local ply = LocalPlayer()
+
+		if not IsValid(ply) then return end
+
+		local plyjob = ply:getJobTable().category
+
+		if not disablefeed[plyjob] then
+			return 0,0
+		end
+
+	end
+
+
+end)
+
+
+timer.Simple(1,function()
+
+	hook.Remove("PlayerDeath", "FAdmin_Log")
+
+end)
+
+--Adding a hook that all players run when taking damage. And overriding the base function with our own.
+hook.Add( "GetFallDamage", "RevivalFallDMG", function( ply, speed ) 
+	--Inside here is where we make the function. With the GetFallDamage hook their are two arguments as seen above inside of our function wrap. PLY and SPEED. These arguments are always found on the gmod wiki and will tell you what they do. ply in this case is our local player. and speed is our fall velocity.
+	
+	
+	-- Declaring a local variable. Variables are wrote to store a value or complete a small function that doesn't need to pass arguments.
+	-- Here I Declare JobFallDamage to equal ply:getJobTable().fallDamage. This broken down ask the hook to check the ply *local player in this function*, get their DarkRP jobtable and pull the fall damage value. We then make an or statement for 4 if there are not falldamage values set in the jobs.lua.
+	local JobFallDamageVal = ply:getJobTable().fallDamage or 4
+	
+	
+	-- Here we are declaring the calculation im going to be using. Math.Ceil is to round the value we are about to pass out. 
+	local JobFallDamage = math.ceil(speed/16 * JobFallDamageVal)
+	
+	--Check if fallspeed is less than 900, if they are crouching, and have the climbswep out.
+	if speed < 900 and ply:Crouching() and (ply:GetActiveWeapon():GetClass() == "climb_swep2") then
+		--GetFallDamage passes falldamage to the player through the return value of the function. By Returning 0 we tell the hook to apply 0 damage to the player.
+		return 0
+	else --Else statements read as *Did they pass the above check? if so continue to end after return 0. If they failed the check continue past else than end.
+		return JobFallDamage
+	end
+end )
+
+--Remove the old climbswep hook.
+hook.Remove("GetFallDamage", "ClimbRollPD")
+
+
+--PLAYER ID RANGER.
+local ConVars = {}
+local HUDWidth
+local HUDHeight
+
+local Color = Color
+local CurTime = CurTime
+local cvars = cvars
+local draw = draw
+local GetConVar = GetConVar
+local hook = hook
+local IsValid = IsValid
+local Lerp = Lerp
+local math = math
+local pairs = pairs
+local ScrW, ScrH = ScrW, ScrH
+local SortedPairs = SortedPairs
+local string = string
+local surface = surface
+local table = table
+local timer = timer
+local tostring = tostring
+
+local PMeta = FindMetaTable( "Player" )
+
+local PlayerTrace = {
+    mask = MASK_SOLID,
+    dist = 1000,
+}
+
+function PMeta:GetCloaked()
+    local Col = self:GetColor()
+    if Col.a <= 0 then
+        return true
+    end
+    if self:GetNoDraw() or self:IsDormant() then 
+        return true 
+    end
+    return false
+end
+
+hook.Add( "HUDDrawTargetID", "RevivalIDSystem", function()
+
+    local Ply = LocalPlayer()
+	
+	local text = "ERROR"
+
+    local traced = table.Copy(PlayerTrace) -- copy the table to tracedata, or ,traced so it doens't get overridden
+    traced.start = Ply:EyePos()
+    traced.endpos = traced.start + Ply:EyeAngles():Forward() * traced.dist
+    traced.owner = Ply
+    traced.filter = Ply
+
+    local htr = util.TraceLine(traced)
+    local ent = htr.Entity
+	
+    if (htr.Hit and ent) and ent:IsPlayer() then	
+        if not ent:GetCloaked() then
+            local Bh,Th = ent:GetHull()
+            local Pos = ent:GetPos() + ent:OBBCenter()
+            local TeamCol = team.GetColor( ent:Team() )
+            Pos.z = Pos.z + Th.z-25
+
+            local PosToScreen = Pos:ToScreen()
+
+            local Text = ent:GetName() or ent:GetNick()
+            local font = "GModNotify"
+            surface.SetFont( font )
+			local w, h = surface.GetTextSize( Text )
+            draw.SimpleTextOutlined( Text, font,PosToScreen.x-(w/2), PosToScreen.y+5, TeamCol,0,0,1,Color(0,0,0,255) )
+
+            local Health = math.floor((ent:Health() / ent:GetMaxHealth()) * 100)
+            local Text = "HP:" .. Health .. "%"
+			local font = "DermaDefault"
+			surface.SetFont( font )
+            local w, h = surface.GetTextSize( Text )
+            
+            draw.SimpleTextOutlined( Text, font,PosToScreen.x-(w/2), PosToScreen.y+30, Color(255,255,255),0,0,1,Color(0,0,0,255) )
+        end
+    end
+    return false
+end)
+
+local function JoinMessage(ply)
+
+	JoinMessageTable  = {
+	
+	["STEAM_0:0:68228942"] = "They... Are my Kind.",
+	["STEAM_0:1:59480742"] = "<translate=rand(-1,1), rand(-1,1)>Impending Doom Approaches.",
+	["STEAM_0:0:77188080"] = "Impending Nerfs Approaches.",
+    ["STEAM_0:1:59316751"] = "Watch out! A real nigga has joined the game."
+	
+	}
+
+	local JoinSteamID = ply:SteamID()
+	
+	if JoinMessageTable[JoinSteamID] then
+		PrintMessage(HUD_PRINTTALK, JoinMessageTable[JoinSteamID])
+	end
+	
+end
+
+hook.Add("PlayerInitialSpawn","JesseChaosJoinMessage",JoinMessage)
