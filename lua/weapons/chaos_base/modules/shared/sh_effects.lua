@@ -3,10 +3,10 @@ AddCSLuaFile()
 local sp = game.SinglePlayer()
 
 function SWEP:MuzzleFlashCustom(spv)
-    local att = self:GetMuzzleAttachment()
+    local att = self.c_WorldModel:LookupAttachment(self.MuzzleAttachment)
     
     if self.MuzzleFlashParticle then
-        ParticleEffectAttach(self.MuzzleFlashParticle, PATTACH_POINT_FOLLOW, self, att)
+        ParticleEffectAttach(self.MuzzleFlashParticle, PATTACH_POINT_FOLLOW, self.c_WorldModel, att)
     end
 
 end
@@ -44,7 +44,6 @@ function SWEP:ShootEffectsCustom(ifp)
     self:GetOwner():MuzzleFlash()
 
     if (CLIENT and ifp and not self:IsFirstPerson()) then
-        self:UpdateMuzzleAttachment()
         self:MuzzleFlashCustom()
     end
 end
