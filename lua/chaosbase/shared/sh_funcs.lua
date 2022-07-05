@@ -1,5 +1,19 @@
 local sp = game.SinglePlayer()
 
+function CTFK(tab, value)
+	for i,v in ipairs(tab) do
+		if v == value then return true end
+	end
+	return false
+end
+
+function CTFKV(tab, value)
+	for i,v in ipairs(tab) do
+		if i == value then return true end
+	end
+	return false
+end
+
 --[[
 Hook: PlayerPostThink
 Function: Weapon Logic
@@ -297,5 +311,3 @@ local function JoinMessage(ply)
 	end
 	
 end
-
-hook.Add("PlayerInitialSpawn","JesseChaosJoinMessage",JoinMessage)
