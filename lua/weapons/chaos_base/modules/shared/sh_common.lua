@@ -28,8 +28,8 @@ SWEP.LimbCompensation = {
 
 function SWEP:GetMuzzleAttachment()
     local vmod = self:GetOwner():GetViewModel()
-    local att = math.max(1, self.MuzzleAttachmentRaw or (sp and vmod or self.c_WorldModel):LookupAttachment(self.MuzzleAttachment))
-
+    --local att = math.max(1, self.MuzzleAttachmentRaw or (sp and vmod or self.c_WorldModel):LookupAttachment(self.MuzzleAttachment))
+    local att = self.c_WorldModel:LookupAttachment(self.MuzzleAttachment)
     return att
 end
 

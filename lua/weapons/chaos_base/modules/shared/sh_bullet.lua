@@ -102,11 +102,12 @@ function SWEP:ShootBullets(hitpos)
         spread = Vector()
     end
 
-    --if self.tracerEntity then
-        --self:Projectiles()
-    --end
+    if self.tracerEntity then
+        self:Projectiles()
+    end
 
     --[[
+    bul.Wep self.c_WorldModel
     bul.Attacker = self:GetOwner()
     bul.Num = SERVER and 1 or self.Bullet.NumBullets
     bul.Src = self:GetOwner():EyePos()
@@ -117,7 +118,8 @@ function SWEP:ShootBullets(hitpos)
     bul.Damage = 0
     bul.Distance = self:MetersToHU(self.Bullet.Range)
     bul.Callback = function(attacker, tr, dmgInfo) self:BulletCallback(attacker, tr, dmgInfo, bFromServer) end
-    self:GetOwner():FireBullets(bul)
+
+    self:FireBullets(bul)
     ]]
 
     self:FireBullets({
@@ -125,7 +127,7 @@ function SWEP:ShootBullets(hitpos)
         Src = self:GetOwner():EyePos(),
         Dir = dir,
         Spread = spread,
-        Num = SERVER and 1 or self.Bullet.NumBullets,
+        Num = self.Bullet.NumBullets,
         Damage = 0,
         HullSize = self.Bullet.HullSize or 0,
         --Force = (self.Bullet.Damage[1] * self.Bullet.PhysicsMultiplier) * 0.01,

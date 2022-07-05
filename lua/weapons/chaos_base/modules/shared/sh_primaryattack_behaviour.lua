@@ -130,9 +130,7 @@ function SWEP:PrimaryAttack()
 
     --ClientSide Blood fix
     if not self.Projectile then
-        if CLIENT then
-            self:ShootBullets()
-        end
+        self:ShootBullets()
     else
         self:Projectiles()
     end
