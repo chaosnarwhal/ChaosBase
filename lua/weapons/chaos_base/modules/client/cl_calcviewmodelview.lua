@@ -184,8 +184,8 @@ function SWEP:CalculateViewModelFlip()
 
     self.ViewModelFOV_OG = self.ViewModelFOV
     local cam_fov = 90
-    local iron_add = cam_fov * (1 - 90 / cam_fov) * math.max(1 - self.Secondary.OwnerFOV / 90, 0)
-    self.ViewModelFOV = Lerp(self.IronSightsProgressUnpredicted, self.ViewModelFOV_OG, self.Secondary.ViewModelFOV) * fovmod_mult:GetFloat() + fovmod_add:GetFloat() + iron_add + self.IronSightsProgressUnpredicted
+    local iron_add = cam_fov * (1 - 90 / cam_fov) * math.max(1 - 70 / 90, 0)
+    self.ViewModelFOV = Lerp(self.IronSightsProgressUnpredicted, self.m_OriginalViewModelFOV, self.Secondary.ViewModelFOV) * fovmod_mult:GetFloat() + fovmod_add:GetFloat() + iron_add + self.IronSightsProgressUnpredicted
 end
 
 --[[ 
@@ -284,7 +284,7 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
     CalcVMViewHookBypass = false
     vm:SetPos(EyePos)
     vm:SetAngles(EyeAng)
-    self.ViewModelFOV = self:SafeLerp(self.Camera.Fov, self.m_OriginalViewModelFOV, self.m_OriginalViewModelFOV * self.Zoom.ViewModelFovMultiplier)
+    --self.ViewModelFOV = self:SafeLerp(self.Camera.Fov, self.m_OriginalViewModelFOV, self.m_OriginalViewModelFOV)
 end
 
 --[[ 
