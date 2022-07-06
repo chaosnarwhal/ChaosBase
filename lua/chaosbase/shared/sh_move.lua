@@ -55,37 +55,4 @@ local function FinishMove(ply, cmovedata)
     end
 end
 
-local meta = FindMetaTable("Player")
-
-function meta:GetInNoclip()
-    return self:GetNW2Bool("in_noclip")
-end
-
-hook.Add("StartCommand", "Prevent_Duck_Spam", function(ply, cmd)
-    if ply:GetInNoclip() then return end
-
-    if ply:KeyReleased(IN_DUCK) then
-        ply:SetNWInt("allowduck", 0)
-    end
-end)
-
-hook.Add("OnPlayerHitGround", "OnPlayerHitGround-anti-duck-crouch-spam", function(player)
-    if player:GetInNoclip() then return end
-
-    --If the player is on the ground.
-    if player:IsOnGround() then
-        --Allow the player to duck again.
-        if player:GetNWInt("allowduck") == 0 then return end
-        player:SetNWInt("allowduck", 1)
-    end
-
-    player:SetVelocity(-player:GetVelocity() * 0.1321)
-end)
-
---When player joins the server create the network var to allow them to duck or not.
-hook.Add("PlayerSpawn", "PlayerInitialSpawn-anti-duck-crouch-spam", function(player)
-    player:SetNWInt("allowduck", 1)
-    player:SetNW2Bool("in_noclip", 0)
-end)
-
 hook.Add("FinishMove", "ChaosFinishMove", FinishMove)
