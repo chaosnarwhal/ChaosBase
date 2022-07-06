@@ -47,7 +47,7 @@ function SWEP:BulletCallbackInternal(attacker, tr, dmgInfo)
     end
 
     -- dmgInfo:SetDamage(damage + 1)
-    local atype = self.Bullet.DamageType
+    local atype = self.Bullet.DamageType or DMG_BULLET
     dmgInfo:SetDamageType(atype)
     dmgInfo:SetDamage(damage)
     local hg = tr.HitGroup
