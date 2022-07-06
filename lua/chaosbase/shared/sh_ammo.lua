@@ -19,7 +19,23 @@ local batteryammo = {
     }
 }
 
+local 762_ammo = {
+    {
+        Name = "7.62×51mm",
+        Text = "Don't give yourself this ammo. It will only break your weapons.",
+        DMG = DMG_BULLET,
+        DamagePlayer = 0,
+        DamageNPC = 0,
+        Tracer = TRACER_LINE_AND_WHIZ,
+        Force = 500,
+        SplashMin = 5,
+        SplashMax = 10,
+        MaxCarry = 600,
+    }
+}
+
 ChaosBase:AddAmmoType(batteryammo)
+ChaosBase:AddAmmoType(762_ammo)
 
 hook.Add("Initialize", "chaos_SetupAmmoTypes", function()
     for k, v in pairs(ChaosBase.AmmoTypes) do

@@ -32,6 +32,7 @@ ChaosBase.scalethesewhitelist = {
     ["Eclipse"] = 1.28,
     ["Warden"] = 1.28,
     ["Praetor"] = 1.28,
+    ["ONI Spartan"] = 1.28,
     ["AI"] = 0.25,
 }
 
