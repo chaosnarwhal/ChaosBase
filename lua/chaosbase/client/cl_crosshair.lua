@@ -44,7 +44,7 @@ function ChaosBase:halo_Crosshair()
 
     local crosshairColorTrace = Color(127, 220, 255, 255)
 
-    if tr.Entity and tr.Entity:IsNPC() or tr.Entity:IsPlayer() then
+    if tr.Entity and tr.Entity:IsNPC() or tr.Entity:IsPlayer() and not tr.Entity:GetCloaked() then
         crosshairColorTrace.r = 255
         crosshairColorTrace.g = 0
         crosshairColorTrace.b = 0
