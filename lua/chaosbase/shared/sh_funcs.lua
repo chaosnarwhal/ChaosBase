@@ -301,7 +301,8 @@ local function JoinMessage(ply)
 	["STEAM_0:1:59480742"] = "<translate=rand(-1,1), rand(-1,1)>Impending Doom Approaches.",
 	["STEAM_0:0:77188080"] = "Impending Nerfs Approaches.",
     ["STEAM_0:1:59316751"] = "Watch out! A real melanated fellow has joined the game.",
-    ["STEAM_0:1:76934751"] = "PAC 2.5 being added.."
+    ["STEAM_0:1:76934751"] = "PAC 2.5 being added..",
+    ["STEAM_1:1:64442380"] = "Hey.. I have an idea for a Server."
 	
 	}
 
