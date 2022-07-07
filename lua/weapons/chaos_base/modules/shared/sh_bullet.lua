@@ -25,7 +25,7 @@ end
 function SWEP:CalculateCone()
     math.randomseed(self.Cone.Seed + self:Clip1() + self:Ammo1())
 
-    return math.Clamp(math.Rand(-self:GetCone(), self:GetCone()) * 1000, -self:GetCone(), self:GetCone())
+    return math.Clamp(math.Rand(-self:GetCone(), self:GetCone()) * 100, -self:GetCone(), self:GetCone())
 end
 
 function SWEP:BulletCallbackInternal(attacker, tr, dmgInfo)
@@ -64,13 +64,17 @@ function SWEP:BulletCallbackInternal(attacker, tr, dmgInfo)
         trent:ChatPrint("Got yo ass -Chaos")
     end
 
-    if CLIENT and self.LastHitEntity == NULL then
-        --only do one call on initial impact, for the rest server will take care of it
-        net.Start("chaosbase_clienthitreg", true)
-        net.WriteEntity(tr.Entity)
-        net.WriteInt(tr.HitBox or 0, 8)
-        net.SendToServer()
+    --[[
+    if CLIENT then
+        if self.LastHitEntity == NULL then
+            --only do one call on initial impact, for the rest server will take care of it
+            net.Start("chaosbase_clienthitreg", true)
+            net.WriteEntity(tr.Entity)
+            net.WriteInt(tr.HitBox or 0, 8)
+            net.SendToServer()
+        end
     end
+    ]]
 end
 
 function SWEP:ShootProjectile(isent, data)
@@ -87,8 +91,11 @@ local bul = {}
 
 function SWEP:ShootBullets(hitpos)
     hitpos = hitpos or nil
+
     if (CLIENT and not game.SinglePlayer()) and not IsFirstTimePredicted() then return end
+
     self.lastHitEntity = NULL
+
     local spread = Vector(self:CalculateCone(), -self:CalculateCone()) * 0.1
 
     if self.Bullet.NumBullets == 1 then
@@ -123,12 +130,13 @@ function SWEP:ShootBullets(hitpos)
     ]]
 
     self:FireBullets({
+        Wep = self,
         Attacker = self:GetOwner(),
         Src = self:GetOwner():EyePos(),
         Dir = dir,
         Spread = spread,
         Num = self.Bullet.NumBullets,
-        Damage = 0,
+        Damage = self.Bullet.Damage[1],
         HullSize = self.Bullet.HullSize or 0,
         --Force = (self.Bullet.Damage[1] * self.Bullet.PhysicsMultiplier) * 0.01,
         Distance = self:MetersToHU(self.Bullet.Range),

@@ -126,13 +126,23 @@ function SWEP:PrimaryAttack()
     end
 
     self:DoShootSound()
+
     self.lastHitEntity = NULL
+
+
+    if ( self:GetOwner():IsPlayer() ) then
+        self:GetOwner():LagCompensation( true )
+    end
 
     --ClientSide Blood fix
     if not self.Projectile then
         self:ShootBullets()
     else
         self:Projectiles()
+    end
+
+    if ( self:GetOwner():IsPlayer() ) then
+        self:GetOwner():LagCompensation( false )
     end
 
     --Primary Shoot animations
