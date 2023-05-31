@@ -280,7 +280,7 @@ function SWEP:CalcViewModel(ViewModel, EyePos, EyeAng)
     self:VectorAddAndMul(EyePos, right, recoilPos.x)
     --end fake recoil
     CalcVMViewHookBypass = true
-    EyePos, EyeAng = hook.Run("CalcViewModelView", self, vm, vm:GetPos(), vm:GetAngles(), EyePos * 1, EyeAng * 1)
+    --EyePos, EyeAng = hook.Run("CalcViewModelView", self, vm, vm:GetPos(), vm:GetAngles(), EyePos * 1, EyeAng * 1)
     CalcVMViewHookBypass = false
     vm:SetPos(EyePos)
     vm:SetAngles(EyeAng)

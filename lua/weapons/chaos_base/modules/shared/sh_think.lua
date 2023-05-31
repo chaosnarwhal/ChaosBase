@@ -71,7 +71,7 @@ function SWEP:ChaosThink2(is_working_out_prediction_errors)
         self:SafetyHandlerModule()
         local speed = 1 / self.IronSightTime
 
-        if self:GetIsAiming() then
+        if self:GetIsAiming() and not self:GetIsSprinting() then
             self:SetAimDelta(math.min(self:GetAimDelta() + speed * FrameTime(), 1))
         else
             self:SetAimDelta(math.max(self:GetAimDelta() - speed * FrameTime(), 0))

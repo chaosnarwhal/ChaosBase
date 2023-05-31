@@ -280,3 +280,9 @@ function SWEP:InitHighTierValues()
     LocalPlayer():ChatPrint("ModelScale: "..LocalPlayer():GetNW2Float("Chaos.PlayerScale").."")
     ]]
 end
+
+local DefaultLoadouts = {
+    {Name = "None",Weapons = {}},
+    {Name = "M41 SPNKR",Weapons = {"drc_spnkr"},Jobs = {"JobNameHere"}},
+    {Name = "M41 AA SPNKR",Weapons = {"drc_spnkr_laser"}}
+}

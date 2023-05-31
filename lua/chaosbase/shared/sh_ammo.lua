@@ -4,23 +4,8 @@ function ChaosBase:AddAmmoType(tbl)
     table.Add(ChaosBase.AmmoTypes, tbl)
 end
 
-local batteryammo = {
-    {
-        Name = "ammo_chaos_battery",
-        Text = "Don't give yourself this ammo. It will only break your weapons.",
-        DMG = DMG_BULLET,
-        DamagePlayer = 0,
-        DamageNPC = 0,
-        Tracer = TRACER_LINE_AND_WHIZ,
-        Force = 500,
-        SplashMin = 5,
-        SplashMax = 10,
-        MaxCarry = 100,
-    }
-}
-
-local 762_ammo = {
-    {
+local fmj = {
+	{
         Name = "7.62×51mm",
         Text = "Don't give yourself this ammo. It will only break your weapons.",
         DMG = DMG_BULLET,
@@ -31,11 +16,10 @@ local 762_ammo = {
         SplashMin = 5,
         SplashMax = 10,
         MaxCarry = 600,
-    }
+    },
 }
 
-ChaosBase:AddAmmoType(batteryammo)
-ChaosBase:AddAmmoType(762_ammo)
+ChaosBase:AddAmmoType(fmj)
 
 hook.Add("Initialize", "chaos_SetupAmmoTypes", function()
     for k, v in pairs(ChaosBase.AmmoTypes) do

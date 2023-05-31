@@ -2,7 +2,9 @@
 AddCSLuaFile()
 
 ChaosBase.scalethesesteamidsextra = {
-    ["76561198079227213"] = 1.34,
+    ["76561198079227213"] = 1.34, --Meliodas
+    ["76561198179334151"] = 1.31, --Bun
+    ["76561198096723612"] = 1.41, --Jesse
 }
 
 ChaosBase.scalethesewhitelist = {
@@ -16,6 +18,7 @@ ChaosBase.scalethesewhitelist = {
     ["SoS Ranger"] = 1.24,
     ["SoS Senior Command"] = 1.24,
     ["SoS Spec-Ops"] = 1.24,
+    ["Silent Shadow"] = 1.24,
     ["SoS Arbiter"] = 1.24,
     ["Ascetic"] = 1.24,
     ["SoS Berserker"] = 1.3,

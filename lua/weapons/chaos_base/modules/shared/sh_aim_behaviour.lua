@@ -10,7 +10,7 @@ end
 function SWEP:AimBehaviourModule()
     local speed = 1 / self.IronSightTime
 
-    if self:CanAim() and self:GetIsAiming() then
+    if self:CanAim() and self:GetIsAiming() and not self:GetIsSprinting() then
         self:SetAimDelta(math.min(self:GetAimDelta() + speed * FrameTime(), 1))
     else
         self:SetAimDelta(math.max(self:GetAimDelta() - speed * FrameTime(), 0))
